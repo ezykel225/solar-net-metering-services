@@ -1,0 +1,53 @@
+import Link from "next/link";
+import { services } from "@/data/services";
+import { Icon } from "@/components/ui/Icon";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import styles from "./ServicesSection.module.css";
+
+type ServicesSectionProps = {
+  /** Show the detailed bullet list on each card (used on the Services page). */
+  detailed?: boolean;
+  showHeading?: boolean;
+};
+
+export function ServicesSection({ detailed = false, showHeading = true }: ServicesSectionProps) {
+  return (
+    <section className="section" aria-labelledby={showHeading ? "services-title" : undefined} aria-label={showHeading ? undefined : "Our services"}>
+      <div className="container">
+        {showHeading ? (
+          <SectionHeading
+            id="services-title"
+            eyebrow="What We Do"
+            title="Solar Solutions for Every Property"
+            intro="From the first site visit to net-metering approval, we provide complete solar services for homes and businesses."
+          />
+        ) : null}
+        <ul className={`${styles.grid} ${detailed ? styles.detailed : ""}`}>
+          {services.map((service) => (
+            <li key={service.slug} id={detailed ? service.slug : undefined} className={styles.card}>
+              <span className={styles.icon}>
+                <Icon name={service.icon} size={28} />
+              </span>
+              <h3>{service.title}</h3>
+              <p>{service.summary}</p>
+              {detailed ? (
+                <ul className={styles.details}>
+                  {service.details.map((d) => (
+                    <li key={d}>
+                      <Icon name="check" size={18} /> {d}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <Link href={`/services#${service.slug}`} className={styles.more}>
+                  Learn more<span className="sr-only"> about {service.title}</span>
+                  <Icon name="arrowRight" size={16} />
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}

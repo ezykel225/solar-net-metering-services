@@ -1,0 +1,50 @@
+.wrap {
+  padding-block: 0 var(--section-y);
+}
+
+.spaced {
+  padding-top: var(--section-y);
+}
+
+.banner {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+  padding: clamp(1.75rem, 5vw, 3.25rem);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(245, 137, 31, 0.45), transparent 45%),
+    var(--color-navy);
+  color: var(--color-on-dark);
+  box-shadow: var(--shadow-lg);
+}
+
+.banner h2 {
+  margin-bottom: 0.5rem;
+  color: var(--color-white);
+  font-size: clamp(1.5rem, 2vw + 0.75rem, 2.2rem);
+}
+
+.banner p {
+  margin: 0;
+  max-width: 560px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.actions :global(.btn) {
+  flex: 1 1 auto;
+}
+
+@media (min-width: 900px) {
+  .banner {
+    grid-template-columns: 1fr auto;
+  }
+  .actions :global(.btn) {
+    flex: 0 0 auto;
+  }
+}

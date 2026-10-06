@@ -1,0 +1,85 @@
+.steps {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.step {
+  position: relative;
+  padding: 1.75rem 1.5rem;
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.step p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.iconWrap {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 1.25rem;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--color-navy);
+  color: var(--color-orange);
+}
+
+.number {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--color-white);
+  border-radius: 50%;
+  background: var(--color-orange);
+  color: var(--color-navy);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.footer {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .steps {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  /* connector arrows between steps */
+  .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 64px;
+    right: -1.15rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-top: 3px solid var(--color-orange);
+    border-right: 3px solid var(--color-orange);
+    transform: rotate(45deg);
+  }
+}

@@ -1,0 +1,219 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-white);
+  transition: box-shadow 0.2s ease;
+}
+
+.scrolled {
+  box-shadow: 0 6px 20px -12px rgba(11, 31, 58, 0.35);
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  display: none;
+  background: var(--color-navy);
+  color: var(--color-on-dark);
+  font-size: 0.85rem;
+}
+
+.topbarInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 40px;
+}
+
+.topbarText {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.topbarText svg {
+  color: var(--color-orange);
+}
+
+.topbarLinks {
+  display: flex;
+  gap: 1.25rem;
+  list-style: none;
+}
+
+.topbarLinks a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-on-dark);
+  text-decoration: none;
+}
+
+.topbarLinks a:hover {
+  color: var(--color-white);
+}
+
+.topbarLinks a:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-orange);
+}
+
+/* ---------- main bar ---------- */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: var(--header-h);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.desktopNav {
+  display: none;
+}
+
+.desktopNav ul {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  list-style: none;
+}
+
+.navLink {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.6rem;
+  color: var(--color-navy);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 6px;
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.15rem;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-orange);
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+
+.navLink:hover::after,
+.navLink[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quoteBtn {
+  white-space: nowrap;
+}
+
+.menuToggle {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-navy);
+  cursor: pointer;
+}
+
+/* ---------- mobile menu ---------- */
+.mobileMenu {
+  position: absolute;
+  inset: 100% 0 auto 0;
+  height: calc(100dvh - var(--header-h));
+  overflow-y: auto;
+  background: var(--color-white);
+  border-top: 1px solid var(--color-border);
+  padding-block: 1rem 2rem;
+}
+
+.mobileList {
+  list-style: none;
+}
+
+.mobileLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 0.75rem 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-navy);
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.mobileLink svg {
+  color: var(--color-orange-text);
+}
+
+.mobileLink[aria-current="page"] {
+  color: var(--color-orange-text);
+}
+
+.mobileCta {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* On phones the quote CTA lives in the sticky bottom bar (MobileCtaBar). */
+@media (max-width: 639px) {
+  .actions .quoteBtn {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .topbar {
+    display: block;
+  }
+  .mobileMenu {
+    height: calc(100dvh - var(--header-h) - 40px);
+  }
+}
+
+@media (max-width: 899px) {
+  .topbarText {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktopNav {
+    display: block;
+  }
+  .menuToggle,
+  .mobileMenu {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1159px) {
+  .navLink {
+    padding-inline: 0.45rem;
+    font-size: 0.9rem;
+  }
+  .navLink::after {
+    left: 0.45rem;
+    right: 0.45rem;
+  }
+}

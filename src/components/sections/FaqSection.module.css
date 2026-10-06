@@ -1,0 +1,63 @@
+.grid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.help {
+  padding: 1.75rem;
+  background: var(--color-navy);
+  color: var(--color-on-dark);
+  border-radius: var(--radius);
+}
+
+.help h3 {
+  color: var(--color-white);
+  margin-bottom: 0.4rem;
+}
+
+.helpIcon {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  background: var(--color-orange);
+  color: var(--color-navy);
+}
+
+.helpActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-white);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.phone:hover {
+  text-decoration: underline;
+}
+
+.phone:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-orange);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 4rem;
+  }
+  .grid > div:first-child {
+    position: sticky;
+    top: calc(var(--header-h) + 64px);
+  }
+}

@@ -1,0 +1,51 @@
+import { faqs, type Faq } from "@/data/faqs";
+import { QUOTE_HREF } from "@/data/navigation";
+import { siteConfig } from "@/lib/site";
+import { Accordion } from "@/components/ui/Accordion";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { Icon } from "@/components/ui/Icon";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import styles from "./FaqSection.module.css";
+
+type FaqSectionProps = {
+  items?: Faq[];
+  limit?: number;
+  showHeading?: boolean;
+};
+
+export function FaqSection({ items = faqs, limit, showHeading = true }: FaqSectionProps) {
+  const list = limit ? items.slice(0, limit) : items;
+  return (
+    <section className="section section--soft" aria-labelledby={showHeading ? "faq-title" : undefined} aria-label={showHeading ? undefined : "Frequently asked questions"}>
+      <div className={`container ${styles.grid}`}>
+        <div>
+          {showHeading ? (
+            <SectionHeading
+              id="faq-title"
+              align="left"
+              eyebrow="FAQs"
+              title="Frequently Asked Questions"
+              intro="Answers to common questions about solar installation and net metering."
+            />
+          ) : null}
+          <aside className={styles.help} aria-label="Need more help?">
+            <span className={styles.helpIcon}>
+              <Icon name="headset" size={26} />
+            </span>
+            <h3>Still have questions?</h3>
+            <p>Our team is happy to explain your options and walk you through the net-metering process.</p>
+            <div className={styles.helpActions}>
+              <ButtonLink href={QUOTE_HREF} size="sm">
+                Ask for a Free Quote
+              </ButtonLink>
+              <a className={styles.phone} href={siteConfig.contact.phoneHref}>
+                <Icon name="phone" size={16} /> {siteConfig.contact.phone}
+              </a>
+            </div>
+          </aside>
+        </div>
+        <Accordion items={list} />
+      </div>
+    </section>
+  );
+}

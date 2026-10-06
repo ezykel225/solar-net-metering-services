@@ -1,0 +1,145 @@
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.imageWrap {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--color-bg-soft);
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.04);
+}
+
+.tag {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--color-orange);
+  color: var(--color-navy);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.tagCommercial {
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.body {
+  padding: 1.35rem 1.5rem 1.6rem;
+}
+
+.body h3 {
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.meta svg {
+  color: var(--color-orange-text);
+}
+
+.description {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.filter {
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-white);
+  color: var(--color-navy);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter:hover {
+  border-color: var(--color-navy);
+}
+
+.filter[aria-pressed="true"] {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: var(--color-white);
+}
+
+.footer {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Avoid a lone orphan card on two-column (tablet) layouts. */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .grid > li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .grid > li:last-child:nth-child(odd) .imageWrap {
+    aspect-ratio: 21 / 9;
+  }
+}

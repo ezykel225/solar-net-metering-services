@@ -1,0 +1,127 @@
+.grid {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.list {
+  display: grid;
+  gap: 1.25rem;
+  list-style: none;
+}
+
+.list li {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.list h3 {
+  margin-bottom: 0.2rem;
+  font-size: 1.075rem;
+}
+
+.list p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--color-white);
+  color: var(--color-orange-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.card {
+  margin: 0;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.cardHead {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  margin-bottom: 1.75rem;
+}
+
+.cardHead h3 {
+  margin: 0;
+}
+
+.cardHead p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.cardIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--color-navy);
+  color: var(--color-orange);
+}
+
+.bars {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  list-style: none;
+}
+
+.barLabel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.925rem;
+  color: var(--color-text-muted);
+}
+
+.barLabel strong {
+  color: var(--color-navy);
+}
+
+.barValue {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-bg-soft);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-orange) 0%, #f9b15f 100%);
+}
+
+.note {
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 1.1fr 1fr;
+  }
+}

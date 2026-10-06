@@ -1,0 +1,47 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-navy);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.onDark {
+  color: var(--color-white);
+}
+
+.mark {
+  width: 42px;
+  height: 42px;
+  color: var(--color-navy);
+}
+
+.onDark .mark {
+  color: var(--color-white);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.sub {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-orange-text);
+}
+
+.onDark .sub {
+  color: var(--color-orange);
+}
