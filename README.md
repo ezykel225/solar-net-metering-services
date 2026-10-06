@@ -48,7 +48,8 @@ Styling uses plain CSS. Design tokens (brand colors, spacing, radii) live in `sr
 
 ## Replacing placeholder content
 
-The full list of placeholders, the business claims that need sign-off, and the pre-launch checklist are in
+Everything still needed from the business owner is listed, with the exact file for each item, in
+[`docs/OWNER_CONTENT_CHECKLIST.md`](docs/OWNER_CONTENT_CHECKLIST.md). The earlier site audit is in
 [`docs/COMPLETION_AUDIT.md`](docs/COMPLETION_AUDIT.md). The most common edits:
 
 - **Contact details, Facebook link, stats:** `src/lib/site.ts`
@@ -60,10 +61,9 @@ The full list of placeholders, the business claims that need sign-off, and the p
 
 The form (`src/components/quote/QuoteForm.tsx`) only calls `submitQuoteRequest()` in `src/lib/quote.ts`.
 Right now that function simulates a request and the form shows a demo success state. Nothing is stored or sent.
-To go live, replace the body of `submitQuoteRequest()` with either:
 
-- a `fetch("/api/quote")` call to a new Route Handler (`src/app/api/quote/route.ts`) that reuses `validateQuoteRequest()` on the server, or
-- a Supabase insert, with keys read from environment variables (see `.env.example`). Never hard-code them.
+The connection plan is in [`docs/QUOTE_SUBMISSION_PLAN.md`](docs/QUOTE_SUBMISSION_PLAN.md). It covers the `quote_requests` table and migration, the server-only `/api/quote` route, environment variables, the privacy-consent checkbox, and the exact files that change.
+The database row types and the form-to-row mapping (`toQuoteRequestInsert()`) are already in `src/lib/quote.ts`.
 
 ## Location-specific SEO (prepared)
 

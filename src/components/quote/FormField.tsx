@@ -19,6 +19,7 @@ type InputProps = BaseProps & {
   type?: "text" | "email" | "tel";
   autoComplete?: string;
   inputMode?: HTMLAttributes<HTMLInputElement>["inputMode"];
+  maxLength?: number;
 };
 type SelectProps = BaseProps & { as: "select"; options: readonly string[] };
 type TextareaProps = BaseProps & { as: "textarea"; maxLength?: number };
@@ -68,6 +69,7 @@ export function FormField(props: FormFieldProps) {
         {...shared}
         type={props.type ?? "text"}
         enterKeyHint="next"
+        maxLength={props.maxLength}
         autoComplete={props.autoComplete}
         inputMode={props.inputMode}
         placeholder={placeholder}

@@ -4,6 +4,7 @@ import { useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent } f
 import {
   emptyQuoteRequest,
   propertyTypes,
+  quoteLimits,
   serviceOptions,
   submitQuoteRequest,
   validateQuoteRequest,
@@ -145,13 +146,30 @@ export function QuoteForm() {
       </div>
 
       <div className={styles.grid}>
-        <FormField label="Full Name" required autoComplete="name" {...fieldProps("fullName")} />
-        <FormField label="Phone Number" required type="tel" autoComplete="tel" inputMode="tel" {...fieldProps("phone")} />
-        <FormField label="Email" required type="email" autoComplete="email" inputMode="email" {...fieldProps("email")} />
+        <FormField label="Full Name" required autoComplete="name" maxLength={quoteLimits.fullName} {...fieldProps("fullName")} />
+        <FormField
+          label="Phone Number"
+          required
+          type="tel"
+          autoComplete="tel"
+          inputMode="tel"
+          maxLength={quoteLimits.phone}
+          {...fieldProps("phone")}
+        />
+        <FormField
+          label="Email"
+          required
+          type="email"
+          autoComplete="email"
+          inputMode="email"
+          maxLength={quoteLimits.email}
+          {...fieldProps("email")}
+        />
         <FormField
           label="Address / Location"
           required
           autoComplete="street-address"
+          maxLength={quoteLimits.location}
           placeholder="City, province or full address"
           {...fieldProps("location")}
         />
