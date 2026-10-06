@@ -12,6 +12,7 @@ import {
   type QuoteField,
   type QuoteRequest,
 } from "@/lib/quote";
+import { siteConfig } from "@/lib/site";
 import { Icon } from "@/components/ui/Icon";
 import { FormField } from "./FormField";
 import styles from "./QuoteForm.module.css";
@@ -98,8 +99,12 @@ export function QuoteForm() {
           Thank you, {values.fullName.trim().split(" ")[0]}!
         </h3>
         <p>
-          Your quote request has been received. Our team will contact you within 1–2 business days to discuss your
-          solar needs and schedule a free site assessment.
+          Your quote request has been received. Our team will get back to you to discuss your solar needs. You can
+          also reach us on{" "}
+          <a href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+            Facebook Messenger<span className="sr-only"> (opens in a new tab)</span>
+          </a>{" "}
+          or call <a href={siteConfig.contact.phoneHref}>{siteConfig.contact.phone}</a>.
         </p>
         <p className={styles.demoNote}>
           Demo mode: this form is not yet connected to a database, so no information was stored or sent.
@@ -170,7 +175,7 @@ export function QuoteForm() {
           required
           autoComplete="street-address"
           maxLength={quoteLimits.location}
-          placeholder="City, province or full address"
+          placeholder="e.g. Barangay, City"
           {...fieldProps("location")}
         />
         <FormField
@@ -182,11 +187,11 @@ export function QuoteForm() {
           {...fieldProps("propertyType")}
         />
         <FormField
-          label="Average Monthly Electricity Bill"
+          label="Average Monthly Electricity Bill (₱)"
           required
           inputMode="decimal"
           placeholder="e.g. 5,000"
-          hint="Check a recent bill for your typical amount."
+          hint="Amount in pesos — check a recent bill for your typical amount."
           {...fieldProps("monthlyBill")}
         />
         <FormField
@@ -225,7 +230,7 @@ export function QuoteForm() {
         )}
       </button>
       <p className={styles.privacy}>
-        <Icon name="shield" size={16} /> We respect your privacy. Your details are only used to prepare your quotation.
+        <Icon name="shield" size={16} /> We use your details to respond to your quotation request.
       </p>
     </form>
   );

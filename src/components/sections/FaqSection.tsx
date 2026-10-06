@@ -37,11 +37,15 @@ export function FaqSection({ items = faqs, limit, showHeading = true }: FaqSecti
               <Icon name="headset" size={26} />
             </span>
             <h3>Still have questions?</h3>
-            <p>Our team is happy to explain your options and walk you through the net-metering process.</p>
+            <p>Message us or call, and we’ll explain your options and the net-metering process.</p>
             <div className={styles.helpActions}>
               <ButtonLink href={QUOTE_HREF} size="sm">
                 Ask for a Free Quote
               </ButtonLink>
+              <a className={styles.phone} href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+                <Icon name="messenger" size={16} /> Message Us
+                <span className="sr-only"> on Facebook Messenger (opens in a new tab)</span>
+              </a>
               <a className={styles.phone} href={siteConfig.contact.phoneHref}>
                 <Icon name="phone" size={16} /> {siteConfig.contact.phone}
               </a>

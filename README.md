@@ -40,7 +40,7 @@ src/
     site.ts               Company name, contact details, social links ← edit this first
     seo.ts                Per-page metadata helper + LocalBusiness JSON-LD
     quote.ts              Quote request types, validation and submit function
-public/images/            Placeholder images (replace with real photos, same file names)
+public/images/            Illustrated placeholder images (replace with real photos, same file names)
 scripts/                  Placeholder image generator
 ```
 
@@ -48,11 +48,15 @@ Styling uses plain CSS. Design tokens (brand colors, spacing, radii) live in `sr
 
 ## Replacing placeholder content
 
-Everything still needed from the business owner is listed, with the exact file for each item, in
+What is confirmed, what needs owner approval and what is still placeholder is tracked in
+[`docs/CONTENT_STATUS.md`](docs/CONTENT_STATUS.md). Everything still needed from the business owner is listed, with the exact file for each item, in
 [`docs/OWNER_CONTENT_CHECKLIST.md`](docs/OWNER_CONTENT_CHECKLIST.md). The earlier site audit is in
 [`docs/COMPLETION_AUDIT.md`](docs/COMPLETION_AUDIT.md). The most common edits:
 
-- **Contact details, Facebook link, stats:** `src/lib/site.ts`
+- **Contact details, Facebook/Messenger links, service-area wording, stats:** `src/lib/site.ts`
+- **Packages, brands, street-light features:** `src/data/services.ts`
+- **Customer result (bill before/after):** `src/data/case-studies.ts`
+- **Main CTA label ("Get a Free Quote"):** `src/data/navigation.ts`
 - **Projects / testimonials / FAQs / services:** `src/data/*.ts`
 - **Photos:** overwrite the files in `public/images/` and `public/images/projects/`. Keep the same names or update the paths in `src/data/projects.ts`, and update the `imageAlt` text too.
 - **Logo:** `src/components/layout/Logo.tsx` (and `src/app/icon.svg` for the favicon)
@@ -68,7 +72,7 @@ The database row types and the form-to-row mapping (`toQuoteRequestInsert()`) ar
 ## Location-specific SEO (prepared)
 
 - `buildMetadata()` in `src/lib/seo.ts` produces title, description, canonical, Open Graph and Twitter tags for any page.
-- `src/data/service-areas.ts` holds placeholder service areas. They are already included in the LocalBusiness `areaServed` structured data.
+- `src/data/service-areas.ts` lists locations with confirmed public work (Dumaguete City, Sibulan, Siaton, Siquijor). It is not a complete service-area list and is included in the LocalBusiness `areaServed` structured data.
 - To add city pages, create `src/app/service-areas/[slug]/page.tsx` with `generateStaticParams()` over `serviceAreas`, then set `SERVICE_AREA_PAGES_ENABLED = true` so the sitemap includes them.
 
 ## Deployment

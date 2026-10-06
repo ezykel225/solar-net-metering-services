@@ -17,32 +17,44 @@ function resolveSiteUrl(): string {
  * structured data read from here, so official details only need to be
  * updated in one place.
  *
- * TODO: Replace placeholder contact details with the company's official information.
+ * CONFIRMED (from the company's public Facebook page): name, mobile number,
+ * email, Facebook page, Messenger link, and the operating area wording.
+ * NOT YET CONFIRMED: office address, office hours, company statistics.
+ * Those are left empty (null / []) and the UI hides them until supplied.
  */
+type Stat = { value: string; label: string };
+
 export const siteConfig = {
   name: "Solar Net Metering Services",
   shortName: "SNMS",
-  tagline: "Solar installation & net metering for homes and businesses",
+  tagline: "Solar installation & net metering in Dumaguete City and Negros Oriental",
   description:
     "Professional solar installation and net metering services for residential and commercial properties.",
   /** Absolute site URL used for canonical links, sitemap and Open Graph. See resolveSiteUrl(). */
   url: resolveSiteUrl(),
   ogImage: "/images/og-image.jpg",
   contact: {
-    phone: "+00 000 000 0000", // placeholder
-    phoneHref: "tel:+000000000000", // placeholder
-    email: "info@example.com", // placeholder
-    address: "Office address to follow", // placeholder
-    hours: "Mon – Sat, 8:00 AM – 5:00 PM", // placeholder
+    phone: "0997 731 0543",
+    phoneHref: "tel:+639977310543",
+    /** International format for structured data */
+    phoneIntl: "+63 997 731 0543",
+    email: "solarandnetmeteringservices@gmail.com",
+    /** Office street address — not yet confirmed; hidden while null. */
+    address: null as string | null,
+    /** Office hours — not yet confirmed; hidden while null. */
+    hours: null as string | null,
   },
+  /** Approved wording for where the company works. Not a complete list of service areas. */
+  serviceAreaSummary:
+    "Serving Dumaguete City and nearby areas in Negros Oriental, with selected projects in surrounding locations.",
+  serviceAreaShort: "Dumaguete City & Negros Oriental",
   social: {
-    facebook: "https://www.facebook.com/", // TODO: link to the official Facebook page
+    facebook: "https://www.facebook.com/profile.php?id=61567843505161",
+    /** Used for every "Message Us" call to action. */
+    messenger: "https://www.facebook.com/messages/t/61567843505161/",
   },
-  stats: [
-    { value: "100+", label: "Systems installed" }, // placeholder figures
-    { value: "10+", label: "Years of experience" },
-    { value: "24/7", label: "Monitoring support" },
-  ],
-} as const;
+  /** Company statistics — none confirmed yet. Add entries here once the owner confirms them. */
+  stats: [] as Stat[],
+};
 
 export type SiteConfig = typeof siteConfig;

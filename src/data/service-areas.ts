@@ -1,12 +1,12 @@
 /**
- * Service areas — groundwork for location-specific SEO.
+ * Locations where the company has publicly shown work or customers.
+ * This is NOT a complete list of service areas — always present it with
+ * siteConfig.serviceAreaSummary wording.
  *
- * Phase 2 idea: add `src/app/service-areas/[slug]/page.tsx` that uses
- * `generateStaticParams()` over this list and `buildMetadata()` from
- * `@/lib/seo` to create a landing page per city/province. Pages listed here
- * are also picked up automatically by `src/app/sitemap.ts` once that route exists.
- *
- * TODO: Replace with the company's real service areas.
+ * Location landing pages (Phase 2): add `src/app/service-areas/[slug]/page.tsx`
+ * using generateStaticParams() over this list and buildMetadata() from
+ * `@/lib/seo`, then set SERVICE_AREA_PAGES_ENABLED to include them in the sitemap.
+ * Each page needs unique, owner-approved content before it is enabled.
  */
 export type ServiceArea = {
   slug: string;
@@ -15,9 +15,10 @@ export type ServiceArea = {
 };
 
 export const serviceAreas: ServiceArea[] = [
-  { slug: "service-area-1", name: "Service Area 1", region: "Region placeholder" },
-  { slug: "service-area-2", name: "Service Area 2", region: "Region placeholder" },
-  { slug: "service-area-3", name: "Service Area 3", region: "Region placeholder" },
+  { slug: "dumaguete-city", name: "Dumaguete City", region: "Negros Oriental" },
+  { slug: "sibulan", name: "Sibulan", region: "Negros Oriental" },
+  { slug: "siaton", name: "Siaton", region: "Negros Oriental" },
+  { slug: "siquijor", name: "Siquijor", region: "Siquijor" },
 ];
 
 /** Set to true once `/service-areas/[slug]` pages are implemented. */

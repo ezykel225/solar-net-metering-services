@@ -1,4 +1,4 @@
-import { QUOTE_HREF } from "@/data/navigation";
+import { QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
 import { siteConfig } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
@@ -13,7 +13,7 @@ type CtaBannerProps = {
 
 export function CtaBanner({
   title = "Ready to lower your electricity bill?",
-  text = "Get a free, no-obligation solar assessment and quotation for your home or business.",
+  text = "Request a site assessment and quotation for your home or business, or message us with your questions.",
   spaced = true,
 }: CtaBannerProps) {
   return (
@@ -26,8 +26,12 @@ export function CtaBanner({
           </div>
           <div className={styles.actions}>
             <ButtonLink href={QUOTE_HREF}>
-              Get a Free Quote <Icon name="arrowRight" size={18} />
+              {QUOTE_CTA} <Icon name="arrowRight" size={18} />
             </ButtonLink>
+            <a className="btn btn--light" href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+              <Icon name="messenger" size={18} /> Message Us
+              <span className="sr-only"> on Facebook Messenger (opens in a new tab)</span>
+            </a>
             <a className="btn btn--light" href={siteConfig.contact.phoneHref}>
               <Icon name="phone" size={18} /> Call Us
             </a>

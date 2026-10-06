@@ -37,10 +37,18 @@
   transform: scale(1.04);
 }
 
-.tag {
+.tags {
   position: absolute;
   top: 0.85rem;
   left: 0.85rem;
+  right: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.tag {
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
   background: var(--color-orange);
@@ -49,9 +57,21 @@
   font-weight: 700;
 }
 
-.tagCommercial {
+.tagSecondary {
   background: var(--color-navy);
   color: var(--color-white);
+}
+
+.illustration {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(11, 31, 58, 0.78);
+  color: var(--color-white);
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .body {
@@ -74,8 +94,13 @@
 
 .meta span {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.3rem;
+}
+
+.meta svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
 }
 
 .meta svg {
@@ -122,6 +147,13 @@
   text-align: center;
 }
 
+.more {
+  max-width: 640px;
+  margin: 2rem auto 0;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
 @media (min-width: 640px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
@@ -131,6 +163,12 @@
 @media (min-width: 1024px) {
   .grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+  /* Two projects: keep a balanced, centred pair instead of a gap in a 3-column grid */
+  .gridPair {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 880px;
+    margin-inline: auto;
   }
 }
 

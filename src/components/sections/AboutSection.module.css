@@ -17,7 +17,7 @@
   box-shadow: var(--shadow-lg);
 }
 
-.experience {
+.badge {
   position: absolute;
   right: 1rem;
   bottom: 1rem;
@@ -31,12 +31,12 @@
   line-height: 1.2;
 }
 
-.experience strong {
+.badge strong {
   font-family: var(--font-heading);
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
-.experience span {
+.badge span {
   font-weight: 600;
   font-size: 0.9rem;
 }

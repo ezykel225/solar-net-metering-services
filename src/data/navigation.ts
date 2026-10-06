@@ -12,3 +12,9 @@ export const mainNav: NavItem[] = [
 
 /** Anchor on the contact page where the quote form lives. */
 export const QUOTE_HREF = "/contact#quote";
+
+/**
+ * Main call-to-action label used across the site.
+ * TODO (owner): confirm quotations are free; if not, change to e.g. "Get a Quote".
+ */
+export const QUOTE_CTA = "Get a Free Quote";

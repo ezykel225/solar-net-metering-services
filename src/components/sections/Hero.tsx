@@ -1,11 +1,16 @@
 import Image from "next/image";
-import { QUOTE_HREF } from "@/data/navigation";
+import { QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
 import heroImage from "../../../public/images/hero.jpg";
 import styles from "./Hero.module.css";
 
-const highlights = ["Free site assessment", "Net-metering application support", "Quality, warrantied components"];
+/** Confirmed offerings only. */
+const highlights = [
+  "Site assessment and quotation",
+  "Net-metering assistance for NORECO 1 & NORECO 2",
+  "Hybrid systems with battery storage",
+];
 
 export function Hero() {
   return (
@@ -13,7 +18,7 @@ export function Hero() {
       <div className={`container ${styles.inner}`}>
         <div className={styles.copy}>
           <p className={styles.badge}>
-            <Icon name="sun" size={16} /> Residential &amp; Commercial Solar
+            <Icon name="mapPin" size={16} /> Serving Dumaguete City &amp; Negros Oriental
           </p>
           <h1 id="hero-title">
             Power Your Home <span className={styles.accent}>With Solar</span>
@@ -23,7 +28,7 @@ export function Hero() {
           </p>
           <div className={styles.ctas}>
             <ButtonLink href={QUOTE_HREF}>
-              Get a Free Quote <Icon name="arrowRight" size={18} />
+              {QUOTE_CTA} <Icon name="arrowRight" size={18} />
             </ButtonLink>
             <ButtonLink href="/#how-it-works" variant="secondary">
               Learn More
@@ -42,7 +47,7 @@ export function Hero() {
           <div className={styles.imageFrame}>
             <Image
               src={heroImage}
-              alt="A family home with a row of rooftop solar panels under a sunny sky"
+              alt="Illustration of a home with rooftop solar panels under a sunny sky"
               priority
               placeholder="blur"
               sizes="(min-width: 1024px) 50vw, 100vw"
@@ -55,7 +60,7 @@ export function Hero() {
             </span>
             <span>
               <strong>Lower bills</strong>
-              <small>Save from month one</small>
+              <small>Use your own solar power</small>
             </span>
           </div>
           <div className={`${styles.floatCard} ${styles.floatBottom}`}>

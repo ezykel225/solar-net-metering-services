@@ -14,9 +14,18 @@ export function ProjectCard({ project }: { project: Project }) {
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className={styles.image}
         />
-        <span className={`${styles.tag} ${project.category === "Commercial" ? styles.tagCommercial : ""}`}>
-          {project.category}
-        </span>
+        {project.tags.length > 0 ? (
+          <ul className={styles.tags} aria-label="Project type">
+            {project.tags.map((tag, i) => (
+              <li key={tag} className={`${styles.tag} ${i > 0 ? styles.tagSecondary : ""}`}>
+                {tag}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {project.imageIsIllustration ? (
+          <span className={styles.illustration}>Illustration · project photo coming soon</span>
+        ) : null}
       </div>
       <div className={styles.body}>
         <h3>{project.title}</h3>
@@ -24,9 +33,11 @@ export function ProjectCard({ project }: { project: Project }) {
           <span>
             <Icon name="mapPin" size={16} /> {project.location}
           </span>
-          <span>
-            <Icon name="bolt" size={16} /> {project.systemSize}
-          </span>
+          {project.system ? (
+            <span>
+              <Icon name="bolt" size={16} /> {project.system}
+            </span>
+          ) : null}
         </p>
         <p className={styles.description}>{project.description}</p>
       </div>

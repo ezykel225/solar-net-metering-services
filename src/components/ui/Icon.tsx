@@ -135,6 +135,22 @@ const paths = {
       <path d="M7 15l4-4 3 3 5-6" />
     </>
   ),
+  battery: (
+    <>
+      <rect x="2" y="7" width="17" height="10" rx="2" />
+      <path d="M22 11v2M10.5 9.5 8.5 12h3l-2 2.5" />
+    </>
+  ),
+  lamp: (
+    <>
+      <path d="M6 22h6M9 22V8a4 4 0 0 1 4-4h3" />
+      <path d="M14 4h7l-1.5 3h-4z" />
+      <path d="M17.5 9v1.5M15 10l-.8 1.2M20 10l.8 1.2" />
+    </>
+  ),
+  messenger: (
+    <path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.43 3.14 7.17.16.15.26.35.27.57l.05 1.78a.8.8 0 0 0 1.12.71l1.98-.88a.8.8 0 0 1 .53-.04c.91.25 1.88.39 2.91.39 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm6 7.46-2.94 4.66a1.5 1.5 0 0 1-2.17.4l-2.34-1.75a.6.6 0 0 0-.72 0l-3.16 2.4c-.42.32-.97-.18-.69-.63l2.94-4.66a1.5 1.5 0 0 1 2.17-.4l2.34 1.75a.6.6 0 0 0 .72 0l3.16-2.4c.42-.32.97.18.69.63z" />
+  ),
   calendar: (
     <>
       <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -152,7 +168,7 @@ type IconProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
 };
 
 export function Icon({ name, size = 24, title, ...rest }: IconProps) {
-  const filled = name === "star" || name === "quote" || name === "facebook";
+  const filled = name === "star" || name === "quote" || name === "facebook" || name === "messenger";
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

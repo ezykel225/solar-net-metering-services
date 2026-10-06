@@ -2,11 +2,36 @@ import type { IconName } from "@/components/ui/Icon";
 
 export type Reason = { title: string; description: string; icon: IconName };
 
+/** Built from confirmed information only. Owner to approve final wording. */
 export const reasons: Reason[] = [
-  { title: "Experienced Team", icon: "users", description: "Trained installers and engineers who have delivered systems for homes and businesses." },
-  { title: "Quality Installation", icon: "shield", description: "Tier-1 components, proper mounting and neat, code-compliant wiring on every project." },
-  { title: "Reliable Support", icon: "headset", description: "Clear communication before, during and long after your system is switched on." },
-  { title: "Lower Electricity Costs", icon: "trendingDown", description: "Systems sized to maximize savings so you see the difference on your monthly bill." },
-  { title: "Renewable Energy", icon: "leaf", description: "Reduce your carbon footprint with clean energy produced right on your roof." },
-  { title: "Net-Metering Assistance", icon: "fileText", description: "We handle the paperwork and coordinate with your utility on your behalf." },
+  {
+    title: "Local to Negros Oriental",
+    icon: "mapPin",
+    description: "Based around Dumaguete City and serving nearby areas in Negros Oriental.",
+  },
+  {
+    title: "Net-Metering Assistance",
+    icon: "fileText",
+    description: "We process net-metering applications for NORECO 1 and NORECO 2 customers.",
+  },
+  {
+    title: "Hybrid & Battery Systems",
+    icon: "battery",
+    description: "Hybrid solar systems with inverters and battery storage, as well as standard solar installations.",
+  },
+  {
+    title: "Brands We Work With",
+    icon: "shield",
+    description: "We install and promote products from brands including SRNE, Deye and LVTopsun.",
+  },
+  {
+    title: "Lower Electricity Costs",
+    icon: "trendingDown",
+    description: "A properly sized system reduces how much electricity you buy from the grid. Actual savings vary.",
+  },
+  {
+    title: "Installation Support",
+    icon: "headset",
+    description: "Support from site assessment and quotation through to installation.",
+  },
 ];

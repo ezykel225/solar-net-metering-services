@@ -16,6 +16,12 @@
   max-width: 360px;
 }
 
+.socialList {
+  display: grid;
+  gap: 0.6rem;
+  list-style: none;
+}
+
 .social {
   display: inline-flex;
   align-items: center;

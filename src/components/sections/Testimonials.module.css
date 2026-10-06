@@ -24,16 +24,32 @@
   color: var(--color-orange-soft);
 }
 
-.stars {
-  display: flex;
-  gap: 0.15rem;
-  margin-bottom: 1rem;
-  color: var(--color-orange);
+.quote {
+  margin: 0 0 1rem;
+  padding-right: 2.5rem;
+  color: var(--color-navy);
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
-.quote {
+.translation {
   margin: 0 0 1.5rem;
-  color: var(--color-text);
+  font-size: 0.925rem;
+  color: var(--color-text-muted);
+}
+
+.translationLabel {
+  font-weight: 600;
+}
+
+/* One testimonial: a single, centred featured card */
+.single {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.single .quote {
+  font-size: clamp(1.15rem, 1vw + 0.9rem, 1.4rem);
 }
 
 .quote p {
@@ -74,7 +90,7 @@
 }
 
 @media (min-width: 768px) {
-  .grid {
+  .grid:not(.single) {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
   }

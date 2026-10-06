@@ -149,71 +149,6 @@ function residentialScene({ w = 1600, h = 1000, wall = "#f4efe6", roof = "#5b4a4
   return svg(w, h, sky(w, h, skyTop, skyBottom), body);
 }
 
-function commercialScene({ w = 1600, h = 1000, wall = "#dfe5ec", accent = "#0f2a4a", skyTop = "#6fa9df", skyBottom = "#e6f1fa" } = {}) {
-  const ground = 800;
-  // Flat roof seen slightly from above: front edge y=520, back edge offset (140,-150).
-  const rowsMarkup = Array.from({ length: 5 })
-    .map((_, i) => {
-      const t = i / 5;
-      const x = 180 + 140 * t + 40;
-      const y = 520 - 150 * t - 28;
-      const wRow = 1150;
-      return panelArray({ cols: 14, rows: 1, width: wRow, height: 34, gap: 4, cellsX: 4, cellsY: 3, matrix: [1, 0, 0.35, 0.7, x, y - 6] });
-    })
-    .reverse()
-    .join("");
-  const body = `
-    <rect width="${w}" height="${h}" fill="url(#sky)"/>
-    ${sun(240, 150, 44)}
-    ${cloud(700, 140, 1)}${cloud(1250, 210, 0.7, 0.8)}
-    <rect y="${ground}" width="${w}" height="${h - ground}" fill="#b9bfc6"/>
-    <rect y="${ground}" width="${w}" height="10" fill="#9aa1a9"/>
-    <!-- side wall -->
-    <polygon points="1400,520 1540,370 1540,${ground - 120} 1400,${ground}" fill="${wall}"/>
-    <polygon points="1400,520 1540,370 1540,${ground - 120} 1400,${ground}" fill="#000" opacity="0.12"/>
-    <!-- roof -->
-    <polygon points="180,520 1400,520 1540,370 320,370" fill="#c7ced6"/>
-    <polygon points="180,520 1400,520 1400,532 180,532" fill="#9aa4ae"/>
-    ${rowsMarkup}
-    <!-- front facade -->
-    <rect x="180" y="530" width="1220" height="${ground - 530}" fill="${wall}"/>
-    <rect x="180" y="530" width="1220" height="24" fill="${accent}"/>
-    ${Array.from({ length: 9 })
-      .map((_, i) => `<rect x="${220 + i * 130}" y="590" width="100" height="80" fill="#8fb7d9" stroke="#ffffff" stroke-width="5"/>`)
-      .join("")}
-    <rect x="700" y="690" width="200" height="${ground - 690}" fill="#6f95b8" stroke="#ffffff" stroke-width="6"/>
-    <path d="M800 690V${ground}" stroke="#ffffff" stroke-width="5"/>
-    <rect x="640" y="560" width="320" height="0" fill="none"/>
-    ${tree(100, ground - 20, 1.3)}${bush(420, ground + 6, 1)}${bush(1100, ground + 6, 1)}
-  `;
-  return svg(w, h, sky(w, h, skyTop, skyBottom), body);
-}
-
-function groundMountScene({ w = 1600, h = 1000, skyTop = "#88bde9", skyBottom = "#fdeccc" } = {}) {
-  const horizon = 520;
-  let rows = "";
-  for (let i = 0; i < 6; i++) {
-    const t = i / 5; // 0 far, 1 near
-    const y = horizon + 30 + Math.pow(t, 1.6) * 330;
-    const scale = 0.35 + t * 0.85;
-    const width = 1500 * scale + 300;
-    const x = (w - width) / 2;
-    const height = 70 * scale;
-    rows += panelArray({ cols: Math.round(10 + t * 6), rows: 2, width, height, gap: 3 * scale + 1, cellsX: 4, cellsY: 3, matrix: [1, 0, 0.12, 0.85, x, y - height] });
-    rows += `<rect x="${x + 20}" y="${y - 6}" width="${width - 40}" height="${4 + scale * 4}" fill="#2a2f36" opacity="0.35"/>`;
-  }
-  const body = `
-    <rect width="${w}" height="${h}" fill="url(#sky)"/>
-    ${sun(1250, 230, 56)}
-    ${cloud(300, 160, 1)}${cloud(900, 110, 0.7, 0.75)}
-    <path d="M0 ${horizon} Q 400 ${horizon - 90} 800 ${horizon - 30} T 1600 ${horizon - 60} V ${horizon + 40} H 0 Z" fill="#8bb27f"/>
-    <rect y="${horizon}" width="${w}" height="${h - horizon}" fill="#7fb06a"/>
-    ${tree(120, horizon + 10, 0.8)}${tree(1480, horizon + 6, 0.9)}${tree(1380, horizon + 12, 0.6)}
-    ${rows}
-  `;
-  return svg(w, h, sky(w, h, skyTop, skyBottom), body);
-}
-
 function closeUpScene({ w = 1600, h = 1200 } = {}) {
   const body = `
     <rect width="${w}" height="${h}" fill="url(#sky)"/>
@@ -257,12 +192,9 @@ const images = [
   ["hero.jpg", residentialScene({ cols: 7 })],
   ["about.jpg", closeUpScene()],
   ["og-image.jpg", ogScene()],
-  ["projects/residential-rooftop.jpg", residentialScene({ wall: "#f6f1e7", roof: "#4b3f3a", cols: 6 })],
-  ["projects/commercial-warehouse.jpg", commercialScene()],
-  ["projects/family-home.jpg", residentialScene({ wall: "#e9eef3", roof: "#3d4b5c", skyTop: "#f2a65a", skyBottom: "#fde8c8", sunX: 220, sunY: 260, mirror: true, cols: 5 })],
-  ["projects/ground-mount.jpg", groundMountScene()],
-  ["projects/retail-building.jpg", commercialScene({ wall: "#f1e9dd", accent: "#d9690b", skyTop: "#7cb4e6", skyBottom: "#f3f8fc" })],
-  ["projects/modern-residence.jpg", residentialScene({ wall: "#ffffff", roof: "#2f3640", cols: 7, rows: 2, skyTop: "#5e9ed8", skyBottom: "#d8ebfa" })],
+  // Illustrations standing in for the confirmed projects until real photos arrive.
+  ["projects/siaton-hybrid.jpg", residentialScene({ wall: "#ffffff", roof: "#2f3640", cols: 7, rows: 2, skyTop: "#5e9ed8", skyBottom: "#d8ebfa" })],
+  ["projects/sibulan-installation.jpg", residentialScene({ wall: "#e9eef3", roof: "#3d4b5c", skyTop: "#f2a65a", skyBottom: "#fde8c8", sunX: 220, sunY: 260, mirror: true, cols: 5 })],
 ];
 
 await mkdir(path.join(outDir, "projects"), { recursive: true });

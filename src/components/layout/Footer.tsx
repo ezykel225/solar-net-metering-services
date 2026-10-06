@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { mainNav, QUOTE_HREF } from "@/data/navigation";
+import { mainNav, QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
 import { services } from "@/data/services";
 import { siteConfig } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -14,12 +14,25 @@ export function Footer() {
       <div className={`container ${styles.grid}`}>
         <div className={styles.brand}>
           <Logo onDark />
-          <p>{siteConfig.description} We help property owners lower their electricity bills with clean, reliable solar energy.</p>
-          <a className={styles.social} href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer">
-            <Icon name="facebook" size={18} />
-            Follow us on Facebook
-            <span className="sr-only"> (opens in a new tab)</span>
-          </a>
+          <p>
+            {siteConfig.description} {siteConfig.serviceAreaSummary}
+          </p>
+          <ul className={styles.socialList}>
+            <li>
+              <a className={styles.social} href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer">
+                <Icon name="facebook" size={18} />
+                Follow us on Facebook
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            </li>
+            <li>
+              <a className={styles.social} href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+                <Icon name="messenger" size={18} />
+                Message us on Messenger
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            </li>
+          </ul>
         </div>
 
         <nav aria-label="Footer">
@@ -57,15 +70,17 @@ export function Footer() {
             </li>
             <li>
               <Icon name="mapPin" size={18} />
-              <span>{siteConfig.contact.address}</span>
+              <span>{siteConfig.contact.address ?? siteConfig.serviceAreaShort}</span>
             </li>
-            <li>
-              <Icon name="clock" size={18} />
-              <span>{siteConfig.contact.hours}</span>
-            </li>
+            {siteConfig.contact.hours ? (
+              <li>
+                <Icon name="clock" size={18} />
+                <span>{siteConfig.contact.hours}</span>
+              </li>
+            ) : null}
           </ul>
           <ButtonLink href={QUOTE_HREF} size="sm" className={styles.cta}>
-            Get a Free Quote
+            {QUOTE_CTA}
           </ButtonLink>
         </div>
       </div>

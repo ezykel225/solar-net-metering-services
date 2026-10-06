@@ -12,10 +12,12 @@ const filters: Filter[] = ["All", "Residential", "Commercial"];
 export function ProjectGallery({ projects, filterable = false }: { projects: Project[]; filterable?: boolean }) {
   const [filter, setFilter] = useState<Filter>("All");
   const visible = filter === "All" ? projects : projects.filter((p) => p.category === filter);
+  // Only offer filters once both categories actually have projects.
+  const canFilter = filterable && filters.slice(1).every((f) => projects.some((p) => p.category === f));
 
   return (
     <>
-      {filterable ? (
+      {canFilter ? (
         <div className={styles.filters} role="group" aria-label="Filter projects by type">
           {filters.map((f) => (
             <button
@@ -31,9 +33,9 @@ export function ProjectGallery({ projects, filterable = false }: { projects: Pro
         </div>
       ) : null}
       <p className="sr-only" aria-live="polite">
-        {filterable ? `Showing ${visible.length} ${filter === "All" ? "" : filter.toLowerCase() + " "}projects` : ""}
+        {canFilter ? `Showing ${visible.length} ${filter === "All" ? "" : filter.toLowerCase() + " "}projects` : ""}
       </p>
-      <ul className={styles.grid}>
+      <ul className={`${styles.grid} ${visible.length === 2 ? styles.gridPair : ""}`}>
         {visible.map((project) => (
           <li key={project.slug}>
             <ProjectCard project={project} />

@@ -3,7 +3,10 @@ import { Icon } from "@/components/ui/Icon";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import styles from "./Testimonials.module.css";
 
+/** Shows confirmed testimonials only. Renders nothing if the list is empty. */
 export function Testimonials() {
+  if (testimonials.length === 0) return null;
+  const single = testimonials.length === 1;
   return (
     <section className="section" aria-labelledby="testimonials-title">
       <div className="container">
@@ -11,30 +14,28 @@ export function Testimonials() {
           id="testimonials-title"
           eyebrow="Testimonials"
           title="What Our Clients Say"
-          intro="Homeowners and businesses trust us to deliver reliable solar systems and savings."
+          intro="Feedback shared by our customers."
         />
-        <ul className={styles.grid}>
+        <ul className={`${styles.grid} ${single ? styles.single : ""}`}>
           {testimonials.map((t) => (
             <li key={t.name}>
               <figure className={styles.card}>
                 <Icon name="quote" size={34} className={styles.quoteIcon} />
-                <div className={styles.stars} role="img" aria-label="Rated 5 out of 5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Icon key={i} name="star" size={18} />
-                  ))}
-                </div>
-                <blockquote className={styles.quote}>
-                  <p>{t.quote}</p>
+                <blockquote className={styles.quote} lang={t.lang}>
+                  <p>“{t.quote}”</p>
                 </blockquote>
+                {t.translation ? (
+                  <p className={styles.translation}>
+                    <span className={styles.translationLabel}>English translation: </span>“{t.translation}”
+                  </p>
+                ) : null}
                 <figcaption className={styles.author}>
                   <span className={styles.avatar} aria-hidden="true">
-                    {t.name.charAt(0)}
+                    {t.name.replace(/^Ma[’']am\s+/, "").charAt(0)}
                   </span>
                   <span>
                     <strong>{t.name}</strong>
-                    <span>
-                      {t.role} · {t.location}
-                    </span>
+                    {t.detail ? <span>{t.detail}</span> : <span>Customer</span>}
                   </span>
                 </figcaption>
               </figure>

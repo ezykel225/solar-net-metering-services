@@ -21,8 +21,17 @@
   background: var(--color-white);
 }
 
+.messenger {
+  flex: 0 0 auto;
+  width: 46px;
+  padding-inline: 0;
+  background: var(--color-white);
+  color: #0866ff; /* Messenger blue for instant recognition */
+}
+
 .quote {
   flex: 1 1 auto;
+  white-space: nowrap;
 }
 
 @media (min-width: 640px) {

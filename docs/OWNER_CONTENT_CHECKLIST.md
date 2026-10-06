@@ -4,50 +4,53 @@ Everything below must come from the business owner. Nothing here should be guess
 Each item lists the exact file where it will be updated. Tick items off as the information arrives.
 
 > Tip: most single values live in `src/lib/site.ts`. Most lists (services, projects, FAQs…) live in `src/data/`.
+>
+> **Update:** items confirmed from the company's public Facebook page are ticked (✔ with notes).
+> For a full confirmed / needs-approval / placeholder breakdown see [`CONTENT_STATUS.md`](CONTENT_STATUS.md).
 
 ---
 
 ## 1. Contact information
 
-- [ ] **Business phone number**, both as displayed and in international dial format → `src/lib/site.ts` (`contact.phone`, `contact.phoneHref`)
-- [ ] **Business email address** → `src/lib/site.ts` (`contact.email`)
-- [ ] **Official Facebook page URL** → `src/lib/site.ts` (`social.facebook`)
-- [ ] **Office address**, or confirmation that there is no public office → `src/lib/site.ts` (`contact.address`)
-- [ ] **Office hours** → `src/lib/site.ts` (`contact.hours`)
-- [ ] **Other contact channels to show, if any** (Messenger, Viber, WhatsApp, Instagram…) → `src/lib/site.ts` (`social`); displayed in `src/components/layout/Header.tsx`, `src/components/layout/Footer.tsx`, `src/components/quote/QuoteSection.tsx`
+- [x] **Business phone number** ✔ 0997 731 0543, both as displayed and in international dial format → `src/lib/site.ts` (`contact.phone`, `contact.phoneHref`)
+- [x] **Business email address** ✔ → `src/lib/site.ts` (`contact.email`)
+- [x] **Official Facebook page URL** ✔ → `src/lib/site.ts` (`social.facebook`)
+- [ ] **Office address** (hidden until supplied; service area shown instead), or confirmation that there is no public office → `src/lib/site.ts` (`contact.address`)
+- [ ] **Office hours** (hidden until supplied) → `src/lib/site.ts` (`contact.hours`)
+- [x] **Other contact channels to show, if any** ✔ Messenger link (used for all "Message Us" CTAs) (Messenger, Viber, WhatsApp, Instagram…) → `src/lib/site.ts` (`social`); displayed in `src/components/layout/Header.tsx`, `src/components/layout/Footer.tsx`, `src/components/quote/QuoteSection.tsx`
 - [ ] **Map on the Contact page?** (yes/no, and the exact location) → `src/app/contact/page.tsx`
-- [ ] **Response-time promise** (currently "within 1–2 business days") → `src/components/quote/QuoteForm.tsx` (success message), `src/app/contact/page.tsx` (hero intro)
+- [ ] **Response-time promise**: the old "within 1–2 business days" was removed; add a timeframe only if the owner confirms one → `src/components/quote/QuoteForm.tsx` (success message), `src/app/contact/page.tsx` (hero intro)
 - [ ] **Who receives new quote requests** (email address or addresses for notifications) → environment variable when the form is connected (see `docs/QUOTE_SUBMISSION_PLAN.md`)
 
 ## 2. Company information
 
-- [ ] **Exact business / registered name** (confirm "Solar Net Metering Services") → `src/lib/site.ts` (`name`). It also appears in the social image via `scripts/generate-placeholders.mjs` → `public/images/og-image.jpg`
+- [x] **Exact business / registered name** ✔ Solar Net Metering Services (registered legal name still to confirm for the copyright line) (confirm "Solar Net Metering Services") → `src/lib/site.ts` (`name`). It also appears in the social image via `scripts/generate-placeholders.mjs` → `public/images/og-image.jpg`
 - [ ] **One-sentence description and tagline** (approve or replace) → `src/lib/site.ts` (`description`, `tagline`)
 - [ ] **Company story** (who you are, when you started, what you focus on) → `src/components/sections/AboutSection.tsx` (intro text and the four bullet points); `src/app/about/page.tsx` (page intro)
-- [ ] **Mission, approach and commitment statements** → `src/app/about/page.tsx` (`values`)
+- [ ] **Mission, approach and commitment statements**: the invented ones were removed from About; add if the owner supplies them → `src/app/about/page.tsx`
 - [ ] **Business registration, contractor or electrical licences, accreditations or memberships** to display, with numbers if required → `src/components/layout/Footer.tsx` and/or `src/app/about/page.tsx`
 - [ ] **Owner / team names and roles** (optional) → `src/app/about/page.tsx`
 - [ ] **Footer company blurb** (approve or replace) → `src/components/layout/Footer.tsx`
 
 ## 3. Services
 
-- [ ] **Confirm the four services**, their titles, one-line summaries and bullet details → `src/data/services.ts` (`services`)
-- [ ] **System types actually offered** (grid-tied, hybrid/battery, off-grid, ground-mount, carport) → `src/data/services.ts` (`details`), `src/data/faqs.ts` ("Do I need batteries?")
+- [x] **Confirm the services** ✔ confirmed list applied (6 service cards); wording still needs approval, their titles, one-line summaries and bullet details → `src/data/services.ts` (`services`)
+- [x] **System types actually offered** ✔ hybrid systems, panels, inverters, battery storage (grid-tied, hybrid/battery, off-grid, ground-mount, carport) → `src/data/services.ts` (`details`), `src/data/faqs.ts` ("Do I need batteries?")
 - [ ] **Maintenance, cleaning and repair offered?** → `src/data/services.ts` (`details`, `serviceOptions`)
-- [ ] **Options in the form's "Service Interested In" list** → `src/data/services.ts` (`serviceOptions`)
+- [x] **Options in the form's "Service Interested In" list** ✔ limited to confirmed services → `src/data/services.ts` (`serviceOptions`)
 - [ ] **Property types served** (Residential, Commercial, Industrial, Agricultural, Other) → `src/lib/quote.ts` (`propertyTypes`)
 - [ ] **Installation process steps** (confirm the five steps) → `src/data/services.ts` (`installationProcess`)
-- [ ] **Equipment brands and warranty terms** (product, performance and workmanship warranty lengths) → `src/data/services.ts`, `src/data/why-choose-us.ts`, `src/components/sections/Hero.tsx`
+- [ ] **Equipment brands and warranty terms** (brands ✔ SRNE, Deye, LVTopsun; warranty terms still needed) (product, performance and workmanship warranty lengths) → `src/data/services.ts`, `src/data/why-choose-us.ts`, `src/components/sections/Hero.tsx`
 - [ ] **Is the site assessment free?** → `src/components/sections/Hero.tsx` (highlights), `src/components/quote/QuoteSection.tsx`
 - [ ] **Typical installation timelines**, residential and commercial → `src/data/faqs.ts`
 - [ ] **Financing or payment terms**, if they should be mentioned → `src/data/faqs.ts` (new FAQ)
-- [ ] **Currency for the monthly bill field** → `src/components/quote/QuoteForm.tsx` (label and placeholder)
+- [x] **Currency for the monthly bill field** ✔ ₱ → `src/components/quote/QuoteForm.tsx` (label and placeholder)
 
 ## 4. Net-metering information
 
-- [ ] **Distribution utility or utilities you work with** → `src/app/net-metering/page.tsx` ("What Is Net Metering?" text), `src/data/faqs.ts`
-- [ ] **Exact required-documents checklist** → `src/data/net-metering.ts` (`requiredDocuments`)
-- [ ] **Exactly what you handle in the application** → `src/app/net-metering/page.tsx` (`support` list)
+- [x] **Distribution utility or utilities you work with** ✔ NORECO 1, NORECO 2 → `src/app/net-metering/page.tsx` ("What Is Net Metering?" text), `src/data/faqs.ts`
+- [x] **Exact required-documents checklist** ✔ advertised list applied with disclaimer (official checklist per cooperative still useful) → `src/data/net-metering.ts` (`requiredDocuments`)
+- [ ] **Exactly what you handle in the application** ("processes applications" ✔; detailed steps still to approve) → `src/app/net-metering/page.tsx` (`support` list)
 - [ ] **Typical approval and meter-installation timeline** → `src/data/faqs.ts`
 - [ ] **Application fees and who pays them** → `src/data/faqs.ts` (new FAQ)
 - [ ] **Eligibility or system-size limits** → `src/app/net-metering/page.tsx`
@@ -66,7 +69,7 @@ For **each** real project → `src/data/projects.ts`:
 
 Also:
 - [ ] **Which three projects to feature on the homepage** (the first three in the list are shown) → order in `src/data/projects.ts`
-- [ ] **Remove any placeholder project that isn't replaced**, so only real projects are published.
+- [x] **Remove any placeholder project that isn't replaced** ✔ only Siaton and Sibulan remain, so only real projects are published.
 
 ## 6. Testimonials
 
@@ -75,11 +78,11 @@ For **each** testimonial → `src/data/testimonials.ts`:
 - [ ] Name format the client approved (e.g. "Maria S."), role, client type
 - [ ] **Written permission** from the client to publish
 - [ ] Rating, only if it is real and its source is known (e.g. Facebook reviews). Otherwise the stars are removed → `src/components/sections/Testimonials.tsx`
-- [ ] **If there are fewer than three real testimonials**, decide whether to show fewer or hide the section → `src/app/page.tsx`, `src/app/about/page.tsx`, `src/app/projects/page.tsx`
+- [x] **If there are fewer than three real testimonials** ✔ single featured testimonial layout; fictional ones removed, decide whether to show fewer or hide the section → `src/app/page.tsx`, `src/app/about/page.tsx`, `src/app/projects/page.tsx`
 
 ## 7. Service areas
 
-- [ ] **List of cities / municipalities / provinces served** → `src/data/service-areas.ts`
+- [ ] **List of cities / municipalities / provinces served** (partial ✔ Dumaguete City, Sibulan, Siaton, Siquijor; not a complete list) → `src/data/service-areas.ts`
 - [ ] **Any areas to prioritise for location landing pages** → `src/data/service-areas.ts` (then set `SERVICE_AREA_PAGES_ENABLED`)
 - [ ] **Text unique to each area**, if location pages are wanted (local utility, nearby projects) → future `src/app/service-areas/[slug]/page.tsx`
 
@@ -87,14 +90,14 @@ For **each** testimonial → `src/data/testimonials.ts`:
 
 Every claim below needs a yes / no / reworded answer. Anything not confirmed is removed.
 
-- [ ] **Stats**: "100+ systems installed", "10+ years of experience", "24/7 monitoring support" → `src/lib/site.ts` (`stats`)
-- [ ] **Savings examples**: 60% / 75% / 70% bill offset and the system-size ranges → `src/data/benefits.ts` (`savingsExamples`)
-- [ ] "Free site assessment", "Quality, warrantied components", "Save from month one" → `src/components/sections/Hero.tsx`
-- [ ] "Tier-1 components", "Trained installers and engineers", "We handle the paperwork" → `src/data/why-choose-us.ts`
-- [ ] "Transparent proposals with no hidden costs", "After-sales support and system monitoring" → `src/components/sections/AboutSection.tsx`
-- [ ] "Higher property value", "Protection from rate increases" → `src/data/benefits.ts` (`benefits`)
-- [ ] "No-obligation" quote and proposal → `src/components/quote/QuoteSection.tsx`, `src/components/sections/CtaBanner.tsx`, `src/data/faqs.ts`
-- [ ] "Completed by our team" and "Homeowners and businesses trust us" → `src/components/sections/ProjectsSection.tsx`, `src/app/projects/page.tsx`, `src/components/sections/Testimonials.tsx`
+- [ ] **Stats**: the invented "100+ systems", "10+ years" and "24/7" were removed; add confirmed figures → `src/lib/site.ts` (`stats`, shown automatically when not empty)
+- [x] **Savings examples**: the invented 60/75/70% offsets were replaced by the confirmed 6kW customer result with disclaimer → `src/data/case-studies.ts`
+- [x] Removed: "Free site assessment", "Quality, warrantied components", "Save from month one" → `src/components/sections/Hero.tsx`
+- [x] Removed: "Tier-1 components", "Trained installers and engineers" → `src/data/why-choose-us.ts`
+- [x] Removed: "Transparent proposals with no hidden costs", "After-sales support and system monitoring" → `src/components/sections/AboutSection.tsx`
+- [x] Removed: "Higher property value", "Protection from rate increases" → `src/data/benefits.ts` (`benefits`)
+- [x] Removed: "No-obligation" quote and proposal (but **"Get a Free Quote" still needs confirmation that quotes are free**: `src/data/navigation.ts` → `QUOTE_CTA`) → `src/components/quote/QuoteSection.tsx`, `src/components/sections/CtaBanner.tsx`, `src/data/faqs.ts`
+- [x] Removed: "Completed by our team" and "Homeowners and businesses trust us" → `src/components/sections/ProjectsSection.tsx`, `src/app/projects/page.tsx`, `src/components/sections/Testimonials.tsx`
 - [ ] **Savings disclaimer wording** → `src/components/sections/BenefitsSection.tsx` (`figcaption`)
 
 ## 9. Logo and branding

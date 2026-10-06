@@ -1,4 +1,5 @@
 import { projects } from "@/data/projects";
+import { siteConfig } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProjectGallery } from "./ProjectGallery";
@@ -20,7 +21,7 @@ export function ProjectsSection({ limit, filterable = false, showHeading = true 
             id="projects-title"
             eyebrow="Our Work"
             title="Recent Solar Projects"
-            intro="A selection of residential and commercial installations completed by our team."
+            intro="Installations we have shared from around Negros Oriental."
           />
         ) : (
           <h2 id="projects-title" className="sr-only">
@@ -31,10 +32,18 @@ export function ProjectsSection({ limit, filterable = false, showHeading = true 
         {limit ? (
           <div className={styles.footer}>
             <ButtonLink href="/projects" variant="secondary">
-              View All Projects
+              View Projects &amp; Results
             </ButtonLink>
           </div>
-        ) : null}
+        ) : (
+          <p className={styles.more}>
+            More of our recent installations are posted on our{" "}
+            <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer">
+              Facebook page<span className="sr-only"> (opens in a new tab)</span>
+            </a>
+            .
+          </p>
+        )}
       </div>
     </section>
   );

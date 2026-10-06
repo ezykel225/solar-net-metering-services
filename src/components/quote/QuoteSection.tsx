@@ -4,7 +4,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { QuoteForm } from "./QuoteForm";
 import styles from "./QuoteSection.module.css";
 
-const steps = ["Send your details", "We review your bill & property", "Receive your free proposal"];
+const steps = ["Send your details", "We review your bill & property", "Receive your quotation"];
 
 export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
   return (
@@ -18,7 +18,7 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
             onDark
             eyebrow="Free Quotation"
             title="Get a Free Solar Quote"
-            intro="Tell us a little about your property and electricity use. We’ll prepare a no-obligation proposal tailored to you."
+            intro="Tell us a little about your property and electricity use, and we’ll get back to you with a quotation."
           />
           <ol className={styles.steps}>
             {steps.map((s, i) => (
@@ -48,24 +48,35 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
             </li>
             <li>
               <span className={styles.contactIcon}>
-                <Icon name="facebook" size={20} />
+                <Icon name="messenger" size={20} />
               </span>
               <span>
                 <small>Message us</small>
-                <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer">
-                  Facebook Page<span className="sr-only"> (opens in a new tab)</span>
+                <a href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+                  Facebook Messenger<span className="sr-only"> (opens in a new tab)</span>
                 </a>
               </span>
             </li>
             <li>
               <span className={styles.contactIcon}>
-                <Icon name="clock" size={20} />
+                <Icon name="mapPin" size={20} />
               </span>
               <span>
-                <small>Office hours</small>
-                {siteConfig.contact.hours}
+                <small>Service area</small>
+                {siteConfig.contact.address ?? siteConfig.serviceAreaShort}
               </span>
             </li>
+            {siteConfig.contact.hours ? (
+              <li>
+                <span className={styles.contactIcon}>
+                  <Icon name="clock" size={20} />
+                </span>
+                <span>
+                  <small>Office hours</small>
+                  {siteConfig.contact.hours}
+                </span>
+              </li>
+            ) : null}
           </ul>
         </div>
         <div className={styles.formCard}>

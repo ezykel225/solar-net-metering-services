@@ -48,9 +48,10 @@ export function localBusinessJsonLd(areaServed: string[] = []) {
     description: siteConfig.description,
     url: siteConfig.url,
     image: `${siteConfig.url}${siteConfig.ogImage}`,
-    telephone: siteConfig.contact.phone,
+    telephone: siteConfig.contact.phoneIntl,
     email: siteConfig.contact.email,
     sameAs: [siteConfig.social.facebook],
+    knowsAbout: ["Solar installation", "Hybrid solar systems", "Battery storage", "Net metering", "Solar street lights"],
     ...(areaServed.length > 0 && { areaServed }),
   };
 }

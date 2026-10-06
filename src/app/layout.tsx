@@ -21,7 +21,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} | Solar Installation & Net Metering`,
+    default: `${siteConfig.name} | Solar Installation & Net Metering in Dumaguete City`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -34,6 +34,13 @@ export const metadata: Metadata = {
     "commercial solar",
     "solar energy",
     "net metering application",
+    "hybrid solar system",
+    "solar battery storage",
+    "solar street lights",
+    "solar installation Dumaguete",
+    "solar Negros Oriental",
+    "NORECO 1 net metering",
+    "NORECO 2 net metering",
   ],
   alternates: { canonical: "/" },
   openGraph: {

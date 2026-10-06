@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { QUOTE_HREF } from "@/data/navigation";
+import { QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
 import { siteConfig } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
@@ -36,8 +36,17 @@ export function MobileCtaBar() {
       <a className={`btn btn--secondary btn--sm ${styles.call}`} href={siteConfig.contact.phoneHref}>
         <Icon name="phone" size={18} /> Call
       </a>
+      <a
+        className={`btn btn--secondary btn--sm ${styles.messenger}`}
+        href={siteConfig.social.messenger}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Message us on Facebook Messenger (opens in a new tab)"
+      >
+        <Icon name="messenger" size={20} />
+      </a>
       <ButtonLink href={QUOTE_HREF} size="sm" className={styles.quote}>
-        Get a Free Quote
+        {QUOTE_CTA}
       </ButtonLink>
     </div>
   );

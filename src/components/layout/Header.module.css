@@ -198,7 +198,8 @@
   }
 }
 
-@media (max-width: 899px) {
+/* The confirmed email address is long; show the tagline only when there is room. */
+@media (max-width: 1199px) {
   .topbarText {
     display: none;
   }

@@ -1,0 +1,91 @@
+.card {
+  margin: 0;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.head {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--color-navy);
+  color: var(--color-orange);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-orange-text);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.bars {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0 0 1.5rem;
+}
+
+.bars dt {
+  margin-bottom: 0.35rem;
+  font-size: 0.925rem;
+  color: var(--color-text-muted);
+}
+
+.bars dd {
+  margin: 0;
+}
+
+.amount {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-navy);
+}
+
+.track {
+  display: block;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-bg-soft);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.before {
+  background: #9aa6b8;
+}
+
+.after {
+  background: linear-gradient(90deg, var(--color-orange) 0%, #f9b15f 100%);
+}
+
+.note {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}

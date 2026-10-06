@@ -6,11 +6,12 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import aboutImage from "../../../public/images/about.jpg";
 import styles from "./AboutSection.module.css";
 
+/** Confirmed offerings only. */
 const points = [
-  "Systems designed around your actual electricity usage",
-  "End-to-end service: design, installation and net metering",
-  "Transparent proposals with no hidden costs",
-  "After-sales support and system monitoring",
+  "Residential and commercial solar installation",
+  "Hybrid solar systems with inverters and battery storage",
+  "Net-metering application processing for NORECO 1 and NORECO 2",
+  "Site assessment, quotation and installation support",
 ];
 
 export function AboutSection({ showLink = true }: { showLink?: boolean }) {
@@ -20,14 +21,14 @@ export function AboutSection({ showLink = true }: { showLink?: boolean }) {
         <div className={styles.media}>
           <Image
             src={aboutImage}
-            alt="Close-up of solar panels mounted on a sloped roof"
+            alt="Illustration of solar panels mounted on a sloped roof"
             placeholder="blur"
             sizes="(min-width: 1024px) 45vw, 100vw"
             className={styles.image}
           />
-          <div className={styles.experience}>
-            <strong>{siteConfig.stats[1].value}</strong>
-            <span>{siteConfig.stats[1].label}</span>
+          <div className={styles.badge}>
+            <strong>NORECO 1 &amp; 2</strong>
+            <span>Net-metering assistance</span>
           </div>
         </div>
         <div>
@@ -35,8 +36,8 @@ export function AboutSection({ showLink = true }: { showLink?: boolean }) {
             id="about-title"
             align="left"
             eyebrow="About Us"
-            title="Your Trusted Partner for Solar & Net Metering"
-            intro={`${siteConfig.name} helps homeowners and businesses switch to clean, affordable solar energy. We handle everything — from assessing your roof and bills to installing your system and securing net-metering approval with your utility.`}
+            title="Your Local Partner for Solar & Net Metering"
+            intro={`${siteConfig.name} helps homeowners and businesses switch to solar energy. ${siteConfig.serviceAreaSummary}`}
           />
           <ul className={styles.points}>
             {points.map((p) => (
@@ -45,14 +46,16 @@ export function AboutSection({ showLink = true }: { showLink?: boolean }) {
               </li>
             ))}
           </ul>
-          <dl className={styles.stats}>
-            {siteConfig.stats.map((s) => (
-              <div key={s.label}>
-                <dt>{s.label}</dt>
-                <dd>{s.value}</dd>
-              </div>
-            ))}
-          </dl>
+          {siteConfig.stats.length > 0 ? (
+            <dl className={styles.stats}>
+              {siteConfig.stats.map((s) => (
+                <div key={s.label}>
+                  <dt>{s.label}</dt>
+                  <dd>{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
           {showLink ? (
             <ButtonLink href="/about" variant="secondary">
               More About Us

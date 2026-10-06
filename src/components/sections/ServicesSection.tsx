@@ -19,7 +19,7 @@ export function ServicesSection({ detailed = false, showHeading = true }: Servic
             id="services-title"
             eyebrow="What We Do"
             title="Solar Solutions for Every Property"
-            intro="From the first site visit to net-metering approval, we provide complete solar services for homes and businesses."
+            intro="From site assessment and quotation to installation and net-metering assistance, we offer solar solutions for homes and businesses."
           />
         ) : (
           // Keeps the heading outline intact (h1 → h2 → h3) when the page hero already introduces the section.
