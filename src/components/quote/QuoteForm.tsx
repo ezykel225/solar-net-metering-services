@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
 import {
   emptyQuoteRequest,
   propertyTypes,
@@ -20,26 +20,44 @@ type Status = "idle" | "submitting" | "success" | "error";
 /** Order used to focus the first invalid field after a failed submit. */
 const fieldOrder: QuoteField[] = ["fullName", "phone", "email", "location", "propertyType", "monthlyBill", "service", "message"];
 
+type FieldEvent<E> = E & { target: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement };
+
 export function QuoteForm() {
   const [values, setValues] = useState<QuoteRequest>(emptyQuoteRequest);
   const [errors, setErrors] = useState<QuoteErrors>({});
+  /** Fields the user has left at least once; only these show errors before submit. */
+  const [touched, setTouched] = useState<Partial<Record<QuoteField, boolean>>>({});
   const [status, setStatus] = useState<Status>("idle");
   const [submitError, setSubmitError] = useState("");
+  /** Honeypot: hidden from people, often filled in by spam bots. */
+  const [website, setWebsite] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const successRef = useRef<HTMLHeadingElement>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setValues((prev) => ({ ...prev, [name]: value }));
-    // Clear a field's error as soon as the user edits it.
-    if (errors[name as QuoteField]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
+  const fieldError = (name: QuoteField, data: QuoteRequest) => validateQuoteRequest(data)[name];
+
+  const handleChange = (e: FieldEvent<ChangeEvent>) => {
+    const name = e.target.name as QuoteField;
+    const next = { ...values, [name]: e.target.value };
+    setValues(next);
+    // Once a field has been visited, re-check it live so errors clear (or update) as the user types.
+    if (touched[name] || errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: fieldError(name, next) }));
     }
+  };
+
+  const handleBlur = (e: FieldEvent<FocusEvent>) => {
+    const name = e.target.name as QuoteField;
+    // Don't flag an untouched empty field just because the user tabbed through it.
+    if (!touched[name] && !values[name].trim()) return;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    setErrors((prev) => ({ ...prev, [name]: fieldError(name, values) }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const nextErrors = validateQuoteRequest(values);
+    setTouched(Object.fromEntries(fieldOrder.map((f) => [f, true])));
     setErrors(nextErrors);
 
     const firstInvalid = fieldOrder.find((f) => nextErrors[f]);
@@ -50,7 +68,9 @@ export function QuoteForm() {
 
     setStatus("submitting");
     setSubmitError("");
-    const result = await submitQuoteRequest(values);
+    // Bots that fill the honeypot get a normal-looking success without anything being sent.
+    // Phase 2: repeat this check server-side and add rate limiting.
+    const result = website ? { ok: true as const } : await submitQuoteRequest(values);
     if (result.ok) {
       setStatus("success");
       requestAnimationFrame(() => successRef.current?.focus());
@@ -63,6 +83,7 @@ export function QuoteForm() {
   const reset = () => {
     setValues(emptyQuoteRequest);
     setErrors({});
+    setTouched({});
     setStatus("idle");
   };
 
@@ -93,6 +114,7 @@ export function QuoteForm() {
     name,
     value: values[name],
     onChange: handleChange,
+    onBlur: handleBlur,
     error: errors[name],
   });
 
@@ -109,10 +131,23 @@ export function QuoteForm() {
         {errorCount > 0 ? `There ${errorCount === 1 ? "is 1 error" : `are ${errorCount} errors`} in the form.` : ""}
       </div>
 
+      <div className={styles.honeypot} aria-hidden="true">
+        <label htmlFor="quote-website">Leave this field empty</label>
+        <input
+          id="quote-website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+        />
+      </div>
+
       <div className={styles.grid}>
         <FormField label="Full Name" required autoComplete="name" {...fieldProps("fullName")} />
         <FormField label="Phone Number" required type="tel" autoComplete="tel" inputMode="tel" {...fieldProps("phone")} />
-        <FormField label="Email" required type="email" autoComplete="email" {...fieldProps("email")} />
+        <FormField label="Email" required type="email" autoComplete="email" inputMode="email" {...fieldProps("email")} />
         <FormField
           label="Address / Location"
           required
@@ -120,7 +155,14 @@ export function QuoteForm() {
           placeholder="City, province or full address"
           {...fieldProps("location")}
         />
-        <FormField label="Property Type" required as="select" options={propertyTypes} {...fieldProps("propertyType")} />
+        <FormField
+          label="Property Type"
+          required
+          as="select"
+          options={propertyTypes}
+          placeholder="Select property type"
+          {...fieldProps("propertyType")}
+        />
         <FormField
           label="Average Monthly Electricity Bill"
           required
@@ -129,7 +171,15 @@ export function QuoteForm() {
           hint="Check a recent bill for your typical amount."
           {...fieldProps("monthlyBill")}
         />
-        <FormField label="Service Interested In" required as="select" options={serviceOptions} className={styles.full} {...fieldProps("service")} />
+        <FormField
+          label="Service Interested In"
+          required
+          as="select"
+          options={serviceOptions}
+          placeholder="Select a service"
+          className={styles.full}
+          {...fieldProps("service")}
+        />
         <FormField
           label="Message"
           as="textarea"
@@ -145,7 +195,7 @@ export function QuoteForm() {
         </p>
       ) : null}
 
-      <button type="submit" className="btn btn--primary btn--block" disabled={status === "submitting"} aria-disabled={status === "submitting"}>
+      <button type="submit" className="btn btn--primary btn--block" disabled={status === "submitting"}>
         {status === "submitting" ? (
           <>
             <span className={styles.spinner} aria-hidden="true" /> Sending request…

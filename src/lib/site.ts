@@ -1,4 +1,18 @@
 /**
+ * Resolves the public site URL:
+ * 1. NEXT_PUBLIC_SITE_URL (set this to the final domain in Vercel),
+ * 2. Vercel's production domain (provided automatically on Vercel),
+ * 3. http://localhost:3000 for local development.
+ */
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const url = explicit || (vercel ? `https://${vercel}` : "http://localhost:3000");
+  // Only used server-side (metadata, sitemap, JSON-LD); client components never render it.
+  return url.replace(/\/$/, "");
+}
+
+/**
  * Central business information. Every page, the footer, metadata and
  * structured data read from here, so official details only need to be
  * updated in one place.
@@ -11,8 +25,8 @@ export const siteConfig = {
   tagline: "Solar installation & net metering for homes and businesses",
   description:
     "Professional solar installation and net metering services for residential and commercial properties.",
-  /** Set NEXT_PUBLIC_SITE_URL in Vercel. Falls back to localhost for development. */
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+  /** Absolute site URL used for canonical links, sitemap and Open Graph. See resolveSiteUrl(). */
+  url: resolveSiteUrl(),
   ogImage: "/images/og-image.jpg",
   contact: {
     phone: "+00 000 000 0000", // placeholder

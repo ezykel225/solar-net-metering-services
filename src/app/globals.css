@@ -32,7 +32,8 @@
   --container: 1200px;
   --gutter: clamp(1rem, 4vw, 2rem);
   --section-y: clamp(3.5rem, 8vw, 6rem);
-  --header-h: 72px;
+  --header-h: 72px; /* sticky main bar */
+  --topbar-h: 40px; /* contact strip above it (≥768px, scrolls away) */
 
   /* Shape & depth */
   --radius-sm: 8px;

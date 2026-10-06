@@ -32,6 +32,7 @@ export default function NetMeteringPage() {
     <>
       <PageHero
         crumb="Net Metering"
+        path="/net-metering"
         title="Solar Net Metering, Made Simple"
         intro="Use your solar power first, export the surplus to the grid, and earn credits that reduce your electricity bill."
       />

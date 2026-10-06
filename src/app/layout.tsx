@@ -5,6 +5,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { serviceAreas } from "@/data/service-areas";
 import { localBusinessJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -72,10 +73,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </main>
         <Footer />
         <MobileCtaBar />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
-        />
+        <JsonLd data={jsonLd} />
       </body>
     </html>
   );

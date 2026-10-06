@@ -12,7 +12,7 @@ type ServicesSectionProps = {
 
 export function ServicesSection({ detailed = false, showHeading = true }: ServicesSectionProps) {
   return (
-    <section className="section" aria-labelledby={showHeading ? "services-title" : undefined} aria-label={showHeading ? undefined : "Our services"}>
+    <section className="section" aria-labelledby="services-title">
       <div className="container">
         {showHeading ? (
           <SectionHeading
@@ -21,7 +21,12 @@ export function ServicesSection({ detailed = false, showHeading = true }: Servic
             title="Solar Solutions for Every Property"
             intro="From the first site visit to net-metering approval, we provide complete solar services for homes and businesses."
           />
-        ) : null}
+        ) : (
+          // Keeps the heading outline intact (h1 → h2 → h3) when the page hero already introduces the section.
+          <h2 id="services-title" className="sr-only">
+            Our services
+          </h2>
+        )}
         <ul className={`${styles.grid} ${detailed ? styles.detailed : ""}`}>
           {services.map((service) => (
             <li key={service.slug} id={detailed ? service.slug : undefined} className={styles.card}>

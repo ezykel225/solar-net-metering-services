@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  min-height: 40px;
+  height: var(--topbar-h);
 }
 
 .topbarText {
@@ -183,11 +183,18 @@
 }
 
 @media (min-width: 768px) {
+  /* The top bar scrolls away; only the 72px main bar stays pinned. This keeps
+     the sticky height equal to --header-h, which anchor offsets rely on. */
+  .header {
+    top: calc(var(--topbar-h) * -1);
+  }
   .topbar {
     display: block;
   }
   .mobileMenu {
-    height: calc(100dvh - var(--header-h) - 40px);
+    height: calc(100dvh - var(--header-h));
+    /* while the top bar is still on screen the menu extends 40px below the fold */
+    padding-bottom: calc(2rem + var(--topbar-h));
   }
 }
 

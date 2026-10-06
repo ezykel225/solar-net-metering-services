@@ -22,7 +22,7 @@ Other scripts:
 | `npm run typecheck` | TypeScript check |
 | `npm run images:placeholders` | Regenerate the illustrated placeholder images |
 
-Optional: copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SITE_URL`. It is used for canonical URLs, the sitemap and Open Graph tags.
+Optional: copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SITE_URL`. It is used for canonical URLs, the sitemap and Open Graph tags. On Vercel the site falls back to the project's production domain if the variable is unset.
 
 ## Project structure
 
@@ -33,6 +33,7 @@ src/
     layout/               Header (with mobile menu), Footer, Logo, PageHero, MobileCtaBar
     sections/             Page sections (Hero, Services, Net metering steps, Projects…)
     quote/                Quote form, form field, quote section
+    seo/                  JsonLd structured-data helper
     ui/                   Reusable primitives (ButtonLink, SectionHeading, Accordion, Icon)
   data/                   All editable content (services, projects, FAQs, testimonials…)
   lib/
@@ -46,6 +47,9 @@ scripts/                  Placeholder image generator
 Styling uses plain CSS. Design tokens (brand colors, spacing, radii) live in `src/app/globals.css`, and each component has its own CSS Module. The only runtime dependencies are `next`, `react` and `react-dom`.
 
 ## Replacing placeholder content
+
+The full list of placeholders, the business claims that need sign-off, and the pre-launch checklist are in
+[`docs/COMPLETION_AUDIT.md`](docs/COMPLETION_AUDIT.md). The most common edits:
 
 - **Contact details, Facebook link, stats:** `src/lib/site.ts`
 - **Projects / testimonials / FAQs / services:** `src/data/*.ts`

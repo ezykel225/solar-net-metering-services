@@ -1,6 +1,7 @@
 import { PageHero } from "@/components/layout/PageHero";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaBanner } from "@/components/sections/CtaBanner";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { faqs } from "@/data/faqs";
 import { buildMetadata } from "@/lib/seo";
 
@@ -25,15 +26,13 @@ export default function FaqsPage() {
     <>
       <PageHero
         crumb="FAQs"
+        path="/faqs"
         title="Frequently Asked Questions"
         intro="Everything you need to know about going solar and applying for net metering."
       />
       <FaqSection showHeading={false} />
       <CtaBanner />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, "\\u003c") }}
-      />
+      <JsonLd data={faqJsonLd} />
     </>
   );
 }

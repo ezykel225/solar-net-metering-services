@@ -13,7 +13,7 @@ type ProjectsSectionProps = {
 export function ProjectsSection({ limit, filterable = false, showHeading = true }: ProjectsSectionProps) {
   const items = limit ? projects.slice(0, limit) : projects;
   return (
-    <section className="section" aria-labelledby={showHeading ? "projects-title" : undefined} aria-label={showHeading ? undefined : "Project gallery"}>
+    <section className="section" aria-labelledby="projects-title">
       <div className="container">
         {showHeading ? (
           <SectionHeading
@@ -22,7 +22,11 @@ export function ProjectsSection({ limit, filterable = false, showHeading = true 
             title="Recent Solar Projects"
             intro="A selection of residential and commercial installations completed by our team."
           />
-        ) : null}
+        ) : (
+          <h2 id="projects-title" className="sr-only">
+            Project gallery
+          </h2>
+        )}
         <ProjectGallery projects={items} filterable={filterable} />
         {limit ? (
           <div className={styles.footer}>

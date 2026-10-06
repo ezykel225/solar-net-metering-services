@@ -15,6 +15,7 @@ export default function ContactPage() {
     <>
       <PageHero
         crumb="Contact"
+        path="/contact"
         title="Contact Us & Get a Free Quote"
         intro="Ready to go solar? Send us your details and our team will get back to you within 1–2 business days."
       />

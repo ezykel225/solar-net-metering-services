@@ -17,6 +17,7 @@ export default function ServicesPage() {
     <>
       <PageHero
         crumb="Services"
+        path="/services"
         title="Our Solar Services"
         intro="Complete solar solutions for homes and businesses — designed, installed and supported by one dedicated team."
       />

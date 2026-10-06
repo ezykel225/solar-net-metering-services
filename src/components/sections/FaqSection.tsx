@@ -16,7 +16,7 @@ type FaqSectionProps = {
 export function FaqSection({ items = faqs, limit, showHeading = true }: FaqSectionProps) {
   const list = limit ? items.slice(0, limit) : items;
   return (
-    <section className="section section--soft" aria-labelledby={showHeading ? "faq-title" : undefined} aria-label={showHeading ? undefined : "Frequently asked questions"}>
+    <section className="section section--soft" aria-labelledby="faq-title">
       <div className={`container ${styles.grid}`}>
         <div>
           {showHeading ? (
@@ -27,7 +27,11 @@ export function FaqSection({ items = faqs, limit, showHeading = true }: FaqSecti
               title="Frequently Asked Questions"
               intro="Answers to common questions about solar installation and net metering."
             />
-          ) : null}
+          ) : (
+            <h2 id="faq-title" className="sr-only">
+              Questions and answers
+            </h2>
+          )}
           <aside className={styles.help} aria-label="Need more help?">
             <span className={styles.helpIcon}>
               <Icon name="headset" size={26} />

@@ -26,6 +26,7 @@ export default function AboutPage() {
     <>
       <PageHero
         crumb="About"
+        path="/about"
         title="About Solar Net Metering Services"
         intro="We help property owners take control of their electricity costs with professionally installed solar and hassle-free net metering."
       />

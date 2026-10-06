@@ -1,4 +1,4 @@
-import type { ChangeEvent, HTMLAttributes } from "react";
+import type { ChangeEvent, FocusEvent, HTMLAttributes } from "react";
 import styles from "./QuoteForm.module.css";
 
 type BaseProps = {
@@ -6,6 +6,7 @@ type BaseProps = {
   name: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  onBlur?: (e: FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
   error?: string;
   hint?: string;
   required?: boolean;
@@ -20,23 +21,25 @@ type InputProps = BaseProps & {
   inputMode?: HTMLAttributes<HTMLInputElement>["inputMode"];
 };
 type SelectProps = BaseProps & { as: "select"; options: readonly string[] };
-type TextareaProps = BaseProps & { as: "textarea" };
+type TextareaProps = BaseProps & { as: "textarea"; maxLength?: number };
 
 type FormFieldProps = InputProps | SelectProps | TextareaProps;
 
 /** Labelled form control with hint and accessible error messaging. */
 export function FormField(props: FormFieldProps) {
-  const { label, name, value, onChange, error, hint, required, placeholder, className } = props;
+  const { label, name, value, onChange, onBlur, error, hint, required, placeholder, className } = props;
   const id = `field-${name}`;
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
-  const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
+  const counterId = props.as === "textarea" ? `${id}-count` : undefined;
+  const describedBy = [hintId, errorId, counterId].filter(Boolean).join(" ") || undefined;
 
   const shared = {
     id,
     name,
     value,
     onChange,
+    onBlur,
     required,
     "aria-invalid": error ? true : undefined,
     "aria-describedby": describedBy,
@@ -48,7 +51,7 @@ export function FormField(props: FormFieldProps) {
     control = (
       <select {...shared}>
         <option value="" disabled>
-          Select an option
+          {placeholder ?? "Select an option"}
         </option>
         {props.options.map((opt) => (
           <option key={opt} value={opt}>
@@ -58,12 +61,13 @@ export function FormField(props: FormFieldProps) {
       </select>
     );
   } else if (props.as === "textarea") {
-    control = <textarea {...shared} rows={5} placeholder={placeholder} maxLength={2000} />;
+    control = <textarea {...shared} rows={5} placeholder={placeholder} maxLength={props.maxLength ?? 2000} />;
   } else {
     control = (
       <input
         {...shared}
         type={props.type ?? "text"}
+        enterKeyHint="next"
         autoComplete={props.autoComplete}
         inputMode={props.inputMode}
         placeholder={placeholder}
@@ -93,6 +97,11 @@ export function FormField(props: FormFieldProps) {
       {error ? (
         <p id={errorId} className={styles.error}>
           {error}
+        </p>
+      ) : null}
+      {props.as === "textarea" ? (
+        <p id={counterId} className={styles.counter}>
+          {value.length.toLocaleString("en-US")} / {(props.maxLength ?? 2000).toLocaleString("en-US")} characters
         </p>
       ) : null}
     </div>

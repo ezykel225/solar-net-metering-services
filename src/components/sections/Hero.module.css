@@ -147,7 +147,11 @@
 
 @media (min-width: 1024px) {
   .inner {
-    grid-template-columns: 1fr 1.05fr;
+    grid-template-columns: 1.1fr 1fr;
+  }
+  /* Keeps "Power Your Home" on one line at laptop widths */
+  .copy h1 {
+    font-size: clamp(2.6rem, 3.6vw + 0.75rem, 3.75rem);
   }
   .floatTop {
     top: 2rem;

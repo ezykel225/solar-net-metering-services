@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { mainNav, QUOTE_HREF } from "@/data/navigation";
 import { siteConfig } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -16,8 +16,12 @@ function isActive(pathname: string, href: string) {
 
 export function Header() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
+  // The menu is tied to the page it was opened on, so any navigation
+  // (nav link, logo, browser back) closes it automatically.
+  const [menuOpenOn, setMenuOpenOn] = useState<string | null>(null);
+  const menuOpen = menuOpenOn === pathname;
   const [scrolled, setScrolled] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -26,17 +30,25 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close the mobile menu on Escape, and lock page scroll while it is open.
+  // While the mobile menu is open: Escape closes it (returning focus to the
+  // toggle), page scroll is locked, and content behind it is made inert so
+  // keyboard and screen-reader users stay inside the menu.
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
+      if (e.key === "Escape") {
+        setMenuOpenOn(null);
+        toggleRef.current?.focus();
+      }
     };
+    const background = document.querySelectorAll<HTMLElement>("main, footer, .skip-link, [data-mobile-cta]");
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+    background.forEach((el) => (el.inert = true));
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      background.forEach((el) => (el.inert = false));
     };
   }, [menuOpen]);
 
@@ -44,13 +56,13 @@ export function Header() {
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
     const onChange = (e: MediaQueryListEvent) => {
-      if (e.matches) setMenuOpen(false);
+      if (e.matches) setMenuOpenOn(null);
     };
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => setMenuOpenOn(null);
 
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
@@ -104,11 +116,12 @@ export function Header() {
             Get a Free Quote
           </ButtonLink>
           <button
+            ref={toggleRef}
             type="button"
             className={styles.menuToggle}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
-            onClick={() => setMenuOpen((open) => !open)}
+            onClick={() => setMenuOpenOn(menuOpen ? null : pathname)}
           >
             <Icon name={menuOpen ? "close" : "menu"} size={26} />
             <span className="sr-only">{menuOpen ? "Close menu" : "Open menu"}</span>

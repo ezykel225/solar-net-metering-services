@@ -15,6 +15,7 @@ export default function ProjectsPage() {
     <>
       <PageHero
         crumb="Projects"
+        path="/projects"
         title="Our Solar Projects"
         intro="Residential and commercial solar installations designed to lower electricity costs for our clients."
       />
