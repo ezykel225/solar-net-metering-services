@@ -1,7 +1,4 @@
 /** Formatting helpers for the admin area (Philippine time and pesos). */
-export const manilaToday = () =>
-  new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Manila", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-
 export const formatDateTime = (iso: string | null | undefined) =>
   iso
     ? new Date(iso).toLocaleString("en-PH", { timeZone: "Asia/Manila", dateStyle: "medium", timeStyle: "short" })

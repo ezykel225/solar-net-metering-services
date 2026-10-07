@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { signOutAction } from "@/app/admin/actions/auth";
@@ -21,6 +21,16 @@ export const adminNav: NavItem[] = [
   { href: "/admin/settings", label: "Business Settings", icon: "building" },
   { href: "/admin/calculator", label: "Calculator Settings", icon: "sun" },
 ];
+
+/** Small "loading" dot on the clicked sidebar link while its page loads. */
+function NavPending() {
+  const { pending } = useLinkStatus();
+  return pending ? (
+    <span className={styles.navPending} data-nav-pending role="status">
+      <span className="sr-only">Loading</span>
+    </span>
+  ) : null;
+}
 
 const isCurrent = (pathname: string, href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
 
@@ -63,6 +73,7 @@ export function AdminShell({ email, newQuotes, children }: { email: string | nul
                       {newQuotes}
                     </span>
                   ) : null}
+                  <NavPending />
                 </Link>
               </li>
             ))}

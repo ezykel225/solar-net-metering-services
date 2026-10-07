@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { requireAdminPage } from "@/lib/admin/auth";
-import { formatDateTime, formatPhp, manilaToday } from "@/lib/admin/format";
+import { loadAdminPage } from "@/lib/admin/auth";
+import { formatDateTime, formatPhp } from "@/lib/admin/format";
 import { quoteStatusLabel } from "@/lib/quote";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Notice } from "@/components/admin/Notice";
@@ -9,28 +9,38 @@ import styles from "@/components/admin/admin.module.css";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-export default async function AdminDashboard() {
-  const { supabase } = await requireAdminPage();
-  const today = manilaToday();
-  const count = (q: PromiseLike<{ count: number | null; error: unknown }>) => q.then((r) => (r.error ? null : (r.count ?? 0)));
+/** Shape returned by public.admin_dashboard_stats() */
+type DashboardStats = {
+  projects_total: number;
+  projects_published: number;
+  packages_active: number;
+  testimonials_published: number;
+  quotes_new: number;
+  promotions_active: number;
+  export_credit_verified: boolean | null;
+};
 
-  const [projectsTotal, projectsPublished, packagesActive, testimonialsPublished, quotesNew, promotionsActive, recent, calc] = await Promise.all([
-    count(supabase.from("projects").select("id", { count: "exact", head: true }).neq("status", "archived")),
-    count(supabase.from("projects").select("id", { count: "exact", head: true }).eq("status", "published")),
-    count(supabase.from("solar_packages").select("id", { count: "exact", head: true }).eq("status", "published").eq("is_active", true)),
-    count(supabase.from("testimonials").select("id", { count: "exact", head: true }).eq("status", "published")),
-    count(supabase.from("quote_requests").select("id", { count: "exact", head: true }).eq("status", "new")),
-    count(
-      supabase
-        .from("promotions")
-        .select("id", { count: "exact", head: true })
-        .eq("is_active", true)
-        .or(`starts_on.is.null,starts_on.lte.${today}`)
-        .or(`ends_on.is.null,ends_on.gte.${today}`),
-    ),
-    supabase.from("quote_requests").select("id,full_name,property_type,monthly_electric_bill,status,created_at").order("created_at", { ascending: false }).limit(5),
-    supabase.from("calculator_settings").select("residential_rate,export_credit_verified,rates_updated_on").maybeSingle(),
-  ]);
+export default async function AdminDashboard() {
+  // All counts come from one database function (one request instead of seven),
+  // fetched together with the recent quotes and the admin check.
+  const {
+    data: [statsResult, recent],
+  } = await loadAdminPage((supabase) =>
+    Promise.all([
+      supabase.rpc("admin_dashboard_stats"),
+      supabase.from("quote_requests").select("id,full_name,property_type,monthly_electric_bill,status,created_at").order("created_at", { ascending: false }).limit(5),
+    ]),
+  );
+  const stats = (statsResult.error ? null : statsResult.data) as DashboardStats | null;
+  const n = (v: number | undefined) => (typeof v === "number" ? v : null);
+  const [projectsTotal, projectsPublished, packagesActive, testimonialsPublished, quotesNew, promotionsActive] = [
+    n(stats?.projects_total),
+    n(stats?.projects_published),
+    n(stats?.packages_active),
+    n(stats?.testimonials_published),
+    n(stats?.quotes_new),
+    n(stats?.promotions_active),
+  ];
 
   const cards: { label: string; value: number | null; href: string; icon: IconName; sub?: string; alert?: boolean }[] = [
     { label: "Total Projects", value: projectsTotal, href: "/admin/projects", icon: "panel", sub: "excluding archived" },
@@ -62,7 +72,7 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      {calc.data && !calc.data.export_credit_verified ? (
+      {stats && stats.export_credit_verified === false ? (
         <Notice kind="warning">
           <p>
             The Solar Calculator’s net-metering export credit is still marked <strong>Unverified</strong>.{" "}

@@ -41,6 +41,13 @@ const supabaseHost = (() => {
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    // Keep visited admin pages in the browser's in-memory navigation cache for
+    // 30s, so switching back to a tab is instant. Saving anything in the admin
+    // (and signing in or out) clears this cache. Public pages are unaffected
+    // (they are static). Nothing is cached on shared servers or CDNs.
+    staleTimes: { dynamic: 30 },
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: supabaseImagePattern(),

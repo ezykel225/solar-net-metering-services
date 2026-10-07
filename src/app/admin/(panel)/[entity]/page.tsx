@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireAdminPage } from "@/lib/admin/auth";
+import { loadAdminPage } from "@/lib/admin/auth";
 import { entities, isEntityKey } from "@/lib/admin/entities";
 import { formatDate, formatPhp } from "@/lib/admin/format";
 import { publicMediaUrl } from "@/lib/supabase/env";
@@ -16,6 +16,19 @@ type Params = { params: Promise<{ entity: string }>; searchParams: Promise<{ vie
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { entity } = await params;
   return { title: isEntityKey(entity) ? entities[entity].label : "Not found" };
+}
+
+type ListRow = { id: string; status?: string; is_active?: boolean; is_featured?: boolean } & Record<string, unknown>;
+
+/** Only the columns the list shows (not long descriptions, answers or galleries). */
+function listSelect(def: (typeof entities)[keyof typeof entities]) {
+  const cols = new Set(["id", def.titleField, ...def.listColumns.map((c) => c.field)]);
+  if (def.model.status) cols.add("status");
+  if (def.model.active) cols.add("is_active");
+  if (def.model.featured) cols.add("is_featured");
+  const image = def.fields.find((f) => f.type === "image");
+  if (image) cols.add(image.name);
+  return [...cols].join(",");
 }
 
 function cell(field: string, value: unknown) {
@@ -33,12 +46,15 @@ export default async function EntityListPage({ params, searchParams }: Params) {
   const def = entities[entity];
   const { view } = await searchParams;
   const showArchived = def.model.status && view === "archived";
-  const { supabase } = await requireAdminPage();
-
-  let query = supabase.from(def.table).select("*").order("display_order", { ascending: true }).order("created_at", { ascending: true });
-  if (def.model.status) query = showArchived ? query.eq("status", "archived") : query.neq("status", "archived");
-  const { data: rows, error } = await query;
   const imageField = def.fields.find((f) => f.type === "image");
+  const {
+    data: { data, error },
+  } = await loadAdminPage((supabase) => {
+    let query = supabase.from(def.table).select(listSelect(def)).order("display_order", { ascending: true }).order("created_at", { ascending: true });
+    if (def.model.status) query = showArchived ? query.eq("status", "archived") : query.neq("status", "archived");
+    return query;
+  });
+  const rows = data as ListRow[] | null;
 
   return (
     <>

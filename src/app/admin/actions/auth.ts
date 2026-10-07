@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -38,11 +39,15 @@ export async function signInAction(_prev: LoginState, form: FormData): Promise<L
     return { error: "This account does not have access to the admin area.", email };
   }
 
+  // Drop any admin pages kept in the browser's navigation cache.
+  revalidatePath("/admin", "layout");
   redirect("/admin");
 }
 
 export async function signOutAction() {
   const supabase = await createSupabaseServerClient();
   if (supabase) await supabase.auth.signOut();
+  // Drop any admin pages kept in the browser's navigation cache.
+  revalidatePath("/admin", "layout");
   redirect("/admin/login");
 }

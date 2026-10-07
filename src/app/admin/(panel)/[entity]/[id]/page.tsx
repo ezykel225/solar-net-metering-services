@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireAdminPage } from "@/lib/admin/auth";
+import { loadAdminPage } from "@/lib/admin/auth";
 import { entities, isEntityKey } from "@/lib/admin/entities";
 import { EntityForm } from "@/components/admin/EntityForm";
 import { Notice } from "@/components/admin/Notice";
@@ -21,8 +21,9 @@ export default async function EditEntityPage({ params, searchParams }: Params) {
   if (!isEntityKey(entity) || !UUID.test(id)) notFound();
   const def = entities[entity];
   const { saved } = await searchParams;
-  const { supabase } = await requireAdminPage();
-  const { data, error } = await supabase.from(def.table).select("*").eq("id", id).maybeSingle();
+  const {
+    data: { data, error },
+  } = await loadAdminPage((supabase) => supabase.from(def.table).select("*").eq("id", id).maybeSingle());
   if (!error && !data) notFound();
 
   return (

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireAdminPage } from "@/lib/admin/auth";
+import { loadAdminPage } from "@/lib/admin/auth";
 import { formatDateTime, formatPhp } from "@/lib/admin/format";
 import { quoteStatusLabel } from "@/lib/quote";
 import { applianceOptions, batteryOptions, daytimeUsageOptions, formatRange } from "@/lib/solar-calculator";
@@ -24,8 +24,9 @@ const n = (v: unknown) => (v == null ? NaN : Number(v));
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!UUID.test(id)) notFound();
-  const { supabase } = await requireAdminPage();
-  const { data: q, error } = await supabase.from("quote_requests").select("*").eq("id", id).maybeSingle();
+  const {
+    data: { data: q, error },
+  } = await loadAdminPage((supabase) => supabase.from("quote_requests").select("*").eq("id", id).maybeSingle());
   if (!error && !q) notFound();
 
   if (error || !q) {

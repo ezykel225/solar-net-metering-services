@@ -26,6 +26,7 @@ Keep the secure defaults:
 | `supabase/migrations/20261007090100_storage_website_media.sql` | `website-media` storage bucket and its policies |
 | `supabase/migrations/20261007090200_seed_confirmed_content.sql` | Confirmed business content (safe to re-run; it never overwrites edits) |
 | `supabase/migrations/20261007090300_revoke_extra_table_privileges.sql` | Removes TRUNCATE/REFERENCES/TRIGGER/MAINTAIN that hosted projects give API roles by default, and locks down Supabase's `rls_auto_enable()` helper |
+| `supabase/migrations/20261007090400_admin_dashboard_stats.sql` | `admin_dashboard_stats()`: all dashboard counts in one request (runs with the caller's permissions, returns nothing to non-admins) |
 
 You can apply them in either of two ways:
 
@@ -36,12 +37,12 @@ You can apply them in either of two ways:
   ```
 - **Dashboard:** paste each file into **SQL Editor** and run it.
 
-**Status (7 Oct 2026):** all four migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
+**Status (7 Oct 2026):** all five migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
 They were applied with the Supabase MCP tool, so the hosted migration history uses different version numbers than these file names.
 Before using `supabase db push` on that project, mark the files as applied, or the CLI will try to run them again:
 
 ```bash
-supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300
+supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400
 ```
 
 Security check after applying:
@@ -127,6 +128,7 @@ Gmail addresses can't be used as the sender. Until a domain is verified, quotes 
 3. Recommended: in **Vercel → Firewall**, add a rate-limit rule for `POST /api/quote` and `/admin/login`.
    The in-app limits are per server instance and are only a first line of defence (see §6).
 4. Production deployment and the custom domain are not set up yet. Deploy only when the owner approves.
+5. `vercel.json` sets the function region to Singapore (`sin1`), next to the database. After the next deploy, check **Project → Settings → Functions → Function Region** shows Singapore. See §8.
 
 ---
 
@@ -246,7 +248,20 @@ Rules:
 
 ---
 
-## 8. Local development with Supabase (optional)
+## 8. Admin performance
+
+How admin navigation is kept fast without weakening security:
+
+- **One database round trip per page.** The admin check (`is_admin()` together with JWT verification) and the page's own query run at the same time (`loadAdminPage()` in `src/lib/admin/auth.ts`). Page queries run as the signed-in user, so RLS still applies, and their results are only used after the admin check passes.
+- **The Dashboard** gets all its counts from one function (`admin_dashboard_stats()`): 3 requests in parallel instead of 9.
+- **The sidebar layout is not re-rendered** when moving between admin pages. Its new-quote badge is refreshed whenever something is saved.
+- **List pages** select only the columns they display.
+- **Browser navigation cache (`staleTimes.dynamic = 30`).** Re-opening an admin tab within 30 seconds is instant. Saving anything, or signing in or out, clears it. It lives only in the admin's own browser memory; admin responses are sent with `Cache-Control: private, no-store`, so nothing is cached on shared servers or CDNs.
+- **Navigation feedback.** The clicked sidebar link shows a small pulsing dot, and a thin orange bar appears under the top bar while the next page loads.
+- **Server region (`vercel.json` → `"regions": ["sin1"]`).** Runs the site's server functions in Singapore, next to the Supabase database (ap-southeast-1). This is the biggest factor on the live site: from Vercel's default US region, every database request crosses the Pacific (roughly 200–250 ms each way and back).
+- **JWT signing keys.** Supabase → Project Settings → JWT Keys should use an asymmetric key (ECC P-256 or RSA) rather than the legacy JWT secret. With asymmetric keys the server verifies sessions locally. With the legacy secret, every session check is an extra network call to Supabase Auth.
+
+## 9. Local development with Supabase (optional)
 
 ```bash
 supabase start                 # needs Docker; prints local URL and keys

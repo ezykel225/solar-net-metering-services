@@ -28,7 +28,7 @@ export async function updateQuoteAction(id: string, _prev: FormState, form: Form
     if (e instanceof AdminAuthError) return { error: "Your session has expired. Please sign in again." };
     throw e;
   }
-  revalidatePath("/admin/quotes");
-  revalidatePath(`/admin/quotes/${id}`);
+  // Refreshes the quote pages, the dashboard counts and the sidebar badge.
+  revalidatePath("/admin", "layout");
   return { ok: true, message: "Quote request updated.", values };
 }

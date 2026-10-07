@@ -1012,3 +1012,71 @@ textarea.input {
   opacity: 0.6;
   pointer-events: none;
 }
+
+/* ------------------------------ route loading ------------------------------ */
+/*
+ * Navigation feedback: the clicked sidebar link shows a small pulsing dot and
+ * a thin bar appears under the top bar while the next page loads. Both only
+ * appear if loading takes more than a moment, so fast navigations don't flash.
+ */
+.navPending {
+  width: 8px;
+  height: 8px;
+  margin-left: auto;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  animation: pendingIn 0.15s ease 0.1s forwards;
+}
+
+.navBadge + .navPending {
+  margin-left: 0.4rem;
+}
+
+.shell:has([data-nav-pending]) .topbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 100%;
+  background: var(--color-orange);
+  transform-origin: left;
+  opacity: 0;
+  animation: pendingIn 0.15s ease 0.1s forwards;
+}
+
+@keyframes pendingIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .navPending {
+    animation:
+      pendingIn 0.15s ease 0.1s forwards,
+      pendingPulse 0.8s ease-in-out 0.25s infinite alternate;
+  }
+  .shell:has([data-nav-pending]) .topbar::after {
+    animation:
+      pendingIn 0.15s ease 0.1s forwards,
+      pendingBar 1.4s ease-out 0.1s infinite;
+  }
+}
+
+@keyframes pendingPulse {
+  to {
+    transform: scale(0.6);
+  }
+}
+
+@keyframes pendingBar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(0.9);
+  }
+}

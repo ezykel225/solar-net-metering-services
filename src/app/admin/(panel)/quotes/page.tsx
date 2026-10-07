@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { requireAdminPage } from "@/lib/admin/auth";
+import { loadAdminPage } from "@/lib/admin/auth";
 import { formatDateTime, formatPhp } from "@/lib/admin/format";
 import { isQuoteStatus, quoteStatuses, quoteStatusLabel } from "@/lib/quote";
 import { Notice } from "@/components/admin/Notice";
@@ -18,15 +18,17 @@ export default async function QuotesPage({ searchParams }: Props) {
   const filter = isQuoteStatus(status) ? status : null;
   const pageNum = Math.max(1, Math.min(1000, Number.parseInt(page ?? "1", 10) || 1));
   const from = (pageNum - 1) * PAGE_SIZE;
-  const { supabase } = await requireAdminPage();
-
-  let query = supabase
-    .from("quote_requests")
-    .select("id,full_name,phone_number,property_type,monthly_electric_bill,service_needed,status,source,created_at", { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range(from, from + PAGE_SIZE - 1);
-  if (filter) query = query.eq("status", filter);
-  const { data, count, error } = await query;
+  const {
+    data: { data, count, error },
+  } = await loadAdminPage((supabase) => {
+    let query = supabase
+      .from("quote_requests")
+      .select("id,full_name,phone_number,property_type,monthly_electric_bill,service_needed,status,source,created_at", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, from + PAGE_SIZE - 1);
+    if (filter) query = query.eq("status", filter);
+    return query;
+  });
   const total = count ?? 0;
   const href = (s: string | null, p = 1) => `/admin/quotes?${new URLSearchParams({ ...(s ? { status: s } : {}), ...(p > 1 ? { page: String(p) } : {}) })}`;
 

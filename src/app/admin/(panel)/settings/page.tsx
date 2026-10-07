@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requireAdminPage } from "@/lib/admin/auth";
+import { loadAdminPage } from "@/lib/admin/auth";
 import { BusinessSettingsForm, type BusinessSettingsValues } from "@/components/admin/BusinessSettingsForm";
 import { Notice } from "@/components/admin/Notice";
 import styles from "@/components/admin/admin.module.css";
@@ -7,8 +7,9 @@ import styles from "@/components/admin/admin.module.css";
 export const metadata: Metadata = { title: "Business Settings" };
 
 export default async function BusinessSettingsPage() {
-  const { supabase } = await requireAdminPage();
-  const { data, error } = await supabase.from("business_settings").select("*").maybeSingle();
+  const {
+    data: { data, error },
+  } = await loadAdminPage((supabase) => supabase.from("business_settings").select("*").maybeSingle());
   return (
     <>
       <div className={styles.pageHeader}>
