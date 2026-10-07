@@ -25,6 +25,7 @@ Keep the secure defaults:
 | `supabase/migrations/20261007090000_cms_schema.sql` | Tables, constraints, grants, RLS policies, `admin_users`, `is_admin()` |
 | `supabase/migrations/20261007090100_storage_website_media.sql` | `website-media` storage bucket and its policies |
 | `supabase/migrations/20261007090200_seed_confirmed_content.sql` | Confirmed business content (safe to re-run; it never overwrites edits) |
+| `supabase/migrations/20261007090300_revoke_extra_table_privileges.sql` | Removes TRUNCATE/REFERENCES/TRIGGER/MAINTAIN that hosted projects give API roles by default, and locks down Supabase's `rls_auto_enable()` helper |
 
 You can apply them in either of two ways:
 
@@ -34,6 +35,18 @@ You can apply them in either of two ways:
   supabase db push
   ```
 - **Dashboard:** paste each file into **SQL Editor** and run it.
+
+**Status (7 Oct 2026):** all four migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
+They were applied with the Supabase MCP tool, so the hosted migration history uses different version numbers than these file names.
+Before using `supabase db push` on that project, mark the files as applied, or the CLI will try to run them again:
+
+```bash
+supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300
+```
+
+Security check after applying:
+- Advisors → Security reports one warning: `is_admin()` is callable by signed-in users. This is intentional. The app calls it to check admin status, and it only reveals the caller's own status.
+- Visitor and non-admin access was verified in the database: published content is readable; quotes, admin users and all writes are denied.
 
 ### 1.3 Authentication
 
