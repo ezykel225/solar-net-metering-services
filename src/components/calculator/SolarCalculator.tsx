@@ -5,8 +5,8 @@ import { useId, useRef, useState, type FormEvent } from "react";
 import {
   applianceOptions,
   batteryOptions,
-  CALCULATOR_DISCLAIMER,
   calculateSolarEstimate,
+  DEFAULT_CALCULATOR_CONFIG,
   commercialRateOptions,
   daytimeUsageOptions,
   defaultCalculatorInput,
@@ -18,14 +18,15 @@ import {
   toQuoteParams,
   type Appliance,
   type BatteryPreference,
+  type CalculatorConfig,
   type CalculatorInput,
   type CalcPropertyType,
   type CommercialRateChoice,
   type DaytimeUsage,
 } from "@/lib/solar-calculator";
-import { siteConfig } from "@/lib/site";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import styles from "./SolarCalculator.module.css";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 
 const entries = <K extends string, V>(obj: Record<K, V>) => Object.entries(obj) as [K, V][];
 
@@ -34,7 +35,8 @@ const entries = <K extends string, V>(obj: Record<K, V>) => Object.entries(obj) 
  * src/lib/solar-calculator.ts; this component only handles input and display.
  * After the first calculation, results update live as inputs change.
  */
-export function SolarCalculator() {
+export function SolarCalculator({ config = DEFAULT_CALCULATOR_CONFIG }: { config?: CalculatorConfig }) {
+  const settings = useSiteSettings();
   const [input, setInput] = useState<CalculatorInput>(defaultCalculatorInput);
   const [submitted, setSubmitted] = useState(false);
   const [billTouched, setBillTouched] = useState(false);
@@ -42,7 +44,7 @@ export function SolarCalculator() {
   const billInputRef = useRef<HTMLInputElement>(null);
   const id = useId();
 
-  const outcome = submitted || billTouched ? calculateSolarEstimate(input) : null;
+  const outcome = submitted || billTouched ? calculateSolarEstimate(input, config) : null;
   const billError = outcome && !outcome.ok ? outcome.error : null;
   const result = submitted && outcome?.ok ? outcome.result : null;
 
@@ -59,7 +61,7 @@ export function SolarCalculator() {
     e.preventDefault();
     setSubmitted(true);
     setBillTouched(true);
-    const check = calculateSolarEstimate(input);
+    const check = calculateSolarEstimate(input, config);
     if (check.ok) {
       requestAnimationFrame(() => resultsHeadingRef.current?.focus());
     } else {
@@ -267,7 +269,7 @@ export function SolarCalculator() {
             </div>
 
             <p className={styles.disclaimer} role="note">
-              <Icon name="fileText" size={18} /> {CALCULATOR_DISCLAIMER}
+              <Icon name="fileText" size={18} /> {config.disclaimer}
             </p>
 
             <div className={styles.cta}>
@@ -277,7 +279,7 @@ export function SolarCalculator() {
                 <Link className="btn btn--primary" href={`/contact?${toQuoteParams(input, result)}#quote`}>
                   Get an Exact Site Assessment <Icon name="arrowRight" size={18} />
                 </Link>
-                <a className="btn btn--secondary" href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+                <a className="btn btn--secondary" href={settings.messenger} target="_blank" rel="noopener noreferrer">
                   <Icon name="messenger" size={18} /> Message Us
                   <span className="sr-only"> on Facebook Messenger (opens in a new tab)</span>
                 </a>

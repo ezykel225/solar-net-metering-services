@@ -1,14 +1,22 @@
 import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
+import { QUOTE_HREF } from "@/data/navigation";
+import { getSiteSettings } from "@/lib/cms";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvider";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
   robots: { index: false, follow: true },
 };
 
-export default function NotFound() {
+export default async function NotFound() {
+  const settings = await getSiteSettings();
   return (
+    <SiteSettingsProvider value={settings}>
+      <Header />
+      <main id="main">
     <section className="section" aria-labelledby="nf-title">
       <div className="container" style={{ textAlign: "center", maxWidth: 640 }}>
         <p style={{ fontWeight: 800, fontSize: "4rem", color: "var(--color-orange-text)", margin: 0 }}>404</p>
@@ -17,10 +25,13 @@ export default function NotFound() {
         <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap", marginTop: "1.5rem" }}>
           <ButtonLink href="/">Back to Home</ButtonLink>
           <ButtonLink href={QUOTE_HREF} variant="secondary">
-            {QUOTE_CTA}
+            {settings.quoteCopy.cta}
           </ButtonLink>
         </div>
       </div>
     </section>
+      </main>
+      <Footer />
+    </SiteSettingsProvider>
   );
 }

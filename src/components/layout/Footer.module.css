@@ -169,3 +169,11 @@
     grid-column: auto;
   }
 }
+
+.bottomInner a {
+  color: var(--color-on-dark);
+}
+
+.bottomInner a:hover {
+  color: var(--color-white);
+}

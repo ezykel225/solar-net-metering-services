@@ -110,8 +110,16 @@ export const installationProcess = [
 
 export type SolarPackage = {
   name: string;
-  price: string;
+  /** Formatted price, e.g. "₱180,000"; null when no price is shown. */
+  price: string | null;
   inclusions: string[];
+  systemSize?: string | null;
+  description?: string | null;
+  image?: string | null;
+  imageAlt?: string | null;
+  /** Per-package note; falls back to PACKAGES_NOTE. */
+  note?: string | null;
+  featured?: boolean;
 };
 
 /**

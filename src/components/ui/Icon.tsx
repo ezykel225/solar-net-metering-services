@@ -161,6 +161,10 @@ const paths = {
 
 export type IconName = keyof typeof paths;
 
+/** All available icon identifiers (used to validate CMS "icon" values). */
+export const iconNames = Object.keys(paths) as IconName[];
+export const isIconName = (v: unknown): v is IconName => typeof v === "string" && v in paths;
+
 type IconProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
   name: IconName;
   size?: number;

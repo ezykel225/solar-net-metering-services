@@ -1,6 +1,9 @@
 # Content Status
 
 Last updated with the business information confirmed from the company's public Facebook page and screenshots.
+**Since the Admin CMS phase:** once Supabase is configured, content is edited in **`/admin`**, not in these files.
+The files listed below are the seed source and the offline fallback (see [`ADMIN_CMS.md`](ADMIN_CMS.md) §5).
+
 Three levels:
 
 - ✅ **Confirmed:** published by the business; used as-is.
@@ -49,11 +52,11 @@ Three levels:
 | CTA banner texts | `src/components/sections/CtaBanner.tsx`, page files |
 | English translation of the testimonial (written by the web team) and the "Customer" label | `src/data/testimonials.ts`, `src/components/sections/Testimonials.tsx` |
 | Project descriptions (Siaton, Sibulan) | `src/data/projects.ts` |
-| **"Get a Free Quote"**: are quotations free? | `src/data/navigation.ts` → set `QUOTES_ARE_FREE` to `false` and every "free" wording updates: buttons, quote heading, submit button, Contact title |
-| **Solar Calculator assumptions**: 4.5 peak sun hours, 80% efficiency, 580W panels, 85% max bill reduction, ₱1,000–₱500,000 bill range | `src/lib/solar-calculator.ts` (`calculatorAssumptions`) |
-| **Export credit assumption: UNVERIFIED.** Exported energy is valued at 50% of the retail rate; needs an official NORECO net-metering credit reference | `src/lib/solar-calculator.ts` (`exportCreditRatio`, `exportCreditVerified: false`) |
-| "Not Sure" commercial rate = average of the Low and High Voltage rates (₱12.2358), labelled as approximate | `src/lib/solar-calculator.ts` (`getAppliedRate`) |
-| Which NORECO (1 or 2) the published rates belong to, and the billing period they cover | `src/lib/solar-calculator.ts` (`POWER_RATE_SOURCE`, `POWER_RATE_UPDATED`) |
+| **"Get a Free Quote"**: are quotations free? | **Admin → Business Settings** → untick "Quotations are free" and every "free" wording updates; the main button text is editable there too |
+| **Solar Calculator assumptions**: 4.5 peak sun hours, 80% efficiency, 580W panels, 85% max bill reduction, ₱1,000–₱500,000 bill range | **Admin → Calculator Settings** (fallback: `DEFAULT_CALCULATOR_CONFIG` in `src/lib/solar-calculator.ts`) |
+| **Export credit assumption: UNVERIFIED.** Exported energy is valued at 50% of the retail rate; needs an official NORECO net-metering credit reference | **Admin → Calculator Settings** (export credit factor, verification status, source note) |
+| "Not Sure" commercial rate = average of the Low and High Voltage rates (₱12.2358), labelled as approximate | **Admin → Calculator Settings** ("Not Sure" method) |
+| Which NORECO (1 or 2) the published rates belong to, and the billing period they cover | **Admin → Calculator Settings** (rate source, billing period, last updated) |
 | Calculator option wording (daytime usage, battery options, appliance list, result notes) | `src/lib/solar-calculator.ts` |
 | Why Choose Us intro sentence (reworded to confirmed facts) | `src/components/sections/WhyChooseUs.tsx` |
 | Property type options in the form | `src/lib/quote.ts` (`propertyTypes`) |
@@ -75,8 +78,8 @@ Three levels:
 | More projects and testimonials | Only confirmed ones shown | `src/data/projects.ts`, `src/data/testimonials.ts` |
 | Street-light model specifications | Not shown (optional) | `src/data/services.ts` |
 | Net-metering timelines and fees | Not stated | `src/data/faqs.ts` |
-| Privacy Policy and consent checkbox | Not built | see `docs/QUOTE_SUBMISSION_PLAN.md` §6 |
-| Quote form backend | Demo mode (nothing is sent) | see `docs/QUOTE_SUBMISSION_PLAN.md` |
+| Privacy Policy text | Page structure at `/privacy` (noindex, sections marked "Pending"); the consent checkbox is live and required | `src/app/(site)/privacy/page.tsx`, `src/lib/privacy.ts` (`PRIVACY_POLICY_VERSION`) |
+| Quote email notification | Quotes are saved to Supabase; email needs a Resend API key and a verified sender domain | `docs/ADMIN_CMS.md` §2 |
 | Final domain | Not set | `NEXT_PUBLIC_SITE_URL` (Vercel) |
 
 ## Asset replacement guide

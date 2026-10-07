@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
 import {
   emptyQuoteRequest,
@@ -12,11 +14,12 @@ import {
   type QuoteField,
   type QuoteRequest,
 } from "@/lib/quote";
-import { quoteCopy } from "@/data/navigation";
-import { siteConfig } from "@/lib/site";
+import { CONSENT_REQUIRED_MESSAGE, consentText } from "@/lib/privacy";
+import type { CalculatorQuoteInput } from "@/lib/solar-calculator";
 import { Icon } from "@/components/ui/Icon";
 import { FormField } from "./FormField";
 import styles from "./QuoteForm.module.css";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -28,9 +31,17 @@ type FieldEvent<E> = E & { target: HTMLInputElement | HTMLSelectElement | HTMLTe
 type QuoteFormProps = {
   /** Values to pre-fill, e.g. from the Solar Calculator. The visitor reviews them before sending. */
   initialValues?: Partial<QuoteRequest> | null;
+  /** Solar Calculator inputs sent with the request (the server recomputes the estimate). */
+  calculator?: CalculatorQuoteInput | null;
 };
 
-export function QuoteForm({ initialValues }: QuoteFormProps = {}) {
+export function QuoteForm({ initialValues, calculator }: QuoteFormProps = {}) {
+  const settings = useSiteSettings();
+  const pathname = usePathname();
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState("");
+  const [submitErrorKind, setSubmitErrorKind] = useState<string | undefined>();
+  const consentRef = useRef<HTMLInputElement>(null);
   const [values, setValues] = useState<QuoteRequest>({ ...emptyQuoteRequest, ...initialValues });
   const [errors, setErrors] = useState<QuoteErrors>({});
   /** Fields the user has left at least once; only these show errors before submit. */
@@ -68,30 +79,48 @@ export function QuoteForm({ initialValues }: QuoteFormProps = {}) {
     setTouched(Object.fromEntries(fieldOrder.map((f) => [f, true])));
     setErrors(nextErrors);
 
+    setConsentError(consent ? "" : CONSENT_REQUIRED_MESSAGE);
+
     const firstInvalid = fieldOrder.find((f) => nextErrors[f]);
     if (firstInvalid) {
       formRef.current?.querySelector<HTMLElement>(`[name="${firstInvalid}"]`)?.focus();
       return;
     }
+    if (!consent) {
+      consentRef.current?.focus();
+      return;
+    }
 
     setStatus("submitting");
     setSubmitError("");
-    // Bots that fill the honeypot get a normal-looking success without anything being sent.
-    // Phase 2: repeat this check server-side and add rate limiting.
-    const result = website ? { ok: true as const } : await submitQuoteRequest(values);
+    setSubmitErrorKind(undefined);
+    const result = await submitQuoteRequest({
+      values,
+      privacyConsent: consent,
+      website, // honeypot: checked on the server
+      calculator: calculator ?? undefined,
+      sourcePage: pathname,
+    });
     if (result.ok) {
       setStatus("success");
       requestAnimationFrame(() => successRef.current?.focus());
-    } else {
-      setStatus("error");
-      setSubmitError(result.error);
+      return;
     }
+    setStatus("error");
+    setSubmitError(result.error);
+    setSubmitErrorKind(result.kind);
+    if (result.fieldErrors) setErrors(result.fieldErrors);
+    if (result.consentError) setConsentError(result.consentError);
+    const serverInvalid = fieldOrder.find((f) => result.fieldErrors?.[f]);
+    if (serverInvalid) formRef.current?.querySelector<HTMLElement>(`[name="${serverInvalid}"]`)?.focus();
   };
 
   const reset = () => {
     setValues(emptyQuoteRequest);
     setErrors({});
     setTouched({});
+    setConsent(false);
+    setConsentError("");
     setStatus("idle");
   };
 
@@ -107,13 +136,10 @@ export function QuoteForm({ initialValues }: QuoteFormProps = {}) {
         <p>
           Your quote request has been received. Our team will get back to you to discuss your solar needs. You can
           also reach us on{" "}
-          <a href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+          <a href={settings.messenger} target="_blank" rel="noopener noreferrer">
             Facebook Messenger<span className="sr-only"> (opens in a new tab)</span>
           </a>{" "}
-          or call <a href={siteConfig.contact.phoneHref}>{siteConfig.contact.phone}</a>.
-        </p>
-        <p className={styles.demoNote}>
-          Demo mode: this form is not yet connected to a database, so no information was stored or sent.
+          or call <a href={settings.phoneHref}>{settings.phone}</a>.
         </p>
         <button type="button" className="btn btn--secondary" onClick={reset}>
           Submit another request
@@ -130,7 +156,7 @@ export function QuoteForm({ initialValues }: QuoteFormProps = {}) {
     error: errors[name],
   });
 
-  const errorCount = Object.values(errors).filter(Boolean).length;
+  const errorCount = Object.values(errors).filter(Boolean).length + (consentError ? 1 : 0);
 
   return (
     <form ref={formRef} className={styles.form} onSubmit={handleSubmit} noValidate aria-describedby="quote-form-note">
@@ -225,10 +251,49 @@ export function QuoteForm({ initialValues }: QuoteFormProps = {}) {
         />
       </div>
 
+      <div className={styles.consent}>
+        <label className={styles.consentLabel}>
+          <input
+            ref={consentRef}
+            type="checkbox"
+            name="privacyConsent"
+            checked={consent}
+            onChange={(e) => {
+              setConsent(e.target.checked);
+              if (e.target.checked) setConsentError("");
+            }}
+            required
+            aria-invalid={consentError ? true : undefined}
+            aria-describedby={consentError ? "quote-consent-error" : undefined}
+            className={styles.consentInput}
+          />
+          <span>
+            {consentText(settings.name)} <span className={styles.required} aria-hidden="true">*</span>{" "}
+            <Link href="/privacy" target="_blank" rel="noopener">
+              Read our Privacy Policy<span className="sr-only"> (opens in a new tab)</span>
+            </Link>
+          </span>
+        </label>
+        {consentError ? (
+          <p id="quote-consent-error" className={styles.error}>
+            {consentError}
+          </p>
+        ) : null}
+      </div>
+
       {status === "error" && submitError ? (
-        <p className={styles.submitError} role="alert">
-          {submitError}
-        </p>
+        <div className={styles.submitError} role="alert">
+          <p>{submitError}</p>
+          {submitErrorKind === "unavailable" || submitErrorKind === "error" ? (
+            <p>
+              You can also reach us directly: call <a href={settings.phoneHref}>{settings.phone}</a> or{" "}
+              <a href={settings.messenger} target="_blank" rel="noopener noreferrer">
+                message us on Facebook Messenger<span className="sr-only"> (opens in a new tab)</span>
+              </a>
+              .
+            </p>
+          ) : null}
+        </div>
       ) : null}
 
       <button type="submit" className="btn btn--primary btn--block" disabled={status === "submitting"}>
@@ -238,7 +303,7 @@ export function QuoteForm({ initialValues }: QuoteFormProps = {}) {
           </>
         ) : (
           <>
-            {quoteCopy.submit} <Icon name="arrowRight" size={18} />
+            {settings.quoteCopy.submit} <Icon name="arrowRight" size={18} />
           </>
         )}
       </button>

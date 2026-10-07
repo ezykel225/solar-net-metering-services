@@ -96,6 +96,14 @@
   color: var(--color-text-muted);
 }
 
+.avatarImage {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .avatar {
   display: grid;
   place-items: center;

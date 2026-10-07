@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { services } from "@/data/services";
+import { getServices } from "@/lib/cms";
 import { Icon } from "@/components/ui/Icon";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import styles from "./ServicesSection.module.css";
@@ -10,7 +10,9 @@ type ServicesSectionProps = {
   showHeading?: boolean;
 };
 
-export function ServicesSection({ detailed = false, showHeading = true }: ServicesSectionProps) {
+export async function ServicesSection({ detailed = false, showHeading = true }: ServicesSectionProps) {
+  const { data: services } = await getServices();
+  if (services.length === 0) return null;
   return (
     <section className="section" aria-labelledby="services-title">
       <div className="container">

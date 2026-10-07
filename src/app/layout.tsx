@@ -2,12 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 // Global styles first so component CSS modules can override them.
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { serviceAreas } from "@/data/service-areas";
-import { localBusinessJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -66,22 +60,15 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+/**
+ * Root layout: document shell, fonts and default metadata only.
+ * Public pages add the site header/footer in app/(site)/layout.tsx;
+ * the admin area uses app/admin/layout.tsx.
+ */
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const jsonLd = localBusinessJsonLd(serviceAreas.map((a) => a.name));
   return (
     <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
-      <body>
-        <a href="#main" className="skip-link">
-          Skip to main content
-        </a>
-        <Header />
-        <main id="main" tabIndex={-1}>
-          {children}
-        </main>
-        <Footer />
-        <MobileCtaBar />
-        <JsonLd data={jsonLd} />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

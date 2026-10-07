@@ -1,10 +1,12 @@
-import { testimonials } from "@/data/testimonials";
+import Image from "next/image";
+import { getTestimonials } from "@/lib/cms";
 import { Icon } from "@/components/ui/Icon";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import styles from "./Testimonials.module.css";
 
 /** Shows confirmed testimonials only. Renders nothing if the list is empty. */
-export function Testimonials() {
+export async function Testimonials() {
+  const { data: testimonials } = await getTestimonials();
   if (testimonials.length === 0) return null;
   const single = testimonials.length === 1;
   return (
@@ -31,9 +33,13 @@ export function Testimonials() {
                   </p>
                 ) : null}
                 <figcaption className={styles.author}>
-                  <span className={styles.avatar} aria-hidden="true">
-                    {t.name.replace(/^Ma[’']am\s+/, "").charAt(0)}
-                  </span>
+                  {t.image ? (
+                    <Image src={t.image} alt="" width={46} height={46} className={styles.avatarImage} />
+                  ) : (
+                    <span className={styles.avatar} aria-hidden="true">
+                      {t.name.replace(/^Ma[’']am\s+/, "").charAt(0)}
+                    </span>
+                  )}
                   <span>
                     <strong>{t.name}</strong>
                     {t.detail ? <span>{t.detail}</span> : <span>Customer</span>}

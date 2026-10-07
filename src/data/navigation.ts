@@ -20,29 +20,45 @@ export const mainNav: NavItem[] = [
 export const QUOTE_HREF = "/contact#quote";
 
 /**
- * TODO (owner): confirm whether quotations are free.
- * This single switch controls every "free" quote wording on the site
- * (buttons, quote section heading, submit button, Contact page title).
+ * Fallback for whether quotations are advertised as free. Once Supabase is
+ * connected, the owner controls this in Admin → Business Settings.
  */
 export const QUOTES_ARE_FREE = true;
 
-const free = QUOTES_ARE_FREE ? "Free " : "";
-
-/** All quote call-to-action wording, derived from QUOTES_ARE_FREE. */
-export const quoteCopy = {
+export type QuoteCopy = {
   /** Main CTA button: header, hero, footer, mobile bar, banners */
-  cta: `Get a ${free}Quote`,
+  cta: string;
   /** Secondary CTA in the FAQ help box */
-  ask: `Ask for a ${free}Quote`,
+  ask: string;
   /** Quote section eyebrow and heading */
-  eyebrow: QUOTES_ARE_FREE ? "Free Quotation" : "Quotation",
-  heading: `Get a ${free}Solar Quote`,
+  eyebrow: string;
+  heading: string;
   /** Quote form submit button */
-  submit: `Get My ${free}Quote`,
+  submit: string;
   /** Contact page heading and browser title */
-  contactTitle: `Contact Us & Get a ${free}Quote`,
-  contactMetaTitle: `Contact & ${free}Quote`,
+  contactTitle: string;
+  contactMetaTitle: string;
 };
 
-/** Main call-to-action label (kept as a named export for existing imports). */
+/**
+ * All quote call-to-action wording, derived from one "free" switch.
+ * `ctaOverride` (Business Settings → Quote CTA wording) replaces the main button text.
+ */
+export function buildQuoteCopy(quotesAreFree: boolean, ctaOverride?: string | null): QuoteCopy {
+  const free = quotesAreFree ? "Free " : "";
+  return {
+    cta: ctaOverride?.trim() || `Get a ${free}Quote`,
+    ask: `Ask for a ${free}Quote`,
+    eyebrow: quotesAreFree ? "Free Quotation" : "Quotation",
+    heading: `Get a ${free}Solar Quote`,
+    submit: `Get My ${free}Quote`,
+    contactTitle: `Contact Us & Get a ${free}Quote`,
+    contactMetaTitle: `Contact & ${free}Quote`,
+  };
+}
+
+/** Fallback wording when Business Settings are not available. */
+export const quoteCopy = buildQuoteCopy(QUOTES_ARE_FREE);
+
+/** Main call-to-action label (fallback). */
 export const QUOTE_CTA = quoteCopy.cta;

@@ -1,7 +1,9 @@
-# Solar Net Metering Services — Website (Phase 1)
+# Solar Net Metering Services — Website
 
 Marketing website for **Solar Net Metering Services**, built with Next.js (App Router) and TypeScript.
-Phase 1 is frontend only. There is no database, no authentication and no admin area yet.
+Content, calculator settings and quote requests are managed in a protected admin area at `/admin`, backed by Supabase (Auth, Postgres with RLS, Storage).
+Setup, security model and operations are documented in **[`docs/ADMIN_CMS.md`](docs/ADMIN_CMS.md)**.
+Without Supabase variables, the public site still works with its built-in content.
 
 ## Run locally
 
@@ -22,13 +24,17 @@ Other scripts:
 | `npm run typecheck` | TypeScript check |
 | `npm run images:placeholders` | Regenerate the illustrated placeholder images |
 
-Optional: copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SITE_URL`. It is used for canonical URLs, the sitemap and Open Graph tags. On Vercel the site falls back to the project's production domain if the variable is unset.
+Copy `.env.example` to `.env.local` and fill in the values. Every variable is explained there and in `docs/ADMIN_CMS.md` §2.
+Without the Supabase variables, the public site uses its built-in content, `/admin` shows "not configured", and the quote form points visitors to phone and Messenger instead.
 
 ## Project structure
 
 ```
 src/
-  app/                    Routes (one folder per page) + layout, sitemap, robots, icon
+  app/(site)/             Public pages (shared header/footer layout)
+  app/admin/              Admin login and dashboard (protected)
+  app/api/quote/          Quote submission endpoint (server-side validation, Supabase insert, email)
+  proxy.ts                Session refresh + redirect for /admin
   components/
     layout/               Header (with mobile menu), Footer, Logo, PageHero, MobileCtaBar
     sections/             Page sections (Hero, Services, Net metering steps, Projects…)
@@ -36,43 +42,47 @@ src/
     calculator/           Solar Savings Calculator UI
     seo/                  JsonLd structured-data helper
     ui/                   Reusable primitives (ButtonLink, SectionHeading, Accordion, Icon)
-  data/                   All editable content (services, projects, FAQs, testimonials…)
+    admin/                Admin shell, forms, image upload, confirmations
+  data/                   Built-in content: seed source and offline fallback for the CMS
   lib/
     site.ts               Company name, contact details, social links ← edit this first
     seo.ts                Per-page metadata helper + LocalBusiness JSON-LD
     quote.ts              Quote request types, validation and submit function
-    solar-calculator.ts   Solar Calculator assumptions, maths, formatting and quote hand-off
+    solar-calculator.ts   Solar Calculator maths, default settings, formatting and quote hand-off
+    supabase/             Supabase clients (browser, server, public, service-role, proxy)
+    cms/                  Public content getters with fallbacks
+    admin/                Admin auth checks, content definitions, validation
+supabase/migrations/      Schema + RLS, storage bucket, seed of confirmed content
 public/images/            Illustrated placeholder images (replace with real photos, same file names)
 scripts/                  Placeholder image generator
 ```
 
-Styling uses plain CSS. Design tokens (brand colors, spacing, radii) live in `src/app/globals.css`, and each component has its own CSS Module. The only runtime dependencies are `next`, `react` and `react-dom`.
+Styling uses plain CSS. Design tokens (brand colors, spacing, radii) live in `src/app/globals.css`, and each component has its own CSS Module. Runtime dependencies: `next`, `react`, `react-dom`, `@supabase/supabase-js`, `@supabase/ssr` and `server-only`.
 
 ## Replacing placeholder content
 
 What is confirmed, what needs owner approval and what is still placeholder is tracked in
 [`docs/CONTENT_STATUS.md`](docs/CONTENT_STATUS.md). Everything still needed from the business owner is listed, with the exact file for each item, in
 [`docs/OWNER_CONTENT_CHECKLIST.md`](docs/OWNER_CONTENT_CHECKLIST.md). The earlier site audit is in
-[`docs/COMPLETION_AUDIT.md`](docs/COMPLETION_AUDIT.md). The most common edits:
+[`docs/COMPLETION_AUDIT.md`](docs/COMPLETION_AUDIT.md).
+
+With Supabase configured, projects, packages, testimonials, services, FAQs, promotions, business settings and calculator settings are edited in **`/admin`**.
+The files below only matter as the fallback or for content that isn't in the CMS yet: hero, about, why-choose-us, benefits, net-metering steps and the customer result. The most common file edits:
 
 - **Contact details, Facebook/Messenger links, service-area wording, stats:** `src/lib/site.ts`
 - **Packages, brands, street-light features:** `src/data/services.ts`
 - **Customer result (bill before/after):** `src/data/case-studies.ts`
-- **"Free" quote wording:** `src/data/navigation.ts` → `QUOTES_ARE_FREE` (one switch for all quote CTAs)
-- **NORECO power rates:** `src/lib/solar-calculator.ts` → `POWER_RATES` and `POWER_RATE_UPDATED` (update both together)
-- **Other Solar Calculator assumptions (sun hours, efficiency, panel wattage, export credit…):** `src/lib/solar-calculator.ts` → `calculatorAssumptions`
+- **"Free" quote wording:** Admin → Business Settings (fallback: `QUOTES_ARE_FREE` in `src/data/navigation.ts`)
+- **Calculator rates and assumptions:** Admin → Calculator Settings. The fallback defaults are `POWER_RATES` and `DEFAULT_CALCULATOR_CONFIG` in `src/lib/solar-calculator.ts`.
 - **Logo, hero/about photos, project photos:** see the asset replacement guide in `docs/CONTENT_STATUS.md`
 - **Projects / testimonials / FAQs / services:** `src/data/*.ts`
 - **Photos:** overwrite the files in `public/images/` and `public/images/projects/`. Keep the same names or update the paths in `src/data/projects.ts`, and update the `imageAlt` text too.
 - **Logo:** `src/components/layout/Logo.tsx` (and `src/app/icon.svg` for the favicon)
 
-## Connecting the quote form later (Phase 2)
+## Quote requests
 
-The form (`src/components/quote/QuoteForm.tsx`) only calls `submitQuoteRequest()` in `src/lib/quote.ts`.
-Right now that function simulates a request and the form shows a demo success state. Nothing is stored or sent.
-
-The connection plan is in [`docs/QUOTE_SUBMISSION_PLAN.md`](docs/QUOTE_SUBMISSION_PLAN.md). It covers the `quote_requests` table and migration, the server-only `/api/quote` route, environment variables, the privacy-consent checkbox, and the exact files that change.
-The database row types and the form-to-row mapping (`toQuoteRequestInsert()`) are already in `src/lib/quote.ts`.
+The form posts to `/api/quote`. The server validates every field again, requires the privacy-consent checkbox, applies rate limits, saves the request to Supabase (`quote_requests`) and emails the business when Resend is configured.
+Requests are managed in **Admin → Quote Requests**. Details are in `docs/ADMIN_CMS.md` §6.
 
 ## Location-specific SEO (prepared)
 
@@ -82,4 +92,5 @@ The database row types and the form-to-row mapping (`toQuoteRequestInsert()`) ar
 
 ## Deployment
 
-The site is fully static and works on Vercel with no extra configuration. Import the repo and set `NEXT_PUBLIC_SITE_URL`. (Not deployed yet.)
+Public pages are statically generated and refreshed every 5 minutes, or immediately after an admin save. The admin and the API are dynamic.
+On Vercel, set the environment variables from `.env.example`. Follow the Supabase and Vercel checklist in `docs/ADMIN_CMS.md` §1–2. (Not deployed yet.)

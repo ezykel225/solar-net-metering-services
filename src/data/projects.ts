@@ -7,12 +7,15 @@ export type Project = {
   category?: ProjectCategory;
   /** Short labels shown on the card image, e.g. "Residential", "Hybrid Solar". */
   tags: string[];
-  location: string;
+  location?: string | null;
   /** Only confirmed specifications. Omit when unknown. */
   system?: string;
   description: string;
-  image: string;
+  /** Image URL (site path or Supabase Storage URL). Null when no image has been added. */
+  image: string | null;
   imageAlt: string;
+  /** Marked as featured in the admin (shown first). */
+  featured?: boolean;
   /** True while the image is an illustration rather than a real project photo. */
   imageIsIllustration: boolean;
 };

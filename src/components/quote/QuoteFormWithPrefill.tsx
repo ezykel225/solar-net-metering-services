@@ -13,5 +13,11 @@ export function QuoteFormWithPrefill() {
   const params = useSearchParams();
   const prefill = quotePrefillFromParams(new URLSearchParams(params.toString()));
   // Re-mount the form if the parameters change so the new values are applied.
-  return <QuoteForm key={params.toString()} initialValues={prefill} />;
+  return (
+    <QuoteForm
+      key={params.toString()}
+      initialValues={prefill && Object.keys(prefill.values).length > 0 ? prefill.values : null}
+      calculator={prefill?.calculator ?? null}
+    />
+  );
 }

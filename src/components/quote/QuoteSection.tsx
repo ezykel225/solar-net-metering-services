@@ -1,5 +1,4 @@
-import { quoteCopy } from "@/data/navigation";
-import { siteConfig } from "@/lib/site";
+
 import { EmailText } from "@/components/ui/EmailText";
 import { Icon } from "@/components/ui/Icon";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -7,10 +6,12 @@ import { Suspense } from "react";
 import { QuoteForm } from "./QuoteForm";
 import { QuoteFormWithPrefill } from "./QuoteFormWithPrefill";
 import styles from "./QuoteSection.module.css";
+import { getSiteSettings } from "@/lib/cms";
 
 const steps = ["Send your details", "We review your bill & property", "Receive your quotation"];
 
-export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
+export async function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
+  const settings = await getSiteSettings();
   return (
     <section id="quote" className={`section ${styles.section}`} aria-labelledby="quote-title">
       <div className={`container ${styles.grid}`}>
@@ -20,8 +21,8 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
             as={headingLevel}
             align="left"
             onDark
-            eyebrow={quoteCopy.eyebrow}
-            title={quoteCopy.heading}
+            eyebrow={settings.quoteCopy.eyebrow}
+            title={settings.quoteCopy.heading}
             intro="Tell us a little about your property and electricity use, and we’ll get back to you with a quotation."
           />
           <ol className={styles.steps}>
@@ -38,7 +39,7 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
               </span>
               <span>
                 <small>Call us</small>
-                <a href={siteConfig.contact.phoneHref}>{siteConfig.contact.phone}</a>
+                <a href={settings.phoneHref}>{settings.phone}</a>
               </span>
             </li>
             <li>
@@ -47,8 +48,8 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
               </span>
               <span>
                 <small>Email us</small>
-                <a href={`mailto:${siteConfig.contact.email}`}>
-                  <EmailText email={siteConfig.contact.email} />
+                <a href={`mailto:${settings.email}`}>
+                  <EmailText email={settings.email} />
                 </a>
               </span>
             </li>
@@ -58,7 +59,7 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
               </span>
               <span>
                 <small>Message us</small>
-                <a href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+                <a href={settings.messenger} target="_blank" rel="noopener noreferrer">
                   Facebook Messenger<span className="sr-only"> (opens in a new tab)</span>
                 </a>
               </span>
@@ -69,17 +70,17 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
               </span>
               <span>
                 <small>Service area</small>
-                {siteConfig.contact.address ?? siteConfig.serviceAreaShort}
+                {settings.address ?? settings.serviceAreaShort}
               </span>
             </li>
-            {siteConfig.contact.hours ? (
+            {settings.hours ? (
               <li>
                 <span className={styles.contactIcon}>
                   <Icon name="clock" size={20} />
                 </span>
                 <span>
                   <small>Office hours</small>
-                  {siteConfig.contact.hours}
+                  {settings.hours}
                 </span>
               </li>
             ) : null}

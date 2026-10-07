@@ -1,9 +1,10 @@
 import Image from "next/image";
-import { QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
+import { QUOTE_HREF } from "@/data/navigation";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
 import heroImage from "../../../public/images/hero.jpg";
 import styles from "./Hero.module.css";
+import { getSiteSettings } from "@/lib/cms";
 
 /** Confirmed offerings only. */
 const highlights = [
@@ -12,7 +13,8 @@ const highlights = [
   "Hybrid systems with battery storage",
 ];
 
-export function Hero() {
+export async function Hero() {
+  const settings = await getSiteSettings();
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
       <div className={`container ${styles.inner}`}>
@@ -28,7 +30,7 @@ export function Hero() {
           </p>
           <div className={styles.ctas}>
             <ButtonLink href={QUOTE_HREF}>
-              {QUOTE_CTA} <Icon name="arrowRight" size={18} />
+              {settings.quoteCopy.cta} <Icon name="arrowRight" size={18} />
             </ButtonLink>
             <ButtonLink href="/#how-it-works" variant="secondary">
               Learn More

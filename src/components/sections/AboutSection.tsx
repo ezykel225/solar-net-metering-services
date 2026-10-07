@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import aboutImage from "../../../public/images/about.jpg";
 import styles from "./AboutSection.module.css";
+import { getSiteSettings } from "@/lib/cms";
 
 /** Confirmed offerings only. */
 const points = [
@@ -14,7 +15,8 @@ const points = [
   "Site assessment, quotation and installation support",
 ];
 
-export function AboutSection({ showLink = true }: { showLink?: boolean }) {
+export async function AboutSection({ showLink = true }: { showLink?: boolean }) {
+  const settings = await getSiteSettings();
   return (
     <section className="section" aria-labelledby="about-title">
       <div className={`container ${styles.grid}`}>
@@ -37,7 +39,7 @@ export function AboutSection({ showLink = true }: { showLink?: boolean }) {
             align="left"
             eyebrow="About Us"
             title="Your Local Partner for Solar & Net Metering"
-            intro={`${siteConfig.name} helps homeowners and businesses switch to solar energy. ${siteConfig.serviceAreaSummary}`}
+            intro={`${settings.name} helps homeowners and businesses switch to solar energy. ${settings.serviceAreaSummary}`}
           />
           <ul className={styles.points}>
             {points.map((p) => (

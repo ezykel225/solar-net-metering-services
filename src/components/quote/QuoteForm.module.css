@@ -148,7 +148,51 @@ textarea.control {
   overflow: hidden;
 }
 
+/* ---------- privacy consent ---------- */
+.consent {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.consentLabel {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  font-size: 0.925rem;
+  color: var(--color-navy);
+  cursor: pointer;
+}
+
+.consentInput {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0.1rem 0 0;
+  accent-color: var(--color-orange);
+  cursor: pointer;
+}
+
+.consentInput:focus-visible {
+  box-shadow: var(--focus-ring);
+  border-radius: 4px;
+}
+
+.consentInput[aria-invalid="true"] {
+  outline: 2px solid var(--color-error);
+  outline-offset: 2px;
+}
+
+.consentLabel a {
+  font-weight: 600;
+}
+
+.submitError p {
+  margin: 0;
+}
+
 .submitError {
+  display: grid;
+  gap: 0.35rem;
   margin: 0;
   padding: 0.75rem 1rem;
   border-radius: 10px;
@@ -218,15 +262,6 @@ textarea.control {
   border-radius: 50%;
   background: var(--color-success-soft);
   color: var(--color-success);
-}
-
-.demoNote {
-  padding: 0.6rem 0.9rem;
-  border-radius: 10px;
-  background: var(--color-orange-soft);
-  color: var(--color-orange-text) !important;
-  font-size: 0.85rem;
-  font-weight: 600;
 }
 
 @media (min-width: 640px) {

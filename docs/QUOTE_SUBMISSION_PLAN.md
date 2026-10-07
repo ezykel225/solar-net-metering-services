@@ -1,7 +1,7 @@
 # Quote Submission Plan (Supabase)
 
-**Status: prepared, not connected.** No Supabase project exists yet, nothing is installed, and the live form still runs in demo mode.
-This document is the plan for connecting it. It covers the table, the request flow, and the exact files that will change.
+**Status: implemented.** The plan below is kept for history. The live implementation, including the final table, the `/api/quote` route, consent storage, rate limits and email, is documented in [`ADMIN_CMS.md`](ADMIN_CMS.md) §6.
+Where this plan and the code differ, the code and `ADMIN_CMS.md` are correct. In particular, the final table also stores calculator estimates and the consent fields.
 
 ---
 

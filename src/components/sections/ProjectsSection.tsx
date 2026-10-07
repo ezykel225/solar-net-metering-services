@@ -1,9 +1,8 @@
-import { projects } from "@/data/projects";
-import { siteConfig } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProjectGallery } from "./ProjectGallery";
 import styles from "./Projects.module.css";
+import { getProjects, getSiteSettings } from "@/lib/cms";
 
 type ProjectsSectionProps = {
   limit?: number;
@@ -11,7 +10,9 @@ type ProjectsSectionProps = {
   showHeading?: boolean;
 };
 
-export function ProjectsSection({ limit, filterable = false, showHeading = true }: ProjectsSectionProps) {
+export async function ProjectsSection({ limit, filterable = false, showHeading = true }: ProjectsSectionProps) {
+  const settings = await getSiteSettings();
+  const { data: projects } = await getProjects();
   const items = limit ? projects.slice(0, limit) : projects;
   return (
     <section className="section" aria-labelledby="projects-title">
@@ -28,7 +29,11 @@ export function ProjectsSection({ limit, filterable = false, showHeading = true 
             Project gallery
           </h2>
         )}
-        <ProjectGallery projects={items} filterable={filterable} />
+        {items.length > 0 ? (
+          <ProjectGallery projects={items} filterable={filterable} />
+        ) : (
+          <p className={styles.more}>New project photos and details will be shared here soon.</p>
+        )}
         {limit ? (
           <div className={styles.footer}>
             <ButtonLink href="/projects" variant="secondary">
@@ -38,7 +43,7 @@ export function ProjectsSection({ limit, filterable = false, showHeading = true 
         ) : (
           <p className={styles.more}>
             More of our recent installations are posted on our{" "}
-            <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer">
+            <a href={settings.facebook} target="_blank" rel="noopener noreferrer">
               Facebook page<span className="sr-only"> (opens in a new tab)</span>
             </a>
             .

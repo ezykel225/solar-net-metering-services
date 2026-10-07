@@ -1,13 +1,16 @@
 /**
  * Solar Savings Calculator — all assumptions and calculation logic.
  *
- * Every number the calculator uses lives in `calculatorAssumptions` (or the
- * option tables below). UI components must not hard-code constants.
- * Results are rough planning estimates only, always shown as ranges with the
- * CALCULATOR_DISCLAIMER. Never present them as guaranteed savings.
+ * Two kinds of numbers:
+ *  - CalculatorConfig: values the business owner edits in Admin → Calculator
+ *    Settings (stored in Supabase, table calculator_settings). The constants
+ *    below (POWER_RATES, DEFAULT_CALCULATOR_CONFIG…) are the fallback used
+ *    when Supabase is not configured or temporarily unavailable.
+ *  - calculatorAssumptions: fixed engineering constants (rounding, variability…).
  *
- * TODO (owner): confirm the export credit ratio (UNVERIFIED) and that the
- * panel wattage reflects the equipment actually installed.
+ * UI components must not hard-code constants. Results are rough planning
+ * estimates only, always shown as ranges with the disclaimer. Never present
+ * them as guaranteed savings.
  */
 import { parseBillAmount, type QuoteRequest } from "@/lib/quote";
 
@@ -32,12 +35,6 @@ export const POWER_RATE_UPDATED = "2026-10-07";
 /** Rate source shown to visitors. */
 export const POWER_RATE_SOURCE = "NORECO published power rates";
 
-/** Human-readable form of POWER_RATE_UPDATED, e.g. "7 October 2026". */
-export const powerRateUpdatedLabel = new Date(`${POWER_RATE_UPDATED}T00:00:00`).toLocaleDateString("en-PH", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-});
 
 /** Consumer-rate choices offered for commercial properties. */
 export const commercialRateOptions = {
@@ -54,50 +51,204 @@ export type AppliedRate = {
   approximate: boolean;
 };
 
+export type NotSureMethod = "average" | "low_voltage" | "high_voltage" | "custom";
+
+/** Values the owner can change in Admin → Calculator Settings. */
+export type CalculatorConfig = {
+  rates: { residential: number; lowVoltage: number; highVoltage: number };
+  rateSource: string;
+  rateBillingPeriod: string | null;
+  /** ISO date (YYYY-MM-DD) */
+  ratesUpdatedOn: string | null;
+  /** How a commercial "Not Sure" rate is approximated. */
+  notSureMethod: NotSureMethod;
+  notSureCustomRate: number | null;
+  peakSunHours: number;
+  systemEfficiency: number;
+  panelWattage: number;
+  /** Share of monthly usage the system is sized to cover, by daytime usage. */
+  coverage: { low: number; medium: number; high: number };
+  minimumBill: number;
+  maximumBill: number;
+  maxBillReductionShare: number;
+  /** Value of exported energy relative to the retail rate. */
+  exportCreditRatio: number;
+  /** False until confirmed by an official net-metering credit reference. */
+  exportCreditVerified: boolean;
+  exportCreditSource: string | null;
+  disclaimer: string;
+};
+
+export const CALCULATOR_DISCLAIMER =
+  "This calculator provides an initial estimate only. Actual system size, solar generation and savings depend on electricity usage, roof orientation, shading, equipment efficiency, weather, utility rates, site conditions and net-metering approval.";
+
+/** Fallback configuration (used when Supabase settings cannot be loaded). */
+export const DEFAULT_CALCULATOR_CONFIG: CalculatorConfig = {
+  rates: {
+    residential: POWER_RATES.residential.ratePerKwh,
+    lowVoltage: POWER_RATES.lowVoltage.ratePerKwh,
+    highVoltage: POWER_RATES.highVoltage.ratePerKwh,
+  },
+  rateSource: POWER_RATE_SOURCE,
+  rateBillingPeriod: null,
+  ratesUpdatedOn: POWER_RATE_UPDATED,
+  notSureMethod: "average",
+  notSureCustomRate: null,
+  peakSunHours: 4.5,
+  systemEfficiency: 0.8,
+  panelWattage: 580,
+  coverage: { low: 0.6, medium: 0.75, high: 0.9 },
+  minimumBill: 1_000,
+  maximumBill: 500_000,
+  maxBillReductionShare: 0.85,
+  // UNVERIFIED — placeholder until an official NORECO net-metering credit reference exists.
+  exportCreditRatio: 0.5,
+  exportCreditVerified: false,
+  exportCreditSource: null,
+  disclaimer: CALCULATOR_DISCLAIMER,
+};
+
+export const notSureMethodLabels: Record<NotSureMethod, string> = {
+  average: "Average of the Low Voltage and High Voltage rates",
+  low_voltage: "Use the Low Voltage rate",
+  high_voltage: "Use the High Voltage rate",
+  custom: "Use a custom approximate rate",
+};
+
 /**
  * The rate used for a calculation.
  * - Residential → Residential rate.
  * - Commercial + Low/High Voltage → that rate (only when the visitor selects it).
- * - Commercial + Not Sure → approximate: average of the Low and High Voltage rates,
- *   so neither consumer type is assumed. The exact rate should be confirmed from the bill.
+ * - Commercial + Not Sure → an approximate rate chosen by the owner's "Not Sure"
+ *   setting (default: average of Low and High Voltage), always labelled as approximate.
  */
-export function getAppliedRate(propertyType: CalcPropertyType, commercialRate: CommercialRateChoice): AppliedRate {
+export function getAppliedRate(
+  propertyType: CalcPropertyType,
+  commercialRate: CommercialRateChoice,
+  config: CalculatorConfig = DEFAULT_CALCULATOR_CONFIG,
+): AppliedRate {
+  const { rates } = config;
   if (propertyType === "Residential") {
-    return { label: `NORECO ${POWER_RATES.residential.label}`, ratePerKwh: POWER_RATES.residential.ratePerKwh, approximate: false };
+    return { label: `${POWER_RATES.residential.label} rate`, ratePerKwh: rates.residential, approximate: false };
   }
   if (commercialRate === "lowVoltage" || commercialRate === "highVoltage") {
-    const r = POWER_RATES[commercialRate];
-    return { label: `NORECO ${r.label}`, ratePerKwh: r.ratePerKwh, approximate: false };
+    return { label: `${POWER_RATES[commercialRate].label} rate`, ratePerKwh: rates[commercialRate], approximate: false };
   }
-  const avg = (POWER_RATES.lowVoltage.ratePerKwh + POWER_RATES.highVoltage.ratePerKwh) / 2;
+  let rate: number;
+  let how: string;
+  switch (config.notSureMethod) {
+    case "low_voltage":
+      rate = rates.lowVoltage;
+      how = "Low Voltage rate used as an approximation";
+      break;
+    case "high_voltage":
+      rate = rates.highVoltage;
+      how = "High Voltage rate used as an approximation";
+      break;
+    case "custom":
+      rate = config.notSureCustomRate ?? (rates.lowVoltage + rates.highVoltage) / 2;
+      how = "approximate rate set by the business";
+      break;
+    default:
+      rate = (rates.lowVoltage + rates.highVoltage) / 2;
+      how = "average of the Low and High Voltage rates";
+  }
   return {
-    label: "Approximate commercial rate (average of NORECO Low and High Voltage rates)",
-    ratePerKwh: Math.round(avg * 10_000) / 10_000,
+    label: `Approximate commercial rate (${how})`,
+    ratePerKwh: Math.round(rate * 10_000) / 10_000,
     approximate: true,
   };
 }
 
+/** Database row shape of public.calculator_settings (numeric columns may arrive as strings). */
+export type CalculatorSettingsRow = {
+  residential_rate: number | string;
+  low_voltage_rate: number | string;
+  high_voltage_rate: number | string;
+  rate_source: string | null;
+  rate_billing_period: string | null;
+  rates_updated_on: string | null;
+  not_sure_method: string | null;
+  not_sure_custom_rate: number | string | null;
+  peak_sun_hours: number | string;
+  system_efficiency: number | string;
+  panel_wattage: number | string;
+  coverage_low: number | string;
+  coverage_medium: number | string;
+  coverage_high: number | string;
+  min_monthly_bill: number | string;
+  max_monthly_bill: number | string;
+  max_bill_reduction_share: number | string;
+  export_credit_ratio: number | string;
+  export_credit_verified: boolean | null;
+  export_credit_source: string | null;
+  disclaimer: string | null;
+};
+
+/** Number within [min, max], or the fallback. */
+const inRange = (v: unknown, min: number, max: number, fallback: number) => {
+  const n = typeof v === "string" ? Number(v) : typeof v === "number" ? v : NaN;
+  return Number.isFinite(n) && n >= min && n <= max ? n : fallback;
+};
+
+/**
+ * Converts a calculator_settings row into a CalculatorConfig. Every value is
+ * sanity-checked and falls back to the default individually, so a bad value
+ * can never break the public calculator.
+ */
+export function calculatorConfigFromRow(row: CalculatorSettingsRow | null | undefined): CalculatorConfig {
+  const d = DEFAULT_CALCULATOR_CONFIG;
+  if (!row) return d;
+  const method = (["average", "low_voltage", "high_voltage", "custom"] as const).find((m) => m === row.not_sure_method) ?? d.notSureMethod;
+  const customRate = row.not_sure_custom_rate == null ? null : inRange(row.not_sure_custom_rate, 0.01, 100, NaN);
+  let minimumBill = inRange(row.min_monthly_bill, 1, 100_000_000, d.minimumBill);
+  let maximumBill = inRange(row.max_monthly_bill, 1, 100_000_000, d.maximumBill);
+  if (maximumBill <= minimumBill) {
+    minimumBill = d.minimumBill;
+    maximumBill = d.maximumBill;
+  }
+  const verified = row.export_credit_verified === true && !!row.export_credit_source?.trim();
+  return {
+    rates: {
+      residential: inRange(row.residential_rate, 0.01, 100, d.rates.residential),
+      lowVoltage: inRange(row.low_voltage_rate, 0.01, 100, d.rates.lowVoltage),
+      highVoltage: inRange(row.high_voltage_rate, 0.01, 100, d.rates.highVoltage),
+    },
+    rateSource: row.rate_source?.trim() || d.rateSource,
+    rateBillingPeriod: row.rate_billing_period?.trim() || null,
+    ratesUpdatedOn: /^\d{4}-\d{2}-\d{2}$/.test(row.rates_updated_on ?? "") ? row.rates_updated_on : null,
+    notSureMethod: method === "custom" && !Number.isFinite(customRate) ? "average" : method,
+    notSureCustomRate: Number.isFinite(customRate) ? customRate : null,
+    peakSunHours: inRange(row.peak_sun_hours, 1, 10, d.peakSunHours),
+    systemEfficiency: inRange(row.system_efficiency, 0.5, 1, d.systemEfficiency),
+    panelWattage: inRange(row.panel_wattage, 100, 1000, d.panelWattage),
+    coverage: {
+      low: inRange(row.coverage_low, 0.1, 1.2, d.coverage.low),
+      medium: inRange(row.coverage_medium, 0.1, 1.2, d.coverage.medium),
+      high: inRange(row.coverage_high, 0.1, 1.2, d.coverage.high),
+    },
+    minimumBill,
+    maximumBill,
+    maxBillReductionShare: inRange(row.max_bill_reduction_share, 0.1, 1, d.maxBillReductionShare),
+    exportCreditRatio: inRange(row.export_credit_ratio, 0, 1.5, d.exportCreditRatio),
+    exportCreditVerified: verified,
+    exportCreditSource: row.export_credit_source?.trim() || null,
+    disclaimer: row.disclaimer && row.disclaimer.trim().length >= 20 ? row.disclaimer.trim() : d.disclaimer,
+  };
+}
+
+/** "7 October 2026" style label for an ISO date, or null. */
+export function formatIsoDate(iso: string | null) {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+  const date = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleDateString("en-PH", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+}
+
+/** Fixed engineering constants (not owner-editable). */
 export const calculatorAssumptions = {
-  // Electricity rates per consumer type live in POWER_RATES above.
-  /** Average daily peak sun hours for the area. */
-  peakSunHours: 4.5,
-  /** Share of rated output delivered after losses (heat, wiring, inverter, dust). */
-  systemEfficiency: 0.8,
-  /** Approximate wattage of one solar panel (W). */
-  panelWattage: 580,
   /** Days used for monthly figures. */
   daysPerMonth: 30,
-  /**
-   * Value of exported (net-metered) energy relative to the retail rate.
-   * UNVERIFIED — OWNER APPROVAL REQUIRED: placeholder until an official NORECO
-   * net-metering credit reference is available. The published retail rates do
-   * not confirm how exported energy is credited.
-   */
-  exportCreditRatio: 0.5,
-  /** Flag shown in the UI while exportCreditRatio is not confirmed. */
-  exportCreditVerified: false,
-  /** Bills never drop to zero (fixed/minimum charges); cap the estimated reduction at this share of the bill. */
-  maxBillReductionShare: 0.85,
   /** Low end of generation range accounts for weather and seasonal variation. */
   generationVariability: 0.15,
   /** System sizes are rounded to these steps (kW), depending on system size. */
@@ -112,17 +263,11 @@ export const calculatorAssumptions = {
   minSystemKw: 1,
   /** ± spread applied to the ideal size before rounding to a range. */
   sizeSpread: 0.1,
-  /** Bills outside this range get a message instead of an estimate (₱). */
-  minimumBill: 1_000,
-  maximumBill: 500_000,
   /** Peso amounts in results are rounded to this step. */
   pesoRoundingStep: 50,
   /** Common battery capacities (kWh) used to suggest a battery option. */
   standardBatteriesKwh: [2.4, 5, 10, 15, 20, 30],
 } as const;
-
-export const CALCULATOR_DISCLAIMER =
-  "This calculator provides an initial estimate only. Actual system size, solar generation and savings depend on electricity usage, roof orientation, shading, equipment efficiency, weather, utility rates, site conditions and net-metering approval.";
 
 /* ----------------------------- input options ----------------------------- */
 
@@ -135,20 +280,16 @@ export const daytimeUsageOptions = {
     hint: "Most electricity is used in the evening or at night",
     /** Share of daily use that happens while the sun is up. */
     daytimeShare: 0.3,
-    /** Share of monthly usage the system is sized to cover. */
-    coverage: 0.6,
   },
   medium: {
     label: "Medium",
     hint: "Usage is spread through the day and evening",
     daytimeShare: 0.5,
-    coverage: 0.75,
   },
   high: {
     label: "High",
     hint: "Most electricity is used during the day",
     daytimeShare: 0.7,
-    coverage: 0.9,
   },
 } as const;
 export type DaytimeUsage = keyof typeof daytimeUsageOptions;
@@ -234,17 +375,16 @@ export type CalculatorOutcome =
 /* ------------------------------- validation ------------------------------ */
 
 /** Validates the bill field. Returns an error message, or null when valid. */
-export function validateBill(raw: string): string | null {
-  const a = calculatorAssumptions;
+export function validateBill(raw: string, config: CalculatorConfig = DEFAULT_CALCULATOR_CONFIG): string | null {
   if (!raw.trim()) return "Please enter your average monthly electricity bill.";
   if (raw.includes("-") || raw.includes("−")) return "The bill amount must be greater than zero.";
   const amount = parseBillAmount(raw);
   if (amount === null) return "Please enter the amount as a number, e.g. 5,000.";
   if (amount <= 0) return "The bill amount must be greater than zero.";
-  if (amount < a.minimumBill)
-    return `Please enter a bill of at least ${formatPeso(a.minimumBill)} for an estimate. For smaller bills, contact us to discuss options.`;
-  if (amount > a.maximumBill)
-    return `For bills above ${formatPeso(a.maximumBill)}, please request a site assessment for an accurate estimate.`;
+  if (amount < config.minimumBill)
+    return `Please enter a bill of at least ${formatPeso(config.minimumBill)} for an estimate. For smaller bills, contact us to discuss options.`;
+  if (amount > config.maximumBill)
+    return `For bills above ${formatPeso(config.maximumBill)}, please request a site assessment for an accurate estimate.`;
   return null;
 }
 
@@ -267,16 +407,25 @@ function standardBattery(requiredKwh: number) {
 }
 
 /** Monthly bill reduction (₱) for a given monthly generation. */
-function billReductionFor(generationKwh: number, monthlyUsageKwh: number, selfShare: number, bill: number, ratePerKwh: number) {
-  const a = calculatorAssumptions;
+function billReductionFor(
+  generationKwh: number,
+  monthlyUsageKwh: number,
+  selfShare: number,
+  bill: number,
+  ratePerKwh: number,
+  config: CalculatorConfig,
+) {
   const selfUsedKwh = Math.min(generationKwh * selfShare, monthlyUsageKwh);
   const exportedKwh = Math.max(generationKwh - selfUsedKwh, 0);
-  const value = selfUsedKwh * ratePerKwh + exportedKwh * ratePerKwh * a.exportCreditRatio;
-  return Math.min(value, bill * a.maxBillReductionShare);
+  const value = selfUsedKwh * ratePerKwh + exportedKwh * ratePerKwh * config.exportCreditRatio;
+  return Math.min(value, bill * config.maxBillReductionShare);
 }
 
-export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcome {
-  const error = validateBill(input.monthlyBill);
+export function calculateSolarEstimate(
+  input: CalculatorInput,
+  config: CalculatorConfig = DEFAULT_CALCULATOR_CONFIG,
+): CalculatorOutcome {
+  const error = validateBill(input.monthlyBill, config);
   if (error) return { ok: false, error };
 
   const a = calculatorAssumptions;
@@ -285,12 +434,13 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
   const battery = batteryOptions[input.battery] ?? batteryOptions.none;
 
   // 1. Bill → monthly usage, using the rate for this consumer type
-  const rate = getAppliedRate(input.propertyType, input.commercialRate);
+  const rate = getAppliedRate(input.propertyType, input.commercialRate, config);
   const monthlyUsageKwh = bill / rate.ratePerKwh;
 
   // 2. Size the system to cover a share of usage
-  const kwhPerKwPerMonth = a.peakSunHours * a.daysPerMonth * a.systemEfficiency;
-  const idealKw = (monthlyUsageKwh * usage.coverage) / kwhPerKwPerMonth;
+  const kwhPerKwPerMonth = config.peakSunHours * a.daysPerMonth * config.systemEfficiency;
+  const coverage = config.coverage[input.daytimeUsage] ?? config.coverage.medium;
+  const idealKw = (monthlyUsageKwh * coverage) / kwhPerKwPerMonth;
   const step = sizeStepFor(idealKw);
   let lowKw = Math.max(floorTo(idealKw * (1 - a.sizeSpread), step), a.minSystemKw);
   let highKw = Math.max(ceilTo(idealKw * (1 + a.sizeSpread), step), a.minSystemKw);
@@ -300,8 +450,8 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
 
   // 3. Panels and generation
   const panelCount = {
-    low: Math.ceil((lowKw * 1000) / a.panelWattage),
-    high: Math.ceil((highKw * 1000) / a.panelWattage),
+    low: Math.ceil((lowKw * 1000) / config.panelWattage),
+    high: Math.ceil((highKw * 1000) / config.panelWattage),
   };
   const monthlyGenerationKwh = {
     low: lowKw * kwhPerKwPerMonth * (1 - a.generationVariability),
@@ -310,8 +460,8 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
 
   // 4. Bill reduction range
   const selfShare = clamp(usage.daytimeShare + battery.selfConsumptionBoost, 0, 0.95);
-  const reductionLow = billReductionFor(monthlyGenerationKwh.low, monthlyUsageKwh, selfShare, bill, rate.ratePerKwh);
-  const reductionHigh = billReductionFor(monthlyGenerationKwh.high, monthlyUsageKwh, selfShare, bill, rate.ratePerKwh);
+  const reductionLow = billReductionFor(monthlyGenerationKwh.low, monthlyUsageKwh, selfShare, bill, rate.ratePerKwh, config);
+  const reductionHigh = billReductionFor(monthlyGenerationKwh.high, monthlyUsageKwh, selfShare, bill, rate.ratePerKwh, config);
   const billReduction = {
     low: floorTo(reductionLow, a.pesoRoundingStep),
     high: Math.max(ceilTo(reductionHigh, a.pesoRoundingStep), floorTo(reductionLow, a.pesoRoundingStep)),
@@ -364,6 +514,11 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
   }
   if (!hasBattery) {
     notes.push("Net-metering credits depend on approval by your electric cooperative.");
+  }
+  if (!config.exportCreditVerified) {
+    notes.push(
+      "The bill reduction range includes an unverified assumption about how exported solar energy is credited under net metering.",
+    );
   }
 
   const result: CalculatorResult = {
@@ -424,20 +579,53 @@ export function toQuoteParams(input: CalculatorInput, result: CalculatorResult) 
     ...(input.propertyType === "Commercial" ? { rate: input.commercialRate } : {}),
     size: `${result.systemSizeKw.low}-${result.systemSizeKw.high}`,
     battery: input.battery,
+    daytime: input.daytimeUsage,
   });
+  if (input.appliances.length > 0) params.set("appliances", input.appliances.join(","));
   return params.toString();
 }
 
+/** Calculator inputs carried with a quote request (re-validated on the server). */
+export type CalculatorQuoteInput = {
+  propertyType: CalcPropertyType;
+  commercialRate: CommercialRateChoice;
+  daytimeUsage: DaytimeUsage;
+  appliances: Appliance[];
+  battery: BatteryPreference;
+};
+
+/** Validates untrusted calculator inputs (from a URL or a request body). */
+export function parseCalculatorQuoteInput(raw: unknown): CalculatorQuoteInput | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  const propertyType = propertyTypeOptions.find((p) => p === r.propertyType);
+  const daytimeUsage = typeof r.daytimeUsage === "string" && r.daytimeUsage in daytimeUsageOptions ? (r.daytimeUsage as DaytimeUsage) : null;
+  const battery = typeof r.battery === "string" && r.battery in batteryOptions ? (r.battery as BatteryPreference) : null;
+  if (!propertyType || !daytimeUsage || !battery) return null;
+  const commercialRate =
+    propertyType === "Commercial" && typeof r.commercialRate === "string" && r.commercialRate in commercialRateOptions
+      ? (r.commercialRate as CommercialRateChoice)
+      : "notSure";
+  const appliances = Array.isArray(r.appliances)
+    ? [...new Set(r.appliances.filter((a): a is Appliance => typeof a === "string" && a in applianceOptions))]
+    : [];
+  return { propertyType, commercialRate, daytimeUsage, appliances, battery };
+}
+
 /**
- * Reads calculator parameters from a URL and maps them to quote-form values.
- * Every value is re-validated (URLs can be edited by anyone); unknown or
- * malformed values are ignored. Returns null when nothing usable is present.
+ * Reads calculator parameters from a URL and maps them to quote-form values
+ * plus the calculator inputs to send with the request. Every value is
+ * re-validated (URLs can be edited by anyone); unknown values are ignored.
+ * Returns null when nothing usable is present.
  */
-export function quotePrefillFromParams(params: URLSearchParams): Partial<QuoteRequest> | null {
+export function quotePrefillFromParams(
+  params: URLSearchParams,
+  config: CalculatorConfig = DEFAULT_CALCULATOR_CONFIG,
+): { values: Partial<QuoteRequest>; calculator: CalculatorQuoteInput | null } | null {
   const prefill: Partial<QuoteRequest> = {};
 
   const billRaw = params.get("bill") ?? "";
-  if (/^\d{1,9}$/.test(billRaw) && validateBill(billRaw) === null) {
+  if (/^\d{1,9}$/.test(billRaw) && validateBill(billRaw, config) === null) {
     prefill.monthlyBill = Number(billRaw).toLocaleString("en-PH");
   }
 
@@ -468,5 +656,14 @@ export function quotePrefillFromParams(params: URLSearchParams): Partial<QuoteRe
     prefill.message = `${parts[0]} ${parts.slice(1).join("; ")}. I'd like an exact site assessment.`;
   }
 
-  return Object.keys(prefill).length > 0 ? prefill : null;
+  const calculator = parseCalculatorQuoteInput({
+    propertyType,
+    commercialRate: rateChoice ?? "notSure",
+    daytimeUsage: params.get("daytime"),
+    battery,
+    appliances: (params.get("appliances") ?? "").split(",").filter(Boolean).slice(0, 12),
+  });
+
+  if (Object.keys(prefill).length === 0 && !calculator) return null;
+  return { values: prefill, calculator };
 }

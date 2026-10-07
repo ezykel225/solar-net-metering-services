@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig } from "./site";
+import type { SiteSettings } from "./site-settings";
 
 type PageMetadataInput = {
   title: string;
@@ -40,17 +41,18 @@ export function buildMetadata({ title, description, path, image }: PageMetadataI
 }
 
 /** LocalBusiness structured data (JSON-LD) rendered in the root layout. */
-export function localBusinessJsonLd(areaServed: string[] = []) {
+export function localBusinessJsonLd(settings: SiteSettings, areaServed: string[] = []) {
   return {
     "@context": "https://schema.org",
     "@type": "HomeAndConstructionBusiness",
-    name: siteConfig.name,
+    name: settings.name,
     description: siteConfig.description,
     url: siteConfig.url,
     image: `${siteConfig.url}${siteConfig.ogImage}`,
-    telephone: siteConfig.contact.phoneIntl,
-    email: siteConfig.contact.email,
-    sameAs: [siteConfig.social.facebook],
+    telephone: settings.phoneIntl,
+    email: settings.email,
+    sameAs: [settings.facebook],
+    ...(settings.address && { address: settings.address }),
     knowsAbout: ["Solar installation", "Hybrid solar systems", "Battery storage", "Net metering", "Solar street lights"],
     ...(areaServed.length > 0 && { areaServed }),
   };

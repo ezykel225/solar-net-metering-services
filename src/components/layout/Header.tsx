@@ -3,18 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { mainNav, QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
-import { siteConfig } from "@/lib/site";
+import { mainNav, QUOTE_HREF } from "@/data/navigation";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
 import { Logo } from "./Logo";
 import styles from "./Header.module.css";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
 export function Header() {
+  const settings = useSiteSettings();
   const pathname = usePathname();
   // The menu is tied to the page it was opened on, so any navigation
   // (nav link, logo, browser back) closes it automatically.
@@ -73,23 +74,23 @@ export function Header() {
           </p>
           <ul className={styles.topbarLinks}>
             <li>
-              <a href={siteConfig.contact.phoneHref}>
-                <Icon name="phone" size={15} /> {siteConfig.contact.phone}
+              <a href={settings.phoneHref}>
+                <Icon name="phone" size={15} /> {settings.phone}
               </a>
             </li>
             <li>
-              <a href={`mailto:${siteConfig.contact.email}`}>
-                <Icon name="mail" size={15} /> {siteConfig.contact.email}
+              <a href={`mailto:${settings.email}`}>
+                <Icon name="mail" size={15} /> {settings.email}
               </a>
             </li>
             <li>
-              <a href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+              <a href={settings.messenger} target="_blank" rel="noopener noreferrer">
                 <Icon name="messenger" size={15} /> Message Us
                 <span className="sr-only"> on Facebook Messenger (opens in a new tab)</span>
               </a>
             </li>
             <li>
-              <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook page (opens in a new tab)">
+              <a href={settings.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook page (opens in a new tab)">
                 <Icon name="facebook" size={15} />
               </a>
             </li>
@@ -128,7 +129,7 @@ export function Header() {
 
         <div className={styles.actions}>
           <ButtonLink href={QUOTE_HREF} size="sm" className={styles.quoteBtn}>
-            {QUOTE_CTA}
+            {settings.quoteCopy.cta}
           </ButtonLink>
           <button
             ref={toggleRef}
@@ -163,14 +164,14 @@ export function Header() {
           </ul>
           <div className={styles.mobileCta}>
             <ButtonLink href={QUOTE_HREF} block onClick={closeMenu}>
-              {QUOTE_CTA}
+              {settings.quoteCopy.cta}
             </ButtonLink>
-            <a className="btn btn--secondary btn--block" href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+            <a className="btn btn--secondary btn--block" href={settings.messenger} target="_blank" rel="noopener noreferrer">
               <Icon name="messenger" size={18} /> Message Us on Messenger
               <span className="sr-only"> (opens in a new tab)</span>
             </a>
-            <a className="btn btn--secondary btn--block" href={siteConfig.contact.phoneHref}>
-              <Icon name="phone" size={18} /> Call {siteConfig.contact.phone}
+            <a className="btn btn--secondary btn--block" href={settings.phoneHref}>
+              <Icon name="phone" size={18} /> Call {settings.phone}
             </a>
           </div>
         </nav>

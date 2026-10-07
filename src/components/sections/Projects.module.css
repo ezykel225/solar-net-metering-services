@@ -181,3 +181,12 @@
     aspect-ratio: 21 / 9;
   }
 }
+
+/* Card without an image yet */
+.noImage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #9aa6b8;
+}

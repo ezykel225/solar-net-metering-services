@@ -7,6 +7,8 @@ export type Testimonial = {
   name: string;
   /** Only add a role/location if confirmed by the client. */
   detail?: string;
+  /** Optional customer photo URL (with the customer's permission). */
+  image?: string | null;
 };
 
 /**

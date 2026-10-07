@@ -7,13 +7,19 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <article className={styles.card}>
       <div className={styles.imageWrap}>
-        <Image
-          src={project.image}
-          alt={project.imageAlt}
-          fill
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className={styles.image}
-        />
+        {project.image ? (
+          <Image
+            src={project.image}
+            alt={project.imageAlt}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className={styles.image}
+          />
+        ) : (
+          <span className={styles.noImage} aria-hidden="true">
+            <Icon name="panel" size={40} />
+          </span>
+        )}
         {project.tags.length > 0 ? (
           <ul className={styles.tags} aria-label="Project type">
             {project.tags.map((tag, i) => (
@@ -23,16 +29,18 @@ export function ProjectCard({ project }: { project: Project }) {
             ))}
           </ul>
         ) : null}
-        {project.imageIsIllustration ? (
+        {project.image && project.imageIsIllustration ? (
           <span className={styles.illustration}>Illustration · project photo coming soon</span>
         ) : null}
       </div>
       <div className={styles.body}>
         <h3>{project.title}</h3>
         <p className={styles.meta}>
-          <span>
-            <Icon name="mapPin" size={16} /> {project.location}
-          </span>
+          {project.location ? (
+            <span>
+              <Icon name="mapPin" size={16} /> {project.location}
+            </span>
+          ) : null}
           {project.system ? (
             <span>
               <Icon name="bolt" size={16} /> {project.system}

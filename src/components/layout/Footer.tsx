@@ -1,14 +1,16 @@
 import Link from "next/link";
-import { mainNav, QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
-import { services } from "@/data/services";
+import { mainNav, QUOTE_HREF } from "@/data/navigation";
 import { siteConfig } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { EmailText } from "@/components/ui/EmailText";
 import { Icon } from "@/components/ui/Icon";
 import { Logo } from "./Logo";
 import styles from "./Footer.module.css";
+import { getServices, getSiteSettings } from "@/lib/cms";
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSiteSettings();
+  const { data: services } = await getServices();
   const year = new Date().getFullYear();
   return (
     <footer className={styles.footer}>
@@ -16,18 +18,18 @@ export function Footer() {
         <div className={styles.brand}>
           <Logo onDark />
           <p>
-            {siteConfig.description} {siteConfig.serviceAreaSummary}
+            {siteConfig.description} {settings.serviceAreaSummary}
           </p>
           <ul className={styles.socialList}>
             <li>
-              <a className={styles.social} href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer">
+              <a className={styles.social} href={settings.facebook} target="_blank" rel="noopener noreferrer">
                 <Icon name="facebook" size={18} />
                 Follow us on Facebook
                 <span className="sr-only"> (opens in a new tab)</span>
               </a>
             </li>
             <li>
-              <a className={styles.social} href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
+              <a className={styles.social} href={settings.messenger} target="_blank" rel="noopener noreferrer">
                 <Icon name="messenger" size={18} />
                 Message us on Messenger
                 <span className="sr-only"> (opens in a new tab)</span>
@@ -63,27 +65,27 @@ export function Footer() {
           <ul className={styles.contact}>
             <li>
               <Icon name="phone" size={18} />
-              <a href={siteConfig.contact.phoneHref}>{siteConfig.contact.phone}</a>
+              <a href={settings.phoneHref}>{settings.phone}</a>
             </li>
             <li>
               <Icon name="mail" size={18} />
-              <a href={`mailto:${siteConfig.contact.email}`}>
-                <EmailText email={siteConfig.contact.email} />
+              <a href={`mailto:${settings.email}`}>
+                <EmailText email={settings.email} />
               </a>
             </li>
             <li>
               <Icon name="mapPin" size={18} />
-              <span>{siteConfig.contact.address ?? siteConfig.serviceAreaShort}</span>
+              <span>{settings.address ?? settings.serviceAreaShort}</span>
             </li>
-            {siteConfig.contact.hours ? (
+            {settings.hours ? (
               <li>
                 <Icon name="clock" size={18} />
-                <span>{siteConfig.contact.hours}</span>
+                <span>{settings.hours}</span>
               </li>
             ) : null}
           </ul>
           <ButtonLink href={QUOTE_HREF} size="sm" className={styles.cta}>
-            {QUOTE_CTA}
+            {settings.quoteCopy.cta}
           </ButtonLink>
         </div>
       </div>
@@ -91,7 +93,10 @@ export function Footer() {
       <div className={styles.bottom}>
         <div className={`container ${styles.bottomInner}`}>
           <p>
-            © {year} {siteConfig.name}. All rights reserved.
+            © {year} {settings.name}. All rights reserved.
+          </p>
+          <p>
+            <Link href="/privacy">Privacy Policy</Link>
           </p>
           <p>Clean energy for homes and businesses.</p>
         </div>

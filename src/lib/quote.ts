@@ -86,18 +86,30 @@ export function validateQuoteRequest(data: QuoteRequest): QuoteErrors {
   return errors;
 }
 
-export type SubmitResult = { ok: true } | { ok: false; error: string };
+export type SubmitResult =
+  | { ok: true }
+  | { ok: false; error: string; fieldErrors?: QuoteErrors; consentError?: string; kind?: "validation" | "rate_limited" | "unavailable" | "error" };
 
 /* -------------------------------------------------------------------------
- * Database mapping (prepared for Supabase, not connected yet).
- * Mirrors the `quote_requests` table in docs/QUOTE_SUBMISSION_PLAN.md.
+ * Database mapping — mirrors public.quote_requests
+ * (supabase/migrations/20261007090000_cms_schema.sql).
  * ---------------------------------------------------------------------- */
 
-/** Lead pipeline statuses. New rows always start as "new" (database default). */
-export const quoteStatuses = ["new", "contacted", "quoted", "won", "lost", "spam"] as const;
-export type QuoteStatus = (typeof quoteStatuses)[number];
+/** Quote pipeline statuses, in order. New rows start as "new" (database default). */
+export const quoteStatuses = [
+  { value: "new", label: "New" },
+  { value: "contacted", label: "Contacted" },
+  { value: "site_assessment_scheduled", label: "Site Assessment Scheduled" },
+  { value: "quotation_sent", label: "Quotation Sent" },
+  { value: "approved", label: "Approved" },
+  { value: "completed", label: "Completed" },
+  { value: "closed", label: "Closed" },
+] as const;
+export type QuoteStatus = (typeof quoteStatuses)[number]["value"];
+export const isQuoteStatus = (v: unknown): v is QuoteStatus => quoteStatuses.some((s) => s.value === v);
+export const quoteStatusLabel = (v: string) => quoteStatuses.find((s) => s.value === v)?.label ?? v;
 
-/** Columns the website inserts. id, status and created_at are filled in by the database. */
+/** Customer-submitted columns the website inserts. */
 export type QuoteRequestInsert = {
   full_name: string;
   phone_number: string;
@@ -107,13 +119,6 @@ export type QuoteRequestInsert = {
   monthly_electric_bill: number;
   service_needed: string;
   message: string | null;
-};
-
-/** A full row as stored in the database. */
-export type QuoteRequestRow = QuoteRequestInsert & {
-  id: string;
-  status: QuoteStatus;
-  created_at: string;
 };
 
 /**
@@ -136,31 +141,53 @@ export function toQuoteRequestInsert(data: QuoteRequest): QuoteRequestInsert {
   };
 }
 
+/** Body sent from the browser to /api/quote. Everything is re-validated on the server. */
+export type QuoteSubmission = {
+  values: QuoteRequest;
+  privacyConsent: boolean;
+  /** Honeypot field: must be empty. */
+  website: string;
+  /** Solar Calculator inputs, when the visitor came from the calculator. */
+  calculator?: unknown;
+  /** Page the form was sent from, e.g. "/contact". */
+  sourcePage?: string;
+};
+
 /**
- * Sends a quote request.
- *
- * PHASE 1: no backend — this simulates a network request so the success
- * state can be demonstrated. Nothing is stored or sent anywhere.
- *
- * PHASE 2 (planned, see docs/QUOTE_SUBMISSION_PLAN.md): this body becomes a
- * POST to the server route /api/quote, which validates again, maps with
- * toQuoteRequestInsert() and inserts into Supabase using a server-only key.
- * The browser never talks to Supabase directly.
- *
- *   const res = await fetch("/api/quote", {
- *     method: "POST",
- *     headers: { "Content-Type": "application/json" },
- *     body: JSON.stringify(data),
- *   });
- *   return res.ok ? { ok: true } : { ok: false, error: "Something went wrong. Please try again or call us." };
- *
- * The form component only depends on this function's signature.
+ * Sends a quote request to the server route /api/quote, which validates again,
+ * inserts into Supabase with a server-only key and notifies the owner.
+ * The browser never talks to the database directly.
  */
-export async function submitQuoteRequest(data: QuoteRequest): Promise<SubmitResult> {
-  const errors = validateQuoteRequest(data);
-  if (Object.keys(errors).length > 0) {
-    return { ok: false, error: "Please correct the highlighted fields." };
+export async function submitQuoteRequest(submission: QuoteSubmission): Promise<SubmitResult> {
+  const fieldErrors = validateQuoteRequest(submission.values);
+  if (Object.keys(fieldErrors).length > 0) {
+    return { ok: false, kind: "validation", error: "Please correct the highlighted fields.", fieldErrors };
   }
-  await new Promise((resolve) => setTimeout(resolve, 900));
-  return { ok: true };
+  try {
+    const res = await fetch("/api/quote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(submission),
+    });
+    if (res.ok) return { ok: true };
+    const body = (await res.json().catch(() => ({}))) as { error?: string; fieldErrors?: QuoteErrors; consentError?: string };
+    if (res.status === 400) {
+      return {
+        ok: false,
+        kind: "validation",
+        error: body.error ?? "Please correct the highlighted fields.",
+        fieldErrors: body.fieldErrors,
+        consentError: body.consentError,
+      };
+    }
+    if (res.status === 429) {
+      return { ok: false, kind: "rate_limited", error: body.error ?? "Too many requests. Please wait a few minutes and try again." };
+    }
+    if (res.status === 503) {
+      return { ok: false, kind: "unavailable", error: body.error ?? "Online quote requests are temporarily unavailable." };
+    }
+    return { ok: false, kind: "error", error: "Something went wrong while sending your request." };
+  } catch {
+    return { ok: false, kind: "error", error: "We couldn't reach the server. Please check your connection and try again." };
+  }
 }
