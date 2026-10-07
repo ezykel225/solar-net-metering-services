@@ -619,6 +619,11 @@
   gap: 1.25rem;
 }
 
+/* Let cards shrink to the screen; wide content (preview table) scrolls inside its box. */
+.form > * {
+  min-width: 0;
+}
+
 .formGrid {
   display: grid;
   gap: 1.1rem 1.25rem;
@@ -661,7 +666,7 @@
   width: 100%;
   min-height: 44px;
   padding: 0.6rem 0.8rem;
-  border: 1.5px solid #c8d0dc;
+  border: 1.5px solid #848e9f; /* 3.3:1 on white */
   border-radius: 8px;
   background: var(--color-white);
   color: var(--color-navy);
@@ -768,7 +773,7 @@ textarea.input {
   display: grid;
   place-items: center;
   height: 100%;
-  color: #9aa6b8;
+  color: var(--color-text-muted);
   font-size: 0.85rem;
 }
 
@@ -990,6 +995,7 @@ textarea.input {
 }
 
 .previewBox {
+  overflow-x: auto;
   padding: 1rem;
   border-radius: 10px;
   background: var(--color-bg-soft);

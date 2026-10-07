@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "How Solar Net Metering Services handles the information you share through this website.",
   alternates: { canonical: "/privacy" },
+  openGraph: { url: "/privacy" },
   robots: { index: false, follow: true },
 };
 

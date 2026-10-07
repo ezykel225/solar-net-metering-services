@@ -8,7 +8,14 @@ type Props = {
   help?: ReactNode;
   full?: boolean;
   required?: boolean;
-  children: (props: { id: string; name: string; "aria-invalid"?: boolean; "aria-describedby"?: string; className: string }) => ReactNode;
+  children: (props: {
+    id: string;
+    name: string;
+    "aria-invalid"?: boolean;
+    "aria-describedby"?: string;
+    "aria-required"?: boolean;
+    className: string;
+  }) => ReactNode;
 };
 
 /** Labelled form control with help text and an error message. */
@@ -20,7 +27,14 @@ export function SettingsField({ name, label, error, help, full, required, childr
       <label htmlFor={id} className={styles.label}>
         {label} {required ? <span className={styles.required} aria-hidden="true">*</span> : null}
       </label>
-      {children({ id, name, "aria-invalid": error ? true : undefined, "aria-describedby": describedBy, className: styles.input })}
+      {children({
+        id,
+        name,
+        "aria-invalid": error ? true : undefined,
+        "aria-describedby": describedBy,
+        "aria-required": required || undefined,
+        className: styles.input,
+      })}
       {help ? (
         <p id={`${id}-help`} className={styles.hint}>
           {help}

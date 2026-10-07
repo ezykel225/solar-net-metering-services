@@ -2,7 +2,7 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { signOutAction } from "@/app/admin/actions/auth";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import styles from "./admin.module.css";
@@ -41,17 +41,39 @@ export function AdminShell({ email, newQuotes, children }: { email: string | nul
   const open = openOn === pathname;
   const title = adminNav.slice().reverse().find((n) => isCurrent(pathname, n.href))?.label ?? "Admin";
 
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  const closeMenu = () => {
+    setOpenOn(null);
+    menuButtonRef.current?.focus();
+  };
+
+  // Mobile menu open: move focus into it, keep the page content behind it out of reach, close on Escape.
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenOn(null);
+    const main = mainRef.current;
+    if (main) main.inert = true;
+    sidebarRef.current?.querySelector<HTMLElement>("a[href], button")?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpenOn(null);
+      menuButtonRef.current?.focus();
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    return () => {
+      if (main) main.inert = false;
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
   return (
     <div className={styles.shell}>
-      {open ? <button type="button" className={styles.backdrop} aria-label="Close menu" onClick={() => setOpenOn(null)} /> : null}
-      <aside id="admin-sidebar" className={`${styles.sidebar} ${open ? styles.sidebarOpen : ""}`} aria-label="Admin">
+      <a href="#admin-main" className="skip-link">
+        Skip to content
+      </a>
+      {open ? <button type="button" className={styles.backdrop} aria-label="Close menu" onClick={closeMenu} /> : null}
+      <aside ref={sidebarRef} id="admin-sidebar" className={`${styles.sidebar} ${open ? styles.sidebarOpen : ""}`} aria-label="Admin">
         <Link href="/admin" className={styles.brand}>
           <span className={styles.brandMark}>
             <Icon name="sun" size={20} />
@@ -69,9 +91,12 @@ export function AdminShell({ email, newQuotes, children }: { email: string | nul
                   <Icon name={item.icon} size={18} />
                   {item.label}
                   {item.href === "/admin/quotes" && newQuotes > 0 ? (
-                    <span className={styles.navBadge} aria-label={`${newQuotes} new`}>
-                      {newQuotes}
-                    </span>
+                    <>
+                      <span className={styles.navBadge} aria-hidden="true">
+                        {newQuotes}
+                      </span>
+                      <span className="sr-only">, {newQuotes} new</span>
+                    </>
                   ) : null}
                   <NavPending />
                 </Link>
@@ -91,6 +116,7 @@ export function AdminShell({ email, newQuotes, children }: { email: string | nul
       <div className={styles.main}>
         <header className={styles.topbar}>
           <button
+            ref={menuButtonRef}
             type="button"
             className={styles.menuButton}
             aria-expanded={open}
@@ -108,7 +134,7 @@ export function AdminShell({ email, newQuotes, children }: { email: string | nul
             </Link>
           </div>
         </header>
-        <main id="admin-main" className={styles.content}>
+        <main ref={mainRef} id="admin-main" className={styles.content} tabIndex={-1}>
           {children}
         </main>
       </div>

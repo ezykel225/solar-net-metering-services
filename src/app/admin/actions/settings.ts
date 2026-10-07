@@ -104,8 +104,16 @@ export async function saveCalculatorSettingsAction(_prev: FormState, form: FormD
   if (v.min_monthly_bill != null && v.max_monthly_bill != null && v.max_monthly_bill <= v.min_monthly_bill) {
     errors.max_monthly_bill = "The maximum must be higher than the minimum.";
   }
-  if (v.export_credit_verified && !v.export_credit_source) {
-    errors.export_credit_source = "Add the official source before marking the export credit as verified.";
+  if (v.export_credit_verified && (!v.export_credit_source || /placeholder|not yet confirmed/i.test(v.export_credit_source))) {
+    errors.export_credit_source = "Add the official source (document and date) before marking the export credit as verified.";
+  }
+  if (
+    v.coverage_low != null &&
+    v.coverage_medium != null &&
+    v.coverage_high != null &&
+    !(v.coverage_low <= v.coverage_medium && v.coverage_medium <= v.coverage_high)
+  ) {
+    errors.coverage_medium = "Coverage targets must go up from low to medium to high daytime use.";
   }
   if ((v.export_credit_source?.length ?? 0) > 300) errors.export_credit_source = "Keep this under 300 characters.";
   if (v.disclaimer.length < 20 || v.disclaimer.length > 1000) errors.disclaimer = "The disclaimer must be 20–1000 characters.";

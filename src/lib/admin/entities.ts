@@ -80,7 +80,8 @@ const statusField: FieldDef = {
 };
 
 const PATH_SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const CTA_URL = /^(\/[^\s]*|https:\/\/[^\s]+)$/;
+// Site path ("/contact#quote") or https URL. "//host" and "/\\host" would leave the site, so they are refused.
+const CTA_URL = /^(\/(?![/\\])[^\s]*|https:\/\/[^\s]+)$/;
 
 export const entities: Record<EntityKey, EntityDef> = {
   projects: {
@@ -281,7 +282,7 @@ export const entities: Record<EntityKey, EntityDef> = {
 };
 
 export const entityList = Object.values(entities);
-export const isEntityKey = (v: string): v is EntityKey => v in entities;
+export const isEntityKey = (v: string): v is EntityKey => Object.hasOwn(entities, v);
 
 /** Allowed stored image paths: uploads in the entity folder, or bundled site images. */
 export function isAllowedImagePath(path: string, folder: MediaFolder | undefined) {

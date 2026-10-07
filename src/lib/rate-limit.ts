@@ -25,7 +25,11 @@ export function rateLimit(key: string, limit: number, windowMs: number): { allow
   return { allowed: true, retryAfterSec: 0 };
 }
 
-/** Client IP from standard proxy headers (Vercel sets x-forwarded-for). */
+/**
+ * Client IP. On Vercel, x-vercel-forwarded-for / x-real-ip / x-forwarded-for
+ * are set by the platform (client-supplied values are overwritten).
+ */
 export function clientIp(headers: Headers): string {
-  return headers.get("x-forwarded-for")?.split(",")[0]?.trim() || headers.get("x-real-ip")?.trim() || "unknown";
+  const first = (name: string) => headers.get(name)?.split(",")[0]?.trim();
+  return first("x-vercel-forwarded-for") || first("x-real-ip") || first("x-forwarded-for") || "unknown";
 }

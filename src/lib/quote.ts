@@ -39,15 +39,42 @@ export const emptyQuoteRequest: QuoteRequest = {
  * ("5k", "about 5000/mo"), so the database never stores a misread value.
  */
 export function parseBillAmount(input: string): number | null {
-  // A minus sign anywhere means a negative/invalid amount, never a positive one.
-  if (input.includes("-") || input.includes("−")) return null;
+  // Any kind of dash or minus sign means a negative/invalid amount, never a positive one.
+  if (/[\p{Pd}\u2212\uFE63\uFF0D]/u.test(input)) return null;
   const cleaned = input
     .trim()
-    .replace(/^[^\d\p{L}]+/u, "") // leading currency symbol, e.g. ₱ $ €
-    .replace(/[\s,]/g, ""); // thousands separators and spaces
-  if (!/^\d{1,9}(\.\d{1,2})?$/.test(cleaned)) return null;
-  return Number(cleaned);
+    .replace(/^(?:₱|PHP|\$)\s*/i, "") // optional currency prefix: ₱, PHP or $
+    .replace(/\s/g, "");
+  // Commas only as thousands separators ("5,000", "12,500.50"), never "5,0,0,0".
+  if (!/^(\d{1,3}(,\d{3})+|\d+)(\.\d{1,2})?$/.test(cleaned)) return null;
+  const plain = cleaned.replace(/,/g, "");
+  if (!/^\d{1,9}(\.\d{1,2})?$/.test(plain)) return null;
+  return Number(plain);
 }
+
+/** Control characters (except tab/newline in the message) are never valid input. */
+const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+
+/**
+ * Removes control characters and line breaks from single-line fields.
+ * Run on the server before validating so stored values are always clean.
+ */
+export function sanitizeQuoteRequest(data: QuoteRequest): QuoteRequest {
+  const line = (s: string) => s.replace(CONTROL_CHARS, "").replace(/[\r\n\u2028\u2029\t]+/g, " ");
+  return {
+    fullName: line(data.fullName),
+    phone: line(data.phone),
+    email: line(data.email),
+    location: line(data.location),
+    propertyType: line(data.propertyType),
+    monthlyBill: line(data.monthlyBill),
+    service: line(data.service),
+    message: data.message.replace(CONTROL_CHARS, "").replace(/\r\n?/g, "\n"),
+  };
+}
+
+/** Length in characters as the database counts them (emoji count as one). */
+const charCount = (s: string) => [...s].length;
 
 /** Maximum lengths; mirrored by CHECK constraints in the planned quote_requests table. */
 export const quoteLimits = {
@@ -58,7 +85,8 @@ export const quoteLimits = {
   message: 2000,
 } as const;
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+// Practical address check: common local-part characters, dotted domain, letter TLD.
+const EMAIL_RE = /^[A-Za-z0-9.!#$%&'*+/=^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*\.[A-Za-z]{2,}$/;
 const PHONE_RE = /^[+()\-.\s\d]{7,20}$/;
 
 /** Returns a map of field → error message. An empty object means valid. */
@@ -66,8 +94,8 @@ export function validateQuoteRequest(data: QuoteRequest): QuoteErrors {
   const errors: QuoteErrors = {};
   const v = (s: string) => s.trim();
 
-  if (v(data.fullName).length < 2) errors.fullName = "Please enter your full name.";
-  else if (v(data.fullName).length > quoteLimits.fullName) errors.fullName = "Please shorten your name.";
+  if (charCount(v(data.fullName)) < 2) errors.fullName = "Please enter your full name.";
+  else if (charCount(v(data.fullName)) > quoteLimits.fullName) errors.fullName = "Please shorten your name.";
   if (!v(data.phone)) errors.phone = "Please enter your phone number.";
   else if (!PHONE_RE.test(v(data.phone)) || v(data.phone).replace(/\D/g, "").length < 7)
     errors.phone = "Please enter a valid phone number.";
@@ -75,13 +103,13 @@ export function validateQuoteRequest(data: QuoteRequest): QuoteErrors {
   else if (!EMAIL_RE.test(v(data.email)) || v(data.email).length > quoteLimits.email)
     errors.email = "Please enter a valid email address, e.g. name@example.com.";
   if (!v(data.location)) errors.location = "Please enter your address or location.";
-  else if (v(data.location).length > quoteLimits.location) errors.location = "Please shorten the address.";
+  else if (charCount(v(data.location)) > quoteLimits.location) errors.location = "Please shorten the address.";
   if (!v(data.propertyType)) errors.propertyType = "Please select a property type.";
   if (!v(data.monthlyBill)) errors.monthlyBill = "Please enter your average monthly bill.";
   else if (parseBillAmount(data.monthlyBill) === null)
     errors.monthlyBill = "Please enter the amount as a number, e.g. 5,000.";
   if (!v(data.service)) errors.service = "Please select a service.";
-  if (data.message.length > quoteLimits.message) errors.message = "Please keep your message under 2,000 characters.";
+  if (charCount(data.message.trim()) > quoteLimits.message) errors.message = "Please keep your message under 2,000 characters.";
 
   return errors;
 }

@@ -60,7 +60,7 @@ export default async function EntityListPage({ params, searchParams }: Params) {
     <>
       <div className={styles.pageHeader}>
         <div>
-          <h1>{def.label}</h1>
+          <h1 tabIndex={-1}>{def.label}</h1>
           <p>{def.description}</p>
         </div>
         <Link href={`/admin/${entity}/new`} className={`${styles.btn} ${styles.btnPrimary} ${styles.btnLarge}`}>

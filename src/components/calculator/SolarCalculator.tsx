@@ -261,7 +261,7 @@ export function SolarCalculator({ config = DEFAULT_CALCULATOR_CONFIG }: { config
                 <ul className={styles.notes}>
                   {result.notes.map((n) => (
                     <li key={n}>
-                      <Icon name="checkCircle" size={16} /> {n}
+                      <Icon name="fileText" size={16} /> {n}
                     </li>
                   ))}
                 </ul>

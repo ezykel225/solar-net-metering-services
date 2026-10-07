@@ -5,6 +5,7 @@ import { saveBusinessSettingsAction } from "@/app/admin/actions/settings";
 import type { FormState } from "@/app/admin/actions/content";
 import { Notice } from "./Notice";
 import { SettingsField } from "./SettingsField";
+import { useFocusFirstError } from "./useFocusFirstError";
 import styles from "./admin.module.css";
 
 export type BusinessSettingsValues = {
@@ -24,13 +25,14 @@ export type BusinessSettingsValues = {
 
 export function BusinessSettingsForm({ initial }: { initial: BusinessSettingsValues }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveBusinessSettingsAction, {});
+  const formRef = useFocusFirstError(state);
   const e = state.errors ?? {};
   // Keep typed values after a failed save (React resets forms after actions).
   const v = { ...initial, ...(state.values as Partial<BusinessSettingsValues> | undefined) };
   const val = (x: string | null | undefined) => x ?? "";
 
   return (
-    <form action={action} className={`${styles.card} ${styles.form}`} noValidate>
+    <form ref={formRef} action={action} className={`${styles.card} ${styles.form}`} noValidate>
       {state.ok && state.message ? <Notice kind="success">{state.message}</Notice> : null}
       {state.error ? <Notice kind="error">{state.error}</Notice> : null}
 

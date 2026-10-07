@@ -26,6 +26,7 @@ Keep the secure defaults:
 | `supabase/migrations/20261007090100_storage_website_media.sql` | `website-media` storage bucket and its policies |
 | `supabase/migrations/20261007090200_seed_confirmed_content.sql` | Confirmed business content (safe to re-run; it never overwrites edits) |
 | `supabase/migrations/20261007090300_revoke_extra_table_privileges.sql` | Removes TRUNCATE/REFERENCES/TRIGGER/MAINTAIN that hosted projects give API roles by default, and locks down Supabase's `rls_auto_enable()` helper |
+| `supabase/migrations/20261007090500_tighten_promotion_cta_url.sql` | Promotion button links: refuses `/\host`-style links that would leave the site |
 | `supabase/migrations/20261007090400_admin_dashboard_stats.sql` | `admin_dashboard_stats()`: all dashboard counts in one request (runs with the caller's permissions, returns nothing to non-admins) |
 
 You can apply them in either of two ways:
@@ -37,12 +38,12 @@ You can apply them in either of two ways:
   ```
 - **Dashboard:** paste each file into **SQL Editor** and run it.
 
-**Status (7 Oct 2026):** all five migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
+**Status (7 Oct 2026):** all six migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
 They were applied with the Supabase MCP tool, so the hosted migration history uses different version numbers than these file names.
 Before using `supabase db push` on that project, mark the files as applied, or the CLI will try to run them again:
 
 ```bash
-supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400
+supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400 20261007090500
 ```
 
 Security check after applying:
@@ -61,6 +62,9 @@ Security check after applying:
    - Use the owner's email and a strong password.
    - Tick **Auto Confirm User**.
    - Never put the password in code, in chat or in this repository.
+5. **Authentication → Sign In / Providers → Anonymous sign-ins:** keep **off**.
+6. **Authentication → Providers → Email → Password security:** turn on **Leaked password protection** (if your plan includes it) and require a strong minimum length.
+7. **Project Settings → JWT Keys:** the current signing key should be asymmetric (ECC P-256 or RSA). If it says "Legacy JWT secret", rotate to an asymmetric key (faster, and the legacy secret can later be revoked).
 
 ### 1.4 Grant admin access (explicit allow-list)
 

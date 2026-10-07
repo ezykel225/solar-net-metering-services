@@ -86,7 +86,7 @@ export function ImageField({ name, label, folder, initialPath, error, help }: Im
       <div className={styles.imageField}>
         <div className={styles.imagePreview}>
           {url ? (
-            <Image src={url} alt="Preview" fill sizes="200px" unoptimized />
+            <Image src={url} alt={`${label} preview`} fill sizes="200px" unoptimized />
           ) : (
             <span className={styles.imagePlaceholder}>No image</span>
           )}
@@ -98,14 +98,17 @@ export function ImageField({ name, label, folder, initialPath, error, help }: Im
             type="file"
             accept="image/jpeg,image/png,image/webp,image/avif"
             className={styles.fileInput}
-            aria-labelledby={`${id}-label`}
+            aria-labelledby={`${id}-btn ${id}-label`}
             aria-describedby={`${id}-help`}
             onChange={(e) => onFile(e.target.files?.[0])}
             disabled={busy}
           />
-          <label htmlFor={`${id}-file`} className={`${styles.btn} ${busy ? styles.disabledLabel : ""}`} aria-hidden="true">
+          <label id={`${id}-btn`} htmlFor={`${id}-file`} className={`${styles.btn} ${busy ? styles.disabledLabel : ""}`}>
             {busy ? "Uploading…" : path ? "Replace image" : "Upload image"}
           </label>
+          <span className="sr-only" role="status">
+            {busy ? "Uploading image…" : ""}
+          </span>
           {path ? (
             <button type="button" className={`${styles.btn} ${styles.btnDanger}`} onClick={() => setPath(null)} disabled={busy}>
               Remove
@@ -190,16 +193,20 @@ export function ImagesField({ name, label, folder, initialPaths, maxItems, error
             multiple
             accept="image/jpeg,image/png,image/webp,image/avif"
             className={styles.fileInput}
-            aria-labelledby={`${id}-label`}
+            aria-labelledby={`${id}-btn ${id}-label`}
+            aria-describedby={`${id}-help`}
             onChange={(e) => onFiles(e.target.files)}
             disabled={busy}
           />
-          <label htmlFor={`${id}-file`} className={styles.btn} aria-hidden="true">
+          <label id={`${id}-btn`} htmlFor={`${id}-file`} className={styles.btn}>
             {busy ? "Uploading…" : "Add images"}
           </label>
+          <span className="sr-only" role="status">
+            {busy ? "Uploading images…" : ""}
+          </span>
         </div>
       ) : null}
-      <p className={styles.hint}>Up to {maxItems} images, 5 MB each. Changes are applied when you save.</p>
+      <p id={`${id}-help`} className={styles.hint}>Up to {maxItems} images, 5 MB each. Changes are applied when you save.</p>
       {message ? (
         <p className={styles.fieldError} role="alert">
           {message}

@@ -16,6 +16,7 @@ import {
 } from "@/lib/solar-calculator";
 import { Notice } from "./Notice";
 import { SettingsField } from "./SettingsField";
+import { useFocusFirstError } from "./useFocusFirstError";
 import styles from "./admin.module.css";
 
 export type CalculatorSettingsValues = CalculatorSettingsRow;
@@ -35,6 +36,7 @@ function rowFromForm(form: HTMLFormElement): CalculatorSettingsRow {
 
 export function CalculatorSettingsForm({ initial }: { initial: CalculatorSettingsValues }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveCalculatorSettingsAction, {});
+  const formRef = useFocusFirstError(state);
   const [previewRow, setPreviewRow] = useState<CalculatorSettingsRow>(initial);
   const [method, setMethod] = useState(String(initial.not_sure_method ?? "average"));
   const [verified, setVerified] = useState(initial.export_credit_verified === true);
@@ -47,7 +49,7 @@ export function CalculatorSettingsForm({ initial }: { initial: CalculatorSetting
   const onChange = (event: FormEvent<HTMLFormElement>) => setPreviewRow(rowFromForm(event.currentTarget));
 
   return (
-    <form action={action} onChange={onChange} className={styles.form} noValidate>
+    <form ref={formRef} action={action} onChange={onChange} className={styles.form} noValidate>
       {state.ok && state.message ? <Notice kind="success">{state.message}</Notice> : null}
       {state.error ? <Notice kind="error">{state.error}</Notice> : null}
 

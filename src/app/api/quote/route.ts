@@ -1,5 +1,13 @@
 import { NextResponse, after } from "next/server";
-import { propertyTypes, serviceOptions, toQuoteRequestInsert, validateQuoteRequest, type QuoteErrors, type QuoteRequest } from "@/lib/quote";
+import {
+  propertyTypes,
+  sanitizeQuoteRequest,
+  serviceOptions,
+  toQuoteRequestInsert,
+  validateQuoteRequest,
+  type QuoteErrors,
+  type QuoteRequest,
+} from "@/lib/quote";
 import {
   calculateSolarEstimate,
   formatPesoRange,
@@ -34,6 +42,38 @@ const json = (status: number, body: Record<string, unknown>, headers?: HeadersIn
 
 const str = (v: unknown, max = 3000) => (typeof v === "string" ? v.slice(0, max) : "");
 
+/** Reads the body as text, stopping as soon as it exceeds the byte limit (also without a Content-Length header). */
+async function readLimited(request: Request, maxBytes: number): Promise<string | "too_large" | null> {
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) {
+        await reader.cancel().catch(() => {});
+        return "too_large";
+      }
+      chunks.push(value);
+    }
+  } catch {
+    return null;
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    bytes.set(c, offset);
+    offset += c.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
+
+/** Keeps an estimate value within its database column range; out-of-range estimates are dropped, not failed. */
+const fits = (n: number | null | undefined, max: number) => (n != null && Number.isFinite(n) && Math.abs(n) < max ? n : null);
+
 export async function POST(request: Request) {
   // 1. Size and content-type checks
   const length = Number(request.headers.get("content-length") ?? 0);
@@ -42,13 +82,9 @@ export async function POST(request: Request) {
     return json(415, { error: "Unsupported request." });
   }
 
-  let raw: string;
-  try {
-    raw = await request.text();
-  } catch {
-    return json(400, { error: "Invalid request." });
-  }
-  if (raw.length > MAX_BODY_BYTES) return json(413, { error: "Request too large." });
+  const raw = await readLimited(request, MAX_BODY_BYTES);
+  if (raw === "too_large") return json(413, { error: "Request too large." });
+  if (raw === null) return json(400, { error: "Invalid request." });
 
   let body: Record<string, unknown>;
   try {
@@ -63,7 +99,7 @@ export async function POST(request: Request) {
   if (str(body.website).trim() !== "") return json(201, { ok: true });
 
   const v = (body.values && typeof body.values === "object" ? body.values : {}) as Record<string, unknown>;
-  const values: QuoteRequest = {
+  const values: QuoteRequest = sanitizeQuoteRequest({
     fullName: str(v.fullName),
     phone: str(v.phone),
     email: str(v.email),
@@ -72,7 +108,7 @@ export async function POST(request: Request) {
     monthlyBill: str(v.monthlyBill, 40),
     service: str(v.service),
     message: str(v.message),
-  };
+  });
 
   // 2. Validation (same rules as the browser) + allowed option values
   const fieldErrors: QuoteErrors = validateQuoteRequest(values);
@@ -142,16 +178,17 @@ export async function POST(request: Request) {
       calc_daytime_usage: calcInput?.daytimeUsage ?? null,
       calc_appliances: calcInput ? calcInput.appliances : null,
       calc_battery_preference: calcInput?.battery ?? null,
-      calc_rate_used: estimate?.rate.ratePerKwh ?? null,
-      calc_monthly_usage_kwh: estimate ? Math.round(estimate.monthlyUsageKwh * 100) / 100 : null,
-      calc_system_size_kw_low: estimate?.systemSizeKw.low ?? null,
-      calc_system_size_kw_high: estimate?.systemSizeKw.high ?? null,
-      calc_panels_low: estimate?.panelCount.low ?? null,
-      calc_panels_high: estimate?.panelCount.high ?? null,
-      calc_generation_kwh_low: estimate ? Math.round(estimate.monthlyGenerationKwh.low) : null,
-      calc_generation_kwh_high: estimate ? Math.round(estimate.monthlyGenerationKwh.high) : null,
-      calc_bill_reduction_low: estimate?.billReduction.low ?? null,
-      calc_bill_reduction_high: estimate?.billReduction.high ?? null,
+      // Column limits: numeric(8,4), (12,2), (8,2), integer. Never let an extreme estimate lose the lead.
+      calc_rate_used: fits(estimate?.rate.ratePerKwh, 1e4),
+      calc_monthly_usage_kwh: fits(estimate ? Math.round(estimate.monthlyUsageKwh * 100) / 100 : null, 1e10),
+      calc_system_size_kw_low: fits(estimate?.systemSizeKw.low, 1e6),
+      calc_system_size_kw_high: fits(estimate?.systemSizeKw.high, 1e6),
+      calc_panels_low: fits(estimate?.panelCount.low, 2e9),
+      calc_panels_high: fits(estimate?.panelCount.high, 2e9),
+      calc_generation_kwh_low: fits(estimate ? Math.round(estimate.monthlyGenerationKwh.low) : null, 1e10),
+      calc_generation_kwh_high: fits(estimate ? Math.round(estimate.monthlyGenerationKwh.high) : null, 1e10),
+      calc_bill_reduction_low: fits(estimate?.billReduction.low, 1e10),
+      calc_bill_reduction_high: fits(estimate?.billReduction.high, 1e10),
       privacy_consent: true,
       consented_at: consentedAt,
       privacy_policy_version: PRIVACY_POLICY_VERSION,

@@ -6,6 +6,7 @@ import { saveEntityAction, type FormState } from "@/app/admin/actions/content";
 import { entities, type EntityKey, type FieldDef } from "@/lib/admin/entities";
 import { ImageField, ImagesField } from "./ImageField";
 import { Notice } from "./Notice";
+import { useFocusFirstError } from "./useFocusFirstError";
 import styles from "./admin.module.css";
 
 type Props = {
@@ -24,6 +25,7 @@ const asString = (v: unknown) => (v == null ? "" : String(v));
 export function EntityForm({ entityKey, id, initial, savedNotice }: Props) {
   const def = entities[entityKey];
   const [state, action, pending] = useActionState<FormState, FormData>(saveEntityAction.bind(null, entityKey, id), {});
+  const formRef = useFocusFirstError(state);
   const errors = state.errors ?? {};
   // After a save attempt, keep showing what the admin typed (React resets forms after actions).
   const current = state.values ?? initial;
@@ -141,7 +143,11 @@ export function EntityForm({ entityKey, id, initial, savedNotice }: Props) {
                 </label>
               ))}
             </div>
-            {error ? <p className={styles.fieldError}>{error}</p> : null}
+            {error ? (
+              <p id={`${fid}-error`} className={styles.fieldError}>
+                {error}
+              </p>
+            ) : null}
           </fieldset>
         );
       }
@@ -168,7 +174,7 @@ export function EntityForm({ entityKey, id, initial, savedNotice }: Props) {
   };
 
   return (
-    <form action={action} className={`${styles.card} ${styles.form}`} noValidate>
+    <form ref={formRef} action={action} className={`${styles.card} ${styles.form}`} noValidate>
       {state.ok && state.message ? <Notice kind="success">{state.message}</Notice> : null}
       {!state.ok && !state.error && savedNotice ? <Notice kind="success">{def.singular} created.</Notice> : null}
       {state.error ? <Notice kind="error">{state.error}</Notice> : null}

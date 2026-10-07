@@ -31,7 +31,24 @@
 
 .quote {
   flex: 1 1 auto;
+  min-width: 0;
   white-space: nowrap;
+}
+
+/* Very narrow phones (≤359px): the Call button shows its icon only, so the quote button fits. */
+@media (max-width: 359px) {
+  .call {
+    width: 46px;
+    padding-inline: 0;
+  }
+  .callText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 @media (min-width: 640px) {

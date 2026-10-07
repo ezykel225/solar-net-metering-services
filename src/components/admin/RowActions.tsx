@@ -37,7 +37,7 @@ export function RowActions({ entityKey, id, title, status, isActive, isFeatured,
   return (
     <div className={styles.rowActions}>
       <Link href={`/admin/${entityKey}/${id}`} className={styles.btn}>
-        <Icon name="wrench" size={14} /> Edit
+        <Icon name="wrench" size={14} /> Edit<span className="sr-only"> “{title}”</span>
       </Link>
 
       {def.model.status && !archived ? (
@@ -108,9 +108,9 @@ export function RowActions({ entityKey, id, title, status, isActive, isFeatured,
         Delete
       </button>
 
-      <dialog ref={dialogRef} className={styles.dialog} aria-labelledby={`del-${id}`}>
+      <dialog ref={dialogRef} className={styles.dialog} aria-labelledby={`del-${id}`} aria-describedby={`del-desc-${id}`}>
         <h2 id={`del-${id}`}>Delete this {def.singular.toLowerCase()}?</h2>
-        <p>
+        <p id={`del-desc-${id}`}>
           “{title}” will be permanently deleted{def.folder ? ", including its uploaded images" : ""}. This cannot be undone.
           {def.model.status ? " To hide it without deleting, use Archive or Unpublish instead." : def.model.active ? " To hide it without deleting, use Deactivate instead." : ""}
         </p>
@@ -123,6 +123,8 @@ export function RowActions({ entityKey, id, title, status, isActive, isFeatured,
             className={`${styles.btn} ${styles.btnDangerSolid}`}
             onClick={() => {
               dialogRef.current?.close();
+              // The row disappears after deleting: keep keyboard focus on the page heading.
+              document.querySelector<HTMLElement>("#admin-main h1")?.focus();
               run(() => deleteEntityAction(entityKey, id));
             }}
           >

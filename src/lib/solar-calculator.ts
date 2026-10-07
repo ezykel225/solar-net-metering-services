@@ -377,7 +377,7 @@ export type CalculatorOutcome =
 /** Validates the bill field. Returns an error message, or null when valid. */
 export function validateBill(raw: string, config: CalculatorConfig = DEFAULT_CALCULATOR_CONFIG): string | null {
   if (!raw.trim()) return "Please enter your average monthly electricity bill.";
-  if (raw.includes("-") || raw.includes("−")) return "The bill amount must be greater than zero.";
+  if (/[\p{Pd}\u2212\uFE63\uFF0D]/u.test(raw)) return "The bill amount must be greater than zero.";
   const amount = parseBillAmount(raw);
   if (amount === null) return "Please enter the amount as a number, e.g. 5,000.";
   if (amount <= 0) return "The bill amount must be greater than zero.";
@@ -389,6 +389,10 @@ export function validateBill(raw: string, config: CalculatorConfig = DEFAULT_CAL
 }
 
 /* ------------------------------ calculation ------------------------------ */
+
+/** True only for an option defined on the object itself ("constructor", "toString"… are not options). */
+const isOption = <T extends object>(options: T, key: unknown): key is keyof T & string =>
+  typeof key === "string" && Object.hasOwn(options, key);
 
 const floorTo = (value: number, step: number) => Math.floor(value / step + 1e-9) * step;
 const ceilTo = (value: number, step: number) => Math.ceil(value / step - 1e-9) * step;
@@ -458,34 +462,44 @@ export function calculateSolarEstimate(
     high: highKw * kwhPerKwPerMonth,
   };
 
-  // 4. Bill reduction range
-  const selfShare = clamp(usage.daytimeShare + battery.selfConsumptionBoost, 0, 0.95);
-  const reductionLow = billReductionFor(monthlyGenerationKwh.low, monthlyUsageKwh, selfShare, bill, rate.ratePerKwh, config);
-  const reductionHigh = billReductionFor(monthlyGenerationKwh.high, monthlyUsageKwh, selfShare, bill, rate.ratePerKwh, config);
-  const billReduction = {
-    low: floorTo(reductionLow, a.pesoRoundingStep),
-    high: Math.max(ceilTo(reductionHigh, a.pesoRoundingStep), floorTo(reductionLow, a.pesoRoundingStep)),
-  };
-
-  // 5. System type and battery
+  // 4. System type and battery
   const hasBattery = input.battery !== "none";
   const systemType = hasBattery
     ? "Hybrid solar system (solar panels + hybrid inverter + battery)"
     : "Grid-tied solar system, with a net-metering application where eligible";
 
   let batteryKwh: Range | null = null;
+  let batteryExceedsStandard = false;
   let batterySuggestion = "No battery — the grid supplies power at night.";
   if (hasBattery) {
     const nightKwhPerDay = (monthlyUsageKwh / a.daysPerMonth) * (1 - usage.daytimeShare);
+    const neededHigh = nightKwhPerDay * battery.nightCoverage[1];
     batteryKwh = {
       low: standardBattery(nightKwhPerDay * battery.nightCoverage[0]),
-      high: standardBattery(nightKwhPerDay * battery.nightCoverage[1]),
+      high: standardBattery(neededHigh),
     };
+    batteryExceedsStandard = neededHigh > a.standardBatteriesKwh[a.standardBatteriesKwh.length - 1];
     batterySuggestion =
       input.battery === "basic"
         ? "Basic backup battery for essential loads such as lights, fans, Wi-Fi and a refrigerator."
         : "Larger battery storage to cover more of your evening and night-time usage.";
   }
+
+  // 5. Bill reduction range. A battery only adds the solar energy it can
+  // actually store (suggested size × days per month), never more.
+  const selfShareFor = (generationKwh: number) => {
+    const storable = batteryKwh && generationKwh > 0 ? (batteryKwh.high * a.daysPerMonth) / generationKwh : 0;
+    return clamp(usage.daytimeShare + Math.min(battery.selfConsumptionBoost, storable), 0, 0.95);
+  };
+  const reductionLow = billReductionFor(monthlyGenerationKwh.low, monthlyUsageKwh, selfShareFor(monthlyGenerationKwh.low), bill, rate.ratePerKwh, config);
+  const reductionHigh = billReductionFor(monthlyGenerationKwh.high, monthlyUsageKwh, selfShareFor(monthlyGenerationKwh.high), bill, rate.ratePerKwh, config);
+  // Rounding never pushes the estimate above the configured cap.
+  const capPeso = floorTo(bill * config.maxBillReductionShare, a.pesoRoundingStep);
+  const lowPeso = Math.min(floorTo(reductionLow, a.pesoRoundingStep), capPeso);
+  const billReduction = {
+    low: lowPeso,
+    high: Math.max(Math.min(ceilTo(reductionHigh, a.pesoRoundingStep), capPeso), lowPeso),
+  };
 
   // 6. Notes
   const notes: string[] = [];
@@ -501,6 +515,9 @@ export function calculateSolarEstimate(
   if (!hasBattery && input.daytimeUsage === "low") {
     notes.push("Most of your usage is outside daylight hours, so net metering or a battery helps you benefit more from your solar power.");
   }
+  if (batteryExceedsStandard) {
+    notes.push("Your night-time usage needs more storage than one standard battery; this would use multiple battery units, sized during the site assessment.");
+  }
   if (highKw > a.largeSystemKw) {
     notes.push("Larger systems need a detailed engineering and site assessment before final sizing.");
   }
@@ -512,9 +529,8 @@ export function calculateSolarEstimate(
   if (input.propertyType === "Commercial") {
     notes.push("Commercial systems are finalised after a load and site assessment.");
   }
-  if (!hasBattery) {
-    notes.push("Net-metering credits depend on approval by your electric cooperative.");
-  }
+  // Exported energy is part of the estimate with or without a battery.
+  notes.push("Net-metering credits depend on approval by your electric cooperative.");
   if (!config.exportCreditVerified) {
     notes.push(
       "The bill reduction range includes an unverified assumption about how exported solar energy is credited under net metering.",
@@ -564,9 +580,10 @@ export function formatRange(r: Range | null, unit = "", digits = 0) {
   return lo === hi ? `${lo}${suffix}` : `${lo}–${hi}${suffix}`;
 }
 
+/** "₱1,950–₱3,500", or "up to ₱850" when the estimate is at its limit (never shown as an exact figure). */
 export function formatPesoRange(r: Range) {
   if (!Number.isFinite(r.low) || !Number.isFinite(r.high)) return SAFE;
-  return r.low === r.high ? formatPeso(r.low) : `${formatPeso(r.low)}–${formatPeso(r.high)}`;
+  return r.low === r.high ? `up to ${formatPeso(r.high)}` : `${formatPeso(r.low)}–${formatPeso(r.high)}`;
 }
 
 /* ---------------------- hand-off to the quote form ----------------------- */
@@ -599,15 +616,15 @@ export function parseCalculatorQuoteInput(raw: unknown): CalculatorQuoteInput | 
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const propertyType = propertyTypeOptions.find((p) => p === r.propertyType);
-  const daytimeUsage = typeof r.daytimeUsage === "string" && r.daytimeUsage in daytimeUsageOptions ? (r.daytimeUsage as DaytimeUsage) : null;
-  const battery = typeof r.battery === "string" && r.battery in batteryOptions ? (r.battery as BatteryPreference) : null;
+  const daytimeUsage = isOption(daytimeUsageOptions, r.daytimeUsage) ? (r.daytimeUsage as DaytimeUsage) : null;
+  const battery = isOption(batteryOptions, r.battery) ? (r.battery as BatteryPreference) : null;
   if (!propertyType || !daytimeUsage || !battery) return null;
   const commercialRate =
-    propertyType === "Commercial" && typeof r.commercialRate === "string" && r.commercialRate in commercialRateOptions
+    propertyType === "Commercial" && isOption(commercialRateOptions, r.commercialRate)
       ? (r.commercialRate as CommercialRateChoice)
       : "notSure";
   const appliances = Array.isArray(r.appliances)
-    ? [...new Set(r.appliances.filter((a): a is Appliance => typeof a === "string" && a in applianceOptions))]
+    ? [...new Set(r.appliances.filter((a): a is Appliance => isOption(applianceOptions, a)))]
     : [];
   return { propertyType, commercialRate, daytimeUsage, appliances, battery };
 }
@@ -634,7 +651,7 @@ export function quotePrefillFromParams(
   if (propertyType) prefill.propertyType = propertyType;
 
   const batteryKey = params.get("battery");
-  const battery = batteryKey && batteryKey in batteryOptions ? (batteryKey as BatteryPreference) : null;
+  const battery = isOption(batteryOptions, batteryKey) ? (batteryKey as BatteryPreference) : null;
   if (battery) {
     prefill.service = battery === "none" ? `${propertyType ?? "Residential"} Solar` : "Hybrid Solar & Battery Storage";
   }
@@ -644,7 +661,7 @@ export function quotePrefillFromParams(
 
   const rateKey = params.get("rate");
   const rateChoice =
-    propertyType === "Commercial" && rateKey && rateKey in commercialRateOptions ? (rateKey as CommercialRateChoice) : null;
+    propertyType === "Commercial" && isOption(commercialRateOptions, rateKey) ? (rateKey as CommercialRateChoice) : null;
 
   if (size || battery) {
     const parts = [

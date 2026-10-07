@@ -30,7 +30,12 @@ export async function signInAction(_prev: LoginState, form: FormData): Promise<L
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     // Same message for unknown email / wrong password; never reveal which.
-    return { error: error.status === 429 ? "Too many sign-in attempts. Please wait and try again." : GENERIC_ERROR, email };
+    if (error.status === 429) return { error: "Too many sign-in attempts. Please wait and try again.", email };
+    // Supabase unreachable or failing: don't tell the admin their password is wrong.
+    if (!error.status || error.status >= 500 || error.name === "AuthRetryableFetchError") {
+      return { error: "Sign-in is temporarily unavailable. Please try again in a few minutes.", email };
+    }
+    return { error: GENERIC_ERROR, email };
   }
 
   const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");

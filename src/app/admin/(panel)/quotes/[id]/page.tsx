@@ -64,7 +64,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               <div>
                 <dt>Email</dt>
                 <dd>
-                  <a href={`mailto:${q.email}`}>{q.email}</a>
+                  <a href={`mailto:${encodeURIComponent(q.email)}`}>{q.email}</a>
                 </dd>
               </div>
               <div className={styles.dlFull}>

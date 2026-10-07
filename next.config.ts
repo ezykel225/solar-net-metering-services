@@ -6,6 +6,10 @@ const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
+  // Conservative policy that cannot break scripts or styles: no framing by other
+  // sites, no <base> or plugin injection, forms only post to this site.
+  { key: "Content-Security-Policy", value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'" },
 ];
 
 /**

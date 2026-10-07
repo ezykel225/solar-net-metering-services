@@ -35,7 +35,7 @@ export function MobileCtaBar() {
   return (
     <div className={`${styles.bar} ${quoteVisible ? styles.hidden : ""}`} data-mobile-cta inert={quoteVisible}>
       <a className={`btn btn--secondary btn--sm ${styles.call}`} href={settings.phoneHref}>
-        <Icon name="phone" size={18} /> Call
+        <Icon name="phone" size={18} /> <span className={styles.callText}>Call</span>
       </a>
       <a
         className={`btn btn--secondary btn--sm ${styles.messenger}`}

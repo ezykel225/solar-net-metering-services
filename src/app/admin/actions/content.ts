@@ -50,6 +50,8 @@ export async function saveEntityAction(entityKey: string, id: string | null, _pr
 
   const { supabase } = ctx;
   if (id) {
+    // An emptied "Display order" keeps the current position (the column is required).
+    if (values.display_order == null) delete values.display_order;
     const { data: before } = await supabase.from(def.table).select("*").eq("id", id).maybeSingle();
     const { error } = await supabase.from(def.table).update(values).eq("id", id);
     if (error) return { error: friendlyDbError(error), values: typed };
@@ -119,14 +121,23 @@ export async function moveEntityAction(entityKey: string, id: string, direction:
   const def = entities[entityKey];
   try {
     const { supabase } = await requireAdminAction();
-    let query = supabase.from(def.table).select("id, display_order").order("display_order", { ascending: true }).order("created_at", { ascending: true });
-    if (def.model.status) query = query.neq("status", "archived");
-    const { data, error } = await query;
+    // All rows (archived included) are renumbered together, so a restored
+    // record returns to its old place instead of colliding with another.
+    const { data, error } = await supabase
+      .from(def.table)
+      .select(def.model.status ? "id, display_order, status" : "id, display_order")
+      .order("display_order", { ascending: true })
+      .order("created_at", { ascending: true })
+      .returns<{ id: string; display_order: number; status?: string }[]>();
     if (error || !data) return { error: friendlyDbError(error) };
-    const ids = data.map((r) => r.id as string);
-    const i = ids.indexOf(id);
-    const j = direction === "up" ? i - 1 : i + 1;
-    if (i < 0 || j < 0 || j >= ids.length) return { ok: true };
+    const ids = data.map((r) => r.id);
+    // Neighbours are taken among the rows shown in the list (archived rows are hidden there).
+    const visible = data.filter((r) => r.status !== "archived").map((r) => r.id);
+    const v = visible.indexOf(id);
+    const w = direction === "up" ? v - 1 : v + 1;
+    if (v < 0 || w < 0 || w >= visible.length) return { ok: true };
+    const i = ids.indexOf(visible[v]);
+    const j = ids.indexOf(visible[w]);
     [ids[i], ids[j]] = [ids[j], ids[i]];
     // Renumber 1..n so ordering stays clean even if values were duplicated.
     const updates = ids

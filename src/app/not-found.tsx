@@ -9,6 +9,7 @@ import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvide
 export const metadata: Metadata = {
   title: "Page Not Found",
   robots: { index: false, follow: true },
+  alternates: { canonical: null },
 };
 
 export default async function NotFound() {

@@ -95,7 +95,8 @@ function projectFromRow(row: ProjectRow): Project {
     system: system || undefined,
     description: row.description ?? "",
     image: mediaUrl(row.main_image_path),
-    imageAlt: row.main_image_alt ?? row.title,
+    // No alt text entered: treat the image as decorative (the card title already names the project).
+    imageAlt: row.main_image_alt ?? "",
     imageIsIllustration: row.image_is_illustration,
     featured: row.is_featured,
   };
