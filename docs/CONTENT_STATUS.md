@@ -31,6 +31,7 @@ Three levels:
 | Street-light features | Integrated panel/LED/battery/controller, dusk-to-dawn, remote control, weather-resistant, bulk orders, nationwide shipping | `src/data/services.ts` |
 | Brands | SRNE, Deye, LVTopsun, with a "no partnership implied" note | `src/data/services.ts` |
 | Currency | Peso (₱) on the bill field | `src/components/quote/QuoteForm.tsx` |
+| NORECO retail power rates | Residential ₱14.3522, Low Voltage ₱13.5024, High Voltage ₱10.9692 per kWh (entered 7 Oct 2026) | `src/lib/solar-calculator.ts` (`POWER_RATES`, `POWER_RATE_UPDATED`) |
 
 ## 🟡 Needs owner approval (wording)
 
@@ -49,7 +50,10 @@ Three levels:
 | English translation of the testimonial (written by the web team) and the "Customer" label | `src/data/testimonials.ts`, `src/components/sections/Testimonials.tsx` |
 | Project descriptions (Siaton, Sibulan) | `src/data/projects.ts` |
 | **"Get a Free Quote"**: are quotations free? | `src/data/navigation.ts` → set `QUOTES_ARE_FREE` to `false` and every "free" wording updates: buttons, quote heading, submit button, Contact title |
-| **Solar Calculator assumptions**: ₱12/kWh rate, 4.5 peak sun hours, 80% efficiency, 580W panels, exported energy valued at 50% of retail, 85% max bill reduction, ₱1,000–₱500,000 bill range | `src/lib/solar-calculator.ts` (`calculatorAssumptions`) |
+| **Solar Calculator assumptions**: 4.5 peak sun hours, 80% efficiency, 580W panels, 85% max bill reduction, ₱1,000–₱500,000 bill range | `src/lib/solar-calculator.ts` (`calculatorAssumptions`) |
+| **Export credit assumption: UNVERIFIED.** Exported energy is valued at 50% of the retail rate; needs an official NORECO net-metering credit reference | `src/lib/solar-calculator.ts` (`exportCreditRatio`, `exportCreditVerified: false`) |
+| "Not Sure" commercial rate = average of the Low and High Voltage rates (₱12.2358), labelled as approximate | `src/lib/solar-calculator.ts` (`getAppliedRate`) |
+| Which NORECO (1 or 2) the published rates belong to, and the billing period they cover | `src/lib/solar-calculator.ts` (`POWER_RATE_SOURCE`, `POWER_RATE_UPDATED`) |
 | Calculator option wording (daytime usage, battery options, appliance list, result notes) | `src/lib/solar-calculator.ts` |
 | Why Choose Us intro sentence (reworded to confirmed facts) | `src/components/sections/WhyChooseUs.tsx` |
 | Property type options in the form | `src/lib/quote.ts` (`propertyTypes`) |

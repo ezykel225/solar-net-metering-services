@@ -6,14 +6,79 @@
  * Results are rough planning estimates only, always shown as ranges with the
  * CALCULATOR_DISCLAIMER. Never present them as guaranteed savings.
  *
- * TODO (owner): confirm the electricity rate, export credit ratio and panel
- * wattage reflect current NORECO bills and the equipment actually installed.
+ * TODO (owner): confirm the export credit ratio (UNVERIFIED) and that the
+ * panel wattage reflects the equipment actually installed.
  */
 import { parseBillAmount, type QuoteRequest } from "@/lib/quote";
 
+/* ------------------------------ power rates ------------------------------ */
+
+/**
+ * Retail electricity rates (₱ per kWh) by consumer type, from the published
+ * NORECO power-rate reference supplied by the business owner.
+ * Update these values (and POWER_RATE_UPDATED) whenever NORECO publishes new rates.
+ * These are retail rates only; they say nothing about how exported solar is credited.
+ */
+export const POWER_RATES = {
+  residential: { label: "Residential", ratePerKwh: 14.3522 },
+  lowVoltage: { label: "Low Voltage", ratePerKwh: 13.5024 },
+  highVoltage: { label: "High Voltage", ratePerKwh: 10.9692 },
+} as const;
+export type PowerRateKey = keyof typeof POWER_RATES;
+
+/** When the rates above were last entered on the website (ISO date). Update together with POWER_RATES. */
+export const POWER_RATE_UPDATED = "2026-10-07";
+
+/** Rate source shown to visitors. */
+export const POWER_RATE_SOURCE = "NORECO published power rates";
+
+/** Human-readable form of POWER_RATE_UPDATED, e.g. "7 October 2026". */
+export const powerRateUpdatedLabel = new Date(`${POWER_RATE_UPDATED}T00:00:00`).toLocaleDateString("en-PH", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+/** Consumer-rate choices offered for commercial properties. */
+export const commercialRateOptions = {
+  lowVoltage: { label: "Low Voltage", hint: "Shown on your bill as Low Voltage / secondary" },
+  highVoltage: { label: "High Voltage", hint: "Shown on your bill as High Voltage / primary" },
+  notSure: { label: "Not Sure", hint: "We’ll use an approximate rate" },
+} as const;
+export type CommercialRateChoice = keyof typeof commercialRateOptions;
+
+export type AppliedRate = {
+  label: string;
+  ratePerKwh: number;
+  /** True when the consumer type is unknown and an approximate rate is used. */
+  approximate: boolean;
+};
+
+/**
+ * The rate used for a calculation.
+ * - Residential → Residential rate.
+ * - Commercial + Low/High Voltage → that rate (only when the visitor selects it).
+ * - Commercial + Not Sure → approximate: average of the Low and High Voltage rates,
+ *   so neither consumer type is assumed. The exact rate should be confirmed from the bill.
+ */
+export function getAppliedRate(propertyType: CalcPropertyType, commercialRate: CommercialRateChoice): AppliedRate {
+  if (propertyType === "Residential") {
+    return { label: `NORECO ${POWER_RATES.residential.label}`, ratePerKwh: POWER_RATES.residential.ratePerKwh, approximate: false };
+  }
+  if (commercialRate === "lowVoltage" || commercialRate === "highVoltage") {
+    const r = POWER_RATES[commercialRate];
+    return { label: `NORECO ${r.label}`, ratePerKwh: r.ratePerKwh, approximate: false };
+  }
+  const avg = (POWER_RATES.lowVoltage.ratePerKwh + POWER_RATES.highVoltage.ratePerKwh) / 2;
+  return {
+    label: "Approximate commercial rate (average of NORECO Low and High Voltage rates)",
+    ratePerKwh: Math.round(avg * 10_000) / 10_000,
+    approximate: true,
+  };
+}
+
 export const calculatorAssumptions = {
-  /** Approximate all-in electricity rate (₱ per kWh) used to convert a bill into kWh. */
-  electricityRatePerKwh: 12,
+  // Electricity rates per consumer type live in POWER_RATES above.
   /** Average daily peak sun hours for the area. */
   peakSunHours: 4.5,
   /** Share of rated output delivered after losses (heat, wiring, inverter, dust). */
@@ -24,9 +89,13 @@ export const calculatorAssumptions = {
   daysPerMonth: 30,
   /**
    * Value of exported (net-metered) energy relative to the retail rate.
-   * Net-metering credits are usually worth less per kWh than energy you use directly.
+   * UNVERIFIED — OWNER APPROVAL REQUIRED: placeholder until an official NORECO
+   * net-metering credit reference is available. The published retail rates do
+   * not confirm how exported energy is credited.
    */
   exportCreditRatio: 0.5,
+  /** Flag shown in the UI while exportCreditRatio is not confirmed. */
+  exportCreditVerified: false,
   /** Bills never drop to zero (fixed/minimum charges); cap the estimated reduction at this share of the bill. */
   maxBillReductionShare: 0.85,
   /** Low end of generation range accounts for weather and seasonal variation. */
@@ -123,6 +192,8 @@ export type Appliance = keyof typeof applianceOptions;
 export type CalculatorInput = {
   monthlyBill: string;
   propertyType: CalcPropertyType;
+  /** Only used when propertyType is "Commercial". */
+  commercialRate: CommercialRateChoice;
   daytimeUsage: DaytimeUsage;
   appliances: Appliance[];
   battery: BatteryPreference;
@@ -131,6 +202,7 @@ export type CalculatorInput = {
 export const defaultCalculatorInput: CalculatorInput = {
   monthlyBill: "",
   propertyType: "Residential",
+  commercialRate: "notSure",
   daytimeUsage: "medium",
   appliances: [],
   battery: "none",
@@ -142,6 +214,8 @@ export type Range = { low: number; high: number };
 
 export type CalculatorResult = {
   monthlyBill: number;
+  /** The electricity rate used to convert the bill into kWh. */
+  rate: AppliedRate;
   monthlyUsageKwh: number;
   systemSizeKw: Range;
   panelCount: Range;
@@ -193,12 +267,11 @@ function standardBattery(requiredKwh: number) {
 }
 
 /** Monthly bill reduction (₱) for a given monthly generation. */
-function billReductionFor(generationKwh: number, monthlyUsageKwh: number, selfShare: number, bill: number) {
+function billReductionFor(generationKwh: number, monthlyUsageKwh: number, selfShare: number, bill: number, ratePerKwh: number) {
   const a = calculatorAssumptions;
   const selfUsedKwh = Math.min(generationKwh * selfShare, monthlyUsageKwh);
   const exportedKwh = Math.max(generationKwh - selfUsedKwh, 0);
-  const value =
-    selfUsedKwh * a.electricityRatePerKwh + exportedKwh * a.electricityRatePerKwh * a.exportCreditRatio;
+  const value = selfUsedKwh * ratePerKwh + exportedKwh * ratePerKwh * a.exportCreditRatio;
   return Math.min(value, bill * a.maxBillReductionShare);
 }
 
@@ -211,8 +284,9 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
   const usage = daytimeUsageOptions[input.daytimeUsage] ?? daytimeUsageOptions.medium;
   const battery = batteryOptions[input.battery] ?? batteryOptions.none;
 
-  // 1. Bill → monthly usage
-  const monthlyUsageKwh = bill / a.electricityRatePerKwh;
+  // 1. Bill → monthly usage, using the rate for this consumer type
+  const rate = getAppliedRate(input.propertyType, input.commercialRate);
+  const monthlyUsageKwh = bill / rate.ratePerKwh;
 
   // 2. Size the system to cover a share of usage
   const kwhPerKwPerMonth = a.peakSunHours * a.daysPerMonth * a.systemEfficiency;
@@ -236,8 +310,8 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
 
   // 4. Bill reduction range
   const selfShare = clamp(usage.daytimeShare + battery.selfConsumptionBoost, 0, 0.95);
-  const reductionLow = billReductionFor(monthlyGenerationKwh.low, monthlyUsageKwh, selfShare, bill);
-  const reductionHigh = billReductionFor(monthlyGenerationKwh.high, monthlyUsageKwh, selfShare, bill);
+  const reductionLow = billReductionFor(monthlyGenerationKwh.low, monthlyUsageKwh, selfShare, bill, rate.ratePerKwh);
+  const reductionHigh = billReductionFor(monthlyGenerationKwh.high, monthlyUsageKwh, selfShare, bill, rate.ratePerKwh);
   const billReduction = {
     low: floorTo(reductionLow, a.pesoRoundingStep),
     high: Math.max(ceilTo(reductionHigh, a.pesoRoundingStep), floorTo(reductionLow, a.pesoRoundingStep)),
@@ -280,6 +354,11 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
   if (highKw > a.largeSystemKw) {
     notes.push("Larger systems need a detailed engineering and site assessment before final sizing.");
   }
+  if (rate.approximate) {
+    notes.push(
+      "This estimate uses an approximate commercial rate because the consumer type is not known. Please confirm your exact rate (Low Voltage or High Voltage) from your electricity bill.",
+    );
+  }
   if (input.propertyType === "Commercial") {
     notes.push("Commercial systems are finalised after a load and site assessment.");
   }
@@ -289,6 +368,7 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
 
   const result: CalculatorResult = {
     monthlyBill: bill,
+    rate,
     monthlyUsageKwh,
     systemSizeKw: { low: lowKw, high: highKw },
     panelCount,
@@ -301,7 +381,7 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
   };
 
   // Final guard: never return NaN/Infinity to the UI.
-  const numbers = [result.monthlyBill, result.monthlyUsageKwh];
+  const numbers = [result.monthlyBill, result.monthlyUsageKwh, result.rate.ratePerKwh];
   const ranges = [result.systemSizeKw, result.panelCount, result.monthlyGenerationKwh, result.billReduction, result.batteryKwh];
   if (!numbers.every(Number.isFinite) || !ranges.every(isFiniteRange)) {
     return { ok: false, error: "We couldn't calculate an estimate from that amount. Please check the value and try again." };
@@ -314,6 +394,9 @@ export function calculateSolarEstimate(input: CalculatorInput): CalculatorOutcom
 const SAFE = "—";
 const num = (n: number, digits = 0) =>
   Number.isFinite(n) ? n.toLocaleString("en-PH", { maximumFractionDigits: digits, minimumFractionDigits: 0 }) : SAFE;
+
+/** Rate with up to 4 decimals, e.g. 14.3522 → "14.3522". */
+export const formatRate = (n: number) => (Number.isFinite(n) ? n.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 4 }) : SAFE);
 
 export const formatPeso = (n: number) => (Number.isFinite(n) ? `₱${num(Math.round(n))}` : SAFE);
 
@@ -338,6 +421,7 @@ export function toQuoteParams(input: CalculatorInput, result: CalculatorResult) 
   const params = new URLSearchParams({
     bill: String(Math.round(result.monthlyBill)),
     property: input.propertyType,
+    ...(input.propertyType === "Commercial" ? { rate: input.commercialRate } : {}),
     size: `${result.systemSizeKw.low}-${result.systemSizeKw.high}`,
     battery: input.battery,
   });
@@ -370,11 +454,16 @@ export function quotePrefillFromParams(params: URLSearchParams): Partial<QuoteRe
   const sizeMatch = /^(\d{1,3}(?:\.\d)?)-(\d{1,3}(?:\.\d)?)$/.exec(params.get("size") ?? "");
   const size = sizeMatch ? formatRange({ low: Number(sizeMatch[1]), high: Number(sizeMatch[2]) }, "kW", 1) : null;
 
+  const rateKey = params.get("rate");
+  const rateChoice =
+    propertyType === "Commercial" && rateKey && rateKey in commercialRateOptions ? (rateKey as CommercialRateChoice) : null;
+
   if (size || battery) {
     const parts = [
       "From the Solar Calculator:",
       size ? `estimated system size about ${size}` : null,
       battery ? `battery preference: ${batteryOptions[battery].label}` : null,
+      rateChoice ? `consumer rate type: ${commercialRateOptions[rateChoice].label}` : null,
     ].filter(Boolean);
     prefill.message = `${parts[0]} ${parts.slice(1).join("; ")}. I'd like an exact site assessment.`;
   }

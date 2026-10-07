@@ -259,6 +259,40 @@
 }
 
 .basedOn {
+  margin-bottom: 0.6rem;
+  color: var(--color-text-muted);
+}
+
+.rateUsed {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: var(--color-bg-soft);
+  font-size: 0.9rem;
+}
+
+.rateUsed svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  color: var(--color-orange-text);
+}
+
+.rateUsed strong {
+  color: var(--color-navy);
+}
+
+/* Approximate rate: highlighted so it is clearly an estimate */
+.rateApprox {
+  background: var(--color-orange-soft);
+  box-shadow: inset 0 0 0 1.5px rgba(245, 137, 31, 0.45);
+}
+
+.legendHint {
+  margin: -0.35rem 0 0.6rem;
+  font-size: 0.85rem;
   color: var(--color-text-muted);
 }
 

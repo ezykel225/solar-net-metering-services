@@ -7,17 +7,20 @@ import {
   batteryOptions,
   CALCULATOR_DISCLAIMER,
   calculateSolarEstimate,
+  commercialRateOptions,
   daytimeUsageOptions,
   defaultCalculatorInput,
   formatPeso,
   formatPesoRange,
   formatRange,
+  formatRate,
   propertyTypeOptions,
   toQuoteParams,
   type Appliance,
   type BatteryPreference,
   type CalculatorInput,
   type CalcPropertyType,
+  type CommercialRateChoice,
   type DaytimeUsage,
 } from "@/lib/solar-calculator";
 import { siteConfig } from "@/lib/site";
@@ -126,6 +129,27 @@ export function SolarCalculator() {
           </div>
         </fieldset>
 
+        {/* Commercial consumer rate type (only for commercial properties) */}
+        {input.propertyType === "Commercial" ? (
+          <fieldset className={styles.fieldset}>
+            <legend className={styles.label}>Electricity Rate Type</legend>
+            <p className={styles.legendHint}>Check your electricity bill for your consumer type.</p>
+            <div className={styles.choices3}>
+              {entries(commercialRateOptions).map(([key, opt]) => (
+                <Choice
+                  key={key}
+                  type="radio"
+                  name={`${id}-rate`}
+                  checked={input.commercialRate === key}
+                  onChange={() => update("commercialRate", key as CommercialRateChoice)}
+                  label={opt.label}
+                  hint={opt.hint}
+                />
+              ))}
+            </div>
+          </fieldset>
+        ) : null}
+
         {/* Daytime usage */}
         <fieldset className={styles.fieldset}>
           <legend className={styles.label}>Daytime Electricity Usage</legend>
@@ -197,6 +221,14 @@ export function SolarCalculator() {
             <p className={styles.basedOn}>
               Based on a monthly bill of <strong>{formatPeso(result.monthlyBill)}</strong>{" "}
               for a {input.propertyType.toLowerCase()} property.
+            </p>
+            <p className={`${styles.rateUsed} ${result.rate.approximate ? styles.rateApprox : ""}`}>
+              <Icon name="receipt" size={18} />
+              <span>
+                <strong>Electricity rate used:</strong> {result.rate.approximate ? "about " : ""}₱
+                {formatRate(result.rate.ratePerKwh)}/kWh — {result.rate.label}
+                {result.rate.approximate ? ". Please confirm your exact rate from your electricity bill." : "."}
+              </span>
             </p>
 
             <dl className={styles.stats}>

@@ -59,7 +59,8 @@ What is confirmed, what needs owner approval and what is still placeholder is tr
 - **Packages, brands, street-light features:** `src/data/services.ts`
 - **Customer result (bill before/after):** `src/data/case-studies.ts`
 - **"Free" quote wording:** `src/data/navigation.ts` → `QUOTES_ARE_FREE` (one switch for all quote CTAs)
-- **Solar Calculator assumptions (rate, sun hours, efficiency, panel wattage…):** `src/lib/solar-calculator.ts` → `calculatorAssumptions`
+- **NORECO power rates:** `src/lib/solar-calculator.ts` → `POWER_RATES` and `POWER_RATE_UPDATED` (update both together)
+- **Other Solar Calculator assumptions (sun hours, efficiency, panel wattage, export credit…):** `src/lib/solar-calculator.ts` → `calculatorAssumptions`
 - **Logo, hero/about photos, project photos:** see the asset replacement guide in `docs/CONTENT_STATUS.md`
 - **Projects / testimonials / FAQs / services:** `src/data/*.ts`
 - **Photos:** overwrite the files in `public/images/` and `public/images/projects/`. Keep the same names or update the paths in `src/data/projects.ts`, and update the `imageAlt` text too.
