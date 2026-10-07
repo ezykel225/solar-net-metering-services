@@ -1,0 +1,87 @@
+/* Small bottom padding: the testimonials section that follows adds its own top spacing. */
+.section {
+  padding-block: clamp(2.5rem, 6vw, 4rem) clamp(0.5rem, 2vw, 1rem);
+}
+
+.card {
+  display: grid;
+  gap: 1.75rem;
+  align-items: center;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border: 1px solid rgba(245, 137, 31, 0.35);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(245, 137, 31, 0.18), transparent 45%),
+    var(--color-orange-soft);
+}
+
+.copy h2 {
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.6rem, 2vw + 0.9rem, 2.2rem);
+}
+
+.copy p:not(.eyebrow) {
+  max-width: 520px;
+  margin-bottom: 1.5rem;
+  color: var(--color-text);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-orange-text);
+}
+
+.previews {
+  display: grid;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+.previews li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.previewIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--color-navy);
+  color: var(--color-orange);
+}
+
+@media (max-width: 479px) {
+  .copy :global(.btn) {
+    width: 100%;
+  }
+}
+
+@media (min-width: 640px) {
+  .previews {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    grid-template-columns: 1fr 1.05fr;
+    gap: 3rem;
+  }
+}

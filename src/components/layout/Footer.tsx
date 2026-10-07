@@ -3,6 +3,7 @@ import { mainNav, QUOTE_CTA, QUOTE_HREF } from "@/data/navigation";
 import { services } from "@/data/services";
 import { siteConfig } from "@/lib/site";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { EmailText } from "@/components/ui/EmailText";
 import { Icon } from "@/components/ui/Icon";
 import { Logo } from "./Logo";
 import styles from "./Footer.module.css";
@@ -57,7 +58,7 @@ export function Footer() {
           </ul>
         </div>
 
-        <div>
+        <div className={styles.contactCol}>
           <h2 className={styles.title}>Contact</h2>
           <ul className={styles.contact}>
             <li>
@@ -66,7 +67,9 @@ export function Footer() {
             </li>
             <li>
               <Icon name="mail" size={18} />
-              <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>
+              <a href={`mailto:${siteConfig.contact.email}`}>
+                <EmailText email={siteConfig.contact.email} />
+              </a>
             </li>
             <li>
               <Icon name="mapPin" size={18} />

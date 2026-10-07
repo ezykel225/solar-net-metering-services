@@ -73,7 +73,10 @@
   display: flex;
   gap: 0.6rem;
   align-items: flex-start;
-  overflow-wrap: anywhere;
+  min-width: 0;
+  /* Long email: if it ever must wrap (very narrow phones), it breaks at the
+     <wbr> before "@" rather than mid-word. */
+  overflow-wrap: break-word;
 }
 
 .contact svg {
@@ -117,14 +120,52 @@
   margin: 0;
 }
 
+/* Tablet: brand and contact span the full width so the long email stays on one line;
+   quick links and services sit side by side. */
 @media (min-width: 640px) {
   .grid {
     grid-template-columns: 1fr 1fr;
   }
+  .brand,
+  .contactCol {
+    grid-column: 1 / -1;
+  }
 }
 
+/* Laptop: brand on its own row, then three columns with the widest for contact. */
 @media (min-width: 1024px) {
   .grid {
-    grid-template-columns: 1.5fr 1fr 1.1fr 1.3fr;
+    grid-template-columns: 0.8fr 1fr 1.4fr;
+    column-gap: 2.5rem;
+  }
+  .contactCol {
+    grid-column: auto;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .brand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .brand p {
+    flex: 1 1 360px;
+    max-width: none;
+    margin: 0;
+  }
+}
+
+/* Desktop: four columns. */
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: 1.2fr 0.75fr 1fr 1.45fr;
+    column-gap: 2rem;
+  }
+  .brand {
+    grid-column: auto;
   }
 }

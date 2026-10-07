@@ -1,5 +1,5 @@
 import { faqs, type Faq } from "@/data/faqs";
-import { QUOTE_HREF } from "@/data/navigation";
+import { QUOTE_HREF, quoteCopy } from "@/data/navigation";
 import { siteConfig } from "@/lib/site";
 import { Accordion } from "@/components/ui/Accordion";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -40,7 +40,7 @@ export function FaqSection({ items = faqs, limit, showHeading = true }: FaqSecti
             <p>Message us or call, and we’ll explain your options and the net-metering process.</p>
             <div className={styles.helpActions}>
               <ButtonLink href={QUOTE_HREF} size="sm">
-                Ask for a Free Quote
+                {quoteCopy.ask}
               </ButtonLink>
               <a className={styles.phone} href={siteConfig.social.messenger} target="_blank" rel="noopener noreferrer">
                 <Icon name="messenger" size={16} /> Message Us

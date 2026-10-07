@@ -1,7 +1,11 @@
+import { quoteCopy } from "@/data/navigation";
 import { siteConfig } from "@/lib/site";
+import { EmailText } from "@/components/ui/EmailText";
 import { Icon } from "@/components/ui/Icon";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Suspense } from "react";
 import { QuoteForm } from "./QuoteForm";
+import { QuoteFormWithPrefill } from "./QuoteFormWithPrefill";
 import styles from "./QuoteSection.module.css";
 
 const steps = ["Send your details", "We review your bill & property", "Receive your quotation"];
@@ -16,8 +20,8 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
             as={headingLevel}
             align="left"
             onDark
-            eyebrow="Free Quotation"
-            title="Get a Free Solar Quote"
+            eyebrow={quoteCopy.eyebrow}
+            title={quoteCopy.heading}
             intro="Tell us a little about your property and electricity use, and we’ll get back to you with a quotation."
           />
           <ol className={styles.steps}>
@@ -43,7 +47,9 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
               </span>
               <span>
                 <small>Email us</small>
-                <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>
+                <a href={`mailto:${siteConfig.contact.email}`}>
+                  <EmailText email={siteConfig.contact.email} />
+                </a>
               </span>
             </li>
             <li>
@@ -80,7 +86,11 @@ export function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1" | "h
           </ul>
         </div>
         <div className={styles.formCard}>
-          <QuoteForm />
+          {/* useSearchParams needs a Suspense boundary on statically rendered pages;
+              the fallback is the same form without pre-filled values. */}
+          <Suspense fallback={<QuoteForm />}>
+            <QuoteFormWithPrefill />
+          </Suspense>
         </div>
       </div>
     </section>

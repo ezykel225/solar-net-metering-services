@@ -1,7 +1,8 @@
 .hero {
   position: relative;
   overflow: hidden;
-  padding-block: clamp(2.5rem, 6vw, 5rem) clamp(3rem, 7vw, 6rem);
+  /* Tighter bottom spacing: the next section adds its own top padding. */
+  padding-block: clamp(2rem, 4.5vw, 4rem) clamp(2.5rem, 4.5vw, 4rem);
   background:
     radial-gradient(circle at 95% 0%, rgba(245, 137, 31, 0.18), transparent 35%),
     linear-gradient(180deg, #ffffff 0%, var(--color-bg-soft) 100%);

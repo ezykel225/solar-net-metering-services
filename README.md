@@ -32,7 +32,8 @@ src/
   components/
     layout/               Header (with mobile menu), Footer, Logo, PageHero, MobileCtaBar
     sections/             Page sections (Hero, Services, Net metering steps, Projects…)
-    quote/                Quote form, form field, quote section
+    quote/                Quote form, form field, quote section (+ calculator pre-fill)
+    calculator/           Solar Savings Calculator UI
     seo/                  JsonLd structured-data helper
     ui/                   Reusable primitives (ButtonLink, SectionHeading, Accordion, Icon)
   data/                   All editable content (services, projects, FAQs, testimonials…)
@@ -40,6 +41,7 @@ src/
     site.ts               Company name, contact details, social links ← edit this first
     seo.ts                Per-page metadata helper + LocalBusiness JSON-LD
     quote.ts              Quote request types, validation and submit function
+    solar-calculator.ts   Solar Calculator assumptions, maths, formatting and quote hand-off
 public/images/            Illustrated placeholder images (replace with real photos, same file names)
 scripts/                  Placeholder image generator
 ```
@@ -56,7 +58,9 @@ What is confirmed, what needs owner approval and what is still placeholder is tr
 - **Contact details, Facebook/Messenger links, service-area wording, stats:** `src/lib/site.ts`
 - **Packages, brands, street-light features:** `src/data/services.ts`
 - **Customer result (bill before/after):** `src/data/case-studies.ts`
-- **Main CTA label ("Get a Free Quote"):** `src/data/navigation.ts`
+- **"Free" quote wording:** `src/data/navigation.ts` → `QUOTES_ARE_FREE` (one switch for all quote CTAs)
+- **Solar Calculator assumptions (rate, sun hours, efficiency, panel wattage…):** `src/lib/solar-calculator.ts` → `calculatorAssumptions`
+- **Logo, hero/about photos, project photos:** see the asset replacement guide in `docs/CONTENT_STATUS.md`
 - **Projects / testimonials / FAQs / services:** `src/data/*.ts`
 - **Photos:** overwrite the files in `public/images/` and `public/images/projects/`. Keep the same names or update the paths in `src/data/projects.ts`, and update the `imageAlt` text too.
 - **Logo:** `src/components/layout/Logo.tsx` (and `src/app/icon.svg` for the favicon)

@@ -4,6 +4,25 @@
   gap: 1.25rem;
 }
 
+.prefilled {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: var(--color-orange-soft);
+  color: var(--color-navy);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.prefilled svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: var(--color-orange-text);
+}
+
 .note {
   margin: 0;
   font-size: 0.875rem;

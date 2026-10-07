@@ -12,6 +12,7 @@ import {
   type QuoteField,
   type QuoteRequest,
 } from "@/lib/quote";
+import { quoteCopy } from "@/data/navigation";
 import { siteConfig } from "@/lib/site";
 import { Icon } from "@/components/ui/Icon";
 import { FormField } from "./FormField";
@@ -24,8 +25,13 @@ const fieldOrder: QuoteField[] = ["fullName", "phone", "email", "location", "pro
 
 type FieldEvent<E> = E & { target: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement };
 
-export function QuoteForm() {
-  const [values, setValues] = useState<QuoteRequest>(emptyQuoteRequest);
+type QuoteFormProps = {
+  /** Values to pre-fill, e.g. from the Solar Calculator. The visitor reviews them before sending. */
+  initialValues?: Partial<QuoteRequest> | null;
+};
+
+export function QuoteForm({ initialValues }: QuoteFormProps = {}) {
+  const [values, setValues] = useState<QuoteRequest>({ ...emptyQuoteRequest, ...initialValues });
   const [errors, setErrors] = useState<QuoteErrors>({});
   /** Fields the user has left at least once; only these show errors before submit. */
   const [touched, setTouched] = useState<Partial<Record<QuoteField, boolean>>>({});
@@ -128,6 +134,13 @@ export function QuoteForm() {
 
   return (
     <form ref={formRef} className={styles.form} onSubmit={handleSubmit} noValidate aria-describedby="quote-form-note">
+      {initialValues ? (
+        <p className={styles.prefilled}>
+          <Icon name="chart" size={18} /> We’ve filled in some details from your Solar Calculator estimate. Please
+          review them and add your contact details.
+        </p>
+      ) : null}
+
       <p id="quote-form-note" className={styles.note}>
         Fields marked <span aria-hidden="true">*</span>
         <span className="sr-only">with an asterisk</span> are required.
@@ -225,7 +238,7 @@ export function QuoteForm() {
           </>
         ) : (
           <>
-            Get My Free Quote <Icon name="arrowRight" size={18} />
+            {quoteCopy.submit} <Icon name="arrowRight" size={18} />
           </>
         )}
       </button>

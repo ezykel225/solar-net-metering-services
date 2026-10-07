@@ -39,6 +39,8 @@ export const emptyQuoteRequest: QuoteRequest = {
  * ("5k", "about 5000/mo"), so the database never stores a misread value.
  */
 export function parseBillAmount(input: string): number | null {
+  // A minus sign anywhere means a negative/invalid amount, never a positive one.
+  if (input.includes("-") || input.includes("−")) return null;
   const cleaned = input
     .trim()
     .replace(/^[^\d\p{L}]+/u, "") // leading currency symbol, e.g. ₱ $ €

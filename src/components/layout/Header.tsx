@@ -109,7 +109,17 @@ export function Header() {
                   className={styles.navLink}
                   aria-current={isActive(pathname, item.href) ? "page" : undefined}
                 >
-                  {item.label}
+                  {item.shortLabel ? (
+                    <>
+                      <span className={styles.labelFull}>{item.label}</span>
+                      <span className={styles.labelShort} aria-hidden="true">
+                        {item.shortLabel}
+                      </span>
+                      <span className={`sr-only ${styles.labelShortSr}`}>{item.label}</span>
+                    </>
+                  ) : (
+                    item.label
+                  )}
                 </Link>
               </li>
             ))}

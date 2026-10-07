@@ -8,13 +8,14 @@ export function Testimonials() {
   if (testimonials.length === 0) return null;
   const single = testimonials.length === 1;
   return (
-    <section className="section" aria-labelledby="testimonials-title">
-      <div className="container">
+    <section className={`section ${single ? styles.compact : ""}`} aria-labelledby="testimonials-title">
+      <div className={`container ${single ? styles.singleLayout : ""}`}>
         <SectionHeading
           id="testimonials-title"
           eyebrow="Testimonials"
           title="What Our Clients Say"
           intro="Feedback shared by our customers."
+          align={single ? "left" : "center"}
         />
         <ul className={`${styles.grid} ${single ? styles.single : ""}`}>
           {testimonials.map((t) => (

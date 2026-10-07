@@ -42,10 +42,30 @@
   font-weight: 600;
 }
 
-/* One testimonial: a single, centred featured card */
+/* One testimonial: compact section, heading beside the card on wide screens */
+.compact {
+  padding-block: clamp(3rem, 6vw, 4.5rem);
+}
+
 .single {
   max-width: 760px;
-  margin-inline: auto;
+}
+
+.singleLayout {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.singleLayout > div:first-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .singleLayout {
+    grid-template-columns: 0.75fr 1.25fr;
+    gap: 3.5rem;
+  }
 }
 
 .single .quote {

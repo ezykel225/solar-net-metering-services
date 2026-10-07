@@ -12,7 +12,7 @@ export function WhyChooseUs() {
           onDark
           eyebrow="Why Choose Us"
           title="Solar Done Right, From Start to Finish"
-          intro="We combine quality workmanship with honest advice so you can switch to solar with confidence."
+          intro="Local service, net-metering assistance and hybrid solar options — from site assessment to installation."
         />
         <ul className={styles.grid}>
           {reasons.map((reason) => (

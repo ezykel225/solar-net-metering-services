@@ -215,6 +215,25 @@
   }
 }
 
+/* Short nav labels: full text by default, short text (with the full name kept
+   for screen readers) only at 1024–1199px where eight links must fit. */
+.labelShort,
+.labelShortSr {
+  display: none;
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .labelFull {
+    display: none;
+  }
+  .labelShort {
+    display: inline;
+  }
+  .labelShortSr {
+    display: block;
+  }
+}
+
 @media (min-width: 1024px) and (max-width: 1159px) {
   .navLink {
     padding-inline: 0.45rem;
