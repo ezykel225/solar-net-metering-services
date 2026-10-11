@@ -34,15 +34,18 @@ export const siteConfig = {
     "Solar systems, inverters and batteries, plus solar installation, system design, permits, net-metering assistance and after-sales support in Dumaguete City and Negros Oriental.",
   /** Absolute site URL used for canonical links, sitemap and Open Graph. See resolveSiteUrl(). */
   url: resolveSiteUrl(),
-  ogImage: "/images/og-image.jpg",
+  /** Social-share image: the client's wide banner, fitted (not cropped) into 1200×630 on navy. */
+  ogImage: "/images/brand/eg-solar-og.jpg",
   /**
-   * Official logo file. Not supplied yet — until it is, the header and footer
-   * show the business name next to a simple sun mark. When the client sends it:
-   * put the file in public/images/brand/ and set src + its real pixel size
-   * (aspect ratio is preserved; the logo is never redrawn or recoloured).
-   * `onDarkSrc` is optional: a light/reversed version for the navy footer.
+   * Official EG Solar Products Trading logo (client-supplied, used unaltered).
+   * It is a detailed circular emblem on a white square, so small placements
+   * show it as a circle next to compact text branding instead of on its own.
    */
-  logo: null as null | { src: string; width: number; height: number; onDarkSrc?: string },
+  logo: {
+    src: "/images/brand/eg-solar-products-trading-logo.jpg",
+    width: 1254,
+    height: 1254,
+  } as null | { src: string; width: number; height: number },
   contact: {
     phone: "0955 270 4060",
     phoneHref: "tel:+639552704060",

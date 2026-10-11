@@ -1,4 +1,5 @@
 import { Hero } from "@/components/sections/Hero";
+import { BrandBanner } from "@/components/sections/BrandBanner";
 import { ServicesSection } from "@/components/sections/ServicesSection";
 import { ProductsSection } from "@/components/sections/ProductsSection";
 import { PromotionsSection } from "@/components/sections/PromotionsSection";
@@ -16,6 +17,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <BrandBanner />
       <PromotionsSection />
       <ServicesSection />
       <ProductsSection />

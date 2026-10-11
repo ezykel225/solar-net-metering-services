@@ -69,15 +69,19 @@
   color: var(--color-orange);
 }
 
-.brandMark {
-  display: grid;
-  place-items: center;
+/* Official emblem (circle on a white square in the file; the mask hides the corners). */
+.brandLogo {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--color-orange);
-  color: var(--color-navy);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.loginLogo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
 }
 
 .nav {

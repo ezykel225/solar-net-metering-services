@@ -163,24 +163,7 @@ function closeUpScene({ w = 1600, h = 1200 } = {}) {
   return svg(w, h, sky(w, h, "#5ea3e0", "#d9ecfb"), body);
 }
 
-function ogScene() {
-  const w = 1200;
-  const h = 630;
-  const inner = residentialScene({ w: 1600, h: 1000 })
-    .replace(/^<svg[^>]*>/, "")
-    .replace(/<\/svg>$/, "");
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-    <svg x="420" y="0" width="780" height="630" viewBox="300 30 1200 970" preserveAspectRatio="xMidYMid slice">${inner}</svg>
-    <rect width="560" height="${h}" fill="#0b1f3a"/>
-    <polygon points="560,0 640,0 560,${h}" fill="#0b1f3a"/>
-    <rect x="70" y="120" width="70" height="8" fill="#f5891f"/>
-    <text x="70" y="210" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#ffffff">EG Solar</text>
-    <text x="70" y="275" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#ffffff">Products</text>
-    <text x="70" y="340" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#f5891f">Trading</text>
-    <text x="70" y="420" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#c9d6e8">Solar products &amp; solar services</text>
-    <text x="70" y="456" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#c9d6e8">Batinguel, Dumaguete City</text>
-  </svg>`;
-}
+// The social-share image now comes from the client banner (public/images/brand/eg-solar-og.jpg).
 
 function svg(w, h, defs, body) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs>${PANEL_DEFS}${defs}</defs>${body}</svg>`;
@@ -191,7 +174,6 @@ function svg(w, h, defs, body) {
 const images = [
   ["hero.jpg", residentialScene({ cols: 7 })],
   ["about.jpg", closeUpScene()],
-  ["og-image.jpg", ogScene()],
   // Illustrations standing in for the confirmed projects until real photos arrive.
   ["projects/siaton-hybrid.jpg", residentialScene({ wall: "#ffffff", roof: "#2f3640", cols: 7, rows: 2, skyTop: "#5e9ed8", skyBottom: "#d8ebfa" })],
   ["projects/sibulan-installation.jpg", residentialScene({ wall: "#e9eef3", roof: "#3d4b5c", skyTop: "#f2a65a", skyBottom: "#fde8c8", sunX: 220, sunY: 260, mirror: true, cols: 5 })],

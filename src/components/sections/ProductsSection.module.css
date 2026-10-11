@@ -73,8 +73,51 @@
   margin-top: 1.5rem;
 }
 
-@media (min-width: 768px) {
+.layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.poster {
+  justify-self: center;
+  width: 100%;
+  max-width: 420px;
+}
+
+.posterLink {
+  display: block;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.posterImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.posterCaption {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Desktop: poster beside the product cards (cards stacked). */
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 400px minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem;
+  }
+  .poster {
+    max-width: none;
   }
 }

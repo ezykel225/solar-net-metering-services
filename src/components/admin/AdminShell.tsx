@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link, { useLinkStatus } from "next/link";
+import { siteConfig } from "@/lib/site";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { signOutAction } from "@/app/admin/actions/auth";
@@ -75,9 +77,14 @@ export function AdminShell({ email, newQuotes, children }: { email: string | nul
       {open ? <button type="button" className={styles.backdrop} aria-label="Close menu" onClick={closeMenu} /> : null}
       <aside ref={sidebarRef} id="admin-sidebar" className={`${styles.sidebar} ${open ? styles.sidebarOpen : ""}`} aria-label="Admin">
         <Link href="/admin" className={styles.brand}>
-          <span className={styles.brandMark}>
-            <Icon name="sun" size={20} />
-          </span>
+          <Image
+            src={siteConfig.logo?.src ?? "/icon.svg"}
+            alt=""
+            width={siteConfig.logo?.width ?? 48}
+            height={siteConfig.logo?.height ?? 48}
+            sizes="40px"
+            className={styles.brandLogo}
+          />
           <span>
             EG Solar Products
             <small>Admin</small>

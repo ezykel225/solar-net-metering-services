@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { getAdminContext } from "@/lib/admin/auth";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { NotConfigured } from "@/components/admin/AccessStates";
-import { Icon } from "@/components/ui/Icon";
+import Image from "next/image";
+import { siteConfig } from "@/lib/site";
 import styles from "@/components/admin/admin.module.css";
 
 export const metadata: Metadata = { title: "Sign in" };
@@ -16,9 +17,15 @@ export default async function AdminLoginPage() {
     <div className={styles.loginWrap}>
       <main className={styles.loginCard}>
         <div className={styles.loginBrand}>
-          <span className={styles.brandMark}>
-            <Icon name="sun" size={20} />
-          </span>
+          <Image
+            src={siteConfig.logo?.src ?? "/icon.svg"}
+            alt=""
+            width={siteConfig.logo?.width ?? 48}
+            height={siteConfig.logo?.height ?? 48}
+            sizes="56px"
+            priority
+            className={styles.loginLogo}
+          />
           EG Solar Products Trading
         </div>
         <h1>Admin sign in</h1>

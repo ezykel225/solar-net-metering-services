@@ -1,0 +1,11 @@
+.section {
+  padding-block: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}

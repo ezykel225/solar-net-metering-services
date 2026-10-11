@@ -54,6 +54,8 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    // 85 is used for client artwork with small printed text (banner, poster).
+    qualities: [75, 85],
     remotePatterns: supabaseImagePattern(),
     // Local development only: allow the optimiser to fetch from a local Supabase (127.0.0.1).
     dangerouslyAllowLocalIP: supabaseHost === "127.0.0.1" || supabaseHost === "localhost",

@@ -46,11 +46,21 @@
   color: var(--color-orange);
 }
 
-/* Official logo image: fixed height, width follows the file's aspect ratio. */
-.official {
+/*
+ * Official emblem. The file is a circle on a white square; the round mask only
+ * hides those white corners on screen (the file itself is unchanged).
+ */
+.emblem {
   display: block;
-  width: auto;
-  height: 44px;
-  max-width: min(240px, 60vw);
-  object-fit: contain;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+
+@media (max-width: 359px) {
+  .emblem {
+    width: 44px;
+    height: 44px;
+  }
 }
