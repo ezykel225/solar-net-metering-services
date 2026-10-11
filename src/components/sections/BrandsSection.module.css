@@ -1,3 +1,16 @@
+.group + .group {
+  margin-top: 1.5rem;
+}
+
+.groupTitle {
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--color-orange-text);
+}
+
 .list {
   display: flex;
   flex-wrap: wrap;
@@ -9,13 +22,13 @@
 .list li {
   display: grid;
   place-items: center;
-  min-width: 160px;
-  padding: 1.1rem 1.75rem;
+  min-width: 140px;
+  padding: 0.9rem 1.5rem;
   background: var(--color-bg-soft);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   font-family: var(--font-heading);
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   font-weight: 800;
   letter-spacing: 0.02em;
   color: var(--color-navy);
@@ -31,6 +44,7 @@
 
 @media (max-width: 479px) {
   .list li {
-    flex: 1 1 100%;
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 0;
   }
 }

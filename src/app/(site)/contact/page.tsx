@@ -9,7 +9,7 @@ export async function generateMetadata() {
   return buildMetadata({
     title: settings.quoteCopy.contactMetaTitle,
     description:
-      "Request a solar quotation or contact Solar Net Metering Services in Dumaguete City about solar installation, hybrid systems and net-metering assistance.",
+      "Request a quotation or contact EG Solar Products Trading in Batinguel, Dumaguete City about solar systems, inverters, batteries, installation and net-metering assistance.",
     path: "/contact",
   });
 }

@@ -17,30 +17,40 @@ function resolveSiteUrl(): string {
  * structured data read from here, so official details only need to be
  * updated in one place.
  *
- * CONFIRMED (from the company's public Facebook page): name, mobile number,
- * email, Facebook page, Messenger link, and the operating area wording.
- * NOT YET CONFIRMED: office address, office hours, company statistics.
- * Those are left empty (null / []) and the UI hides them until supplied.
+ * CONFIRMED (client rebrand, Oct 2026): business name "EG Solar Products
+ * Trading", mobile 0955 270 4060, email egsolarproductstrading@gmail.com,
+ * business location Batinguel, Dumaguete City. Service-area wording and the
+ * Facebook/Messenger links carry over from the earlier confirmation (the
+ * links still need owner confirmation for the new brand).
+ * NOT YET CONFIRMED: office hours, company statistics — left empty and hidden.
  */
 type Stat = { value: string; label: string };
 
 export const siteConfig = {
-  name: "Solar Net Metering Services",
-  shortName: "SNMS",
-  tagline: "Solar installation & net metering in Dumaguete City and Negros Oriental",
+  name: "EG Solar Products Trading",
+  shortName: "EG Solar",
+  tagline: "Solar products & solar services in Dumaguete City and Negros Oriental",
   description:
-    "Professional solar installation and net metering services for residential and commercial properties.",
+    "Solar systems, inverters and batteries, plus solar installation, system design, permits, net-metering assistance and after-sales support in Dumaguete City and Negros Oriental.",
   /** Absolute site URL used for canonical links, sitemap and Open Graph. See resolveSiteUrl(). */
   url: resolveSiteUrl(),
   ogImage: "/images/og-image.jpg",
+  /**
+   * Official logo file. Not supplied yet — until it is, the header and footer
+   * show the business name next to a simple sun mark. When the client sends it:
+   * put the file in public/images/brand/ and set src + its real pixel size
+   * (aspect ratio is preserved; the logo is never redrawn or recoloured).
+   * `onDarkSrc` is optional: a light/reversed version for the navy footer.
+   */
+  logo: null as null | { src: string; width: number; height: number; onDarkSrc?: string },
   contact: {
-    phone: "0997 731 0543",
-    phoneHref: "tel:+639977310543",
+    phone: "0955 270 4060",
+    phoneHref: "tel:+639552704060",
     /** International format for structured data */
-    phoneIntl: "+63 997 731 0543",
-    email: "solarandnetmeteringservices@gmail.com",
-    /** Office street address — not yet confirmed; hidden while null. */
-    address: null as string | null,
+    phoneIntl: "+63 955 270 4060",
+    email: "egsolarproductstrading@gmail.com",
+    /** Business location (confirmed). Not the full service area — see serviceAreaSummary. */
+    address: "Batinguel, Dumaguete City, Philippines" as string | null,
     /** Office hours — not yet confirmed; hidden while null. */
     hours: null as string | null,
   },

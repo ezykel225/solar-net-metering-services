@@ -19,7 +19,7 @@ export default async function AdminLoginPage() {
           <span className={styles.brandMark}>
             <Icon name="sun" size={20} />
           </span>
-          Solar Net Metering Services
+          EG Solar Products Trading
         </div>
         <h1>Admin sign in</h1>
         <p>Sign in to manage the website. Accounts are created by the site owner.</p>

@@ -13,7 +13,7 @@ import { getSiteSettings } from "@/lib/cms";
 export const metadata = buildMetadata({
   title: "About Us",
   description:
-    "Solar Net Metering Services offers solar installation, hybrid systems with battery storage and net-metering assistance in Dumaguete City and Negros Oriental.",
+    "EG Solar Products Trading, based in Batinguel, Dumaguete City, supplies solar systems, inverters and batteries and provides installation, system design, permits, net-metering assistance and after-sales support.",
   path: "/about",
 });
 
@@ -24,8 +24,8 @@ export default async function AboutPage() {
       <PageHero
         crumb="About"
         path="/about"
-        title="About Solar Net Metering Services"
-        intro="Solar installation, hybrid systems and net-metering assistance for homes and businesses in Negros Oriental."
+        title="About EG Solar Products Trading"
+        intro="Solar products and solar services for homes and businesses, from Batinguel, Dumaguete City."
       />
       <AboutSection showLink={false} />
       <section className="section section--soft" aria-labelledby="areas-title">

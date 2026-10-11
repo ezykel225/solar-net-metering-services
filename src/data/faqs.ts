@@ -1,6 +1,6 @@
 import { NET_METERING_DISCLAIMER } from "./net-metering";
 import { SAVINGS_DISCLAIMER } from "./case-studies";
-import { brands } from "./services";
+import { brandGroups } from "./services";
 
 export type Faq = { question: string; answer: string };
 
@@ -47,8 +47,15 @@ export const faqs: Faq[] = [
       "Yes. We offer all-in-one solar street lights with an integrated solar panel, LED light, battery and controller. They run dusk to dawn, come with a remote control and are designed to be weather-resistant. Bulk orders and nationwide shipping are available.",
   },
   {
-    question: "What brands do you use?",
-    answer: `We install and promote products from brands including ${list(brands)}.`,
+    question: "What brands do you offer?",
+    answer: `We offer or promote ${brandGroups
+      .map((g) => `${g.category.toLowerCase()} from brands including ${list(g.brands)}`)
+      .join(", and ")}. Stock and models change, so ask us about current availability.`,
+  },
+  {
+    question: "Do you accept pre-orders for inverters and batteries?",
+    answer:
+      "Yes. We accept pre-orders for inverters and batteries. Stock, models and prices change, so please contact us to confirm availability before ordering.",
   },
   {
     question: "Which areas do you serve?",

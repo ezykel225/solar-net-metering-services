@@ -75,8 +75,17 @@ export async function Footer() {
             </li>
             <li>
               <Icon name="mapPin" size={18} />
-              <span>{settings.address ?? settings.serviceAreaShort}</span>
+              <span>
+                {settings.address ?? settings.serviceAreaShort}
+                {settings.address ? <span className="sr-only"> (business location)</span> : null}
+              </span>
             </li>
+            {settings.address ? (
+              <li>
+                <Icon name="grid" size={18} />
+                <span>Serving {settings.serviceAreaShort}</span>
+              </li>
+            ) : null}
             {settings.hours ? (
               <li>
                 <Icon name="clock" size={18} />

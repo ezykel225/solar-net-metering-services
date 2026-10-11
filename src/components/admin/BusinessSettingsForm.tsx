@@ -44,10 +44,10 @@ export function BusinessSettingsForm({ initial }: { initial: BusinessSettingsVal
         <SettingsField name="email" label="Email" required error={e.email}>
           {(p) => <input {...p} type="email" defaultValue={val(v.email)} maxLength={254} />}
         </SettingsField>
-        <SettingsField name="phone_display" label="Phone number (as shown)" required error={e.phone_display} help="e.g. 0997 731 0543">
+        <SettingsField name="phone_display" label="Phone number (as shown)" required error={e.phone_display} help="e.g. 0955 270 4060">
           {(p) => <input {...p} defaultValue={val(v.phone_display)} maxLength={30} />}
         </SettingsField>
-        <SettingsField name="phone_e164" label="Phone number (international format)" required error={e.phone_e164} help="Used for tap-to-call links, e.g. +639977310543">
+        <SettingsField name="phone_e164" label="Phone number (international format)" required error={e.phone_e164} help="Used for tap-to-call links, e.g. +639552704060">
           {(p) => <input {...p} defaultValue={val(v.phone_e164)} maxLength={16} inputMode="tel" />}
         </SettingsField>
         <SettingsField name="facebook_url" label="Facebook page URL" error={e.facebook_url}>

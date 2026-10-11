@@ -1,11 +1,11 @@
 import type { IconName } from "@/components/ui/Icon";
 
 /**
- * Services publicly offered by the company (confirmed from its Facebook page):
- * residential & commercial installation, hybrid systems, solar panels,
- * inverters, battery storage, net-metering services/assistance, solar street
- * lights, site assessment / quotation, and installation support.
- * Do not add services outside this list without owner confirmation.
+ * Primary service categories from the client's rebrand material (Oct 2026):
+ * Solar System Supply, Solar Installation, System Design & Consultation,
+ * Permits & Documents Processing, Net Metering Assistance, Maintenance &
+ * After-Sales Support. Wording beyond these titles needs owner approval.
+ * Do not add warranties, certifications or approval guarantees.
  */
 export type Service = {
   slug: string;
@@ -17,46 +17,43 @@ export type Service = {
 
 export const services: Service[] = [
   {
-    slug: "residential-solar",
-    title: "Residential Solar",
+    slug: "solar-system-supply",
+    title: "Solar System Supply",
+    icon: "panel",
+    summary: "Solar systems and components for homes and businesses, including inverters and batteries.",
+    details: ["Complete solar system packages", "Inverters", "Batteries", "Product inquiries and pre-orders"],
+  },
+  {
+    slug: "solar-installation",
+    title: "Solar Installation",
     icon: "home",
-    summary: "Solar installation for homes, with panels, inverters and optional battery storage.",
-    details: [
-      "Site assessment and quotation",
-      "Solar panels and inverters",
-      "Hybrid systems with battery storage",
-      "Net-metering assistance",
-    ],
+    summary: "Installation of solar systems for residential and commercial properties, including hybrid systems with battery storage.",
+    details: ["Residential and commercial properties", "Grid-tied and hybrid systems", "Battery storage", "Site assessment before installation"],
   },
   {
-    slug: "commercial-solar",
-    title: "Commercial Solar",
-    icon: "building",
-    summary: "Solar installation for businesses that want to reduce what they buy from the grid.",
-    details: [
-      "Site assessment and quotation",
-      "Solar panels and inverters",
-      "Hybrid and battery storage options",
-      "Installation support",
-    ],
+    slug: "system-design-consultation",
+    title: "System Design & Consultation",
+    icon: "chart",
+    summary: "We look at your property and electricity use and recommend a suitable solar system.",
+    details: ["Site assessment", "Review of your electricity bill and usage", "System sizing and quotation"],
   },
   {
-    slug: "hybrid-solar",
-    title: "Hybrid Solar & Battery Storage",
-    icon: "battery",
-    summary: "Hybrid systems that combine solar panels, a hybrid inverter and battery storage.",
+    slug: "permits-documents",
+    title: "Permits & Documents Processing",
+    icon: "fileText",
+    summary: "Help preparing and processing the permits and documents for your solar project.",
     details: [
-      "Hybrid inverters",
-      "Wall-mounted battery storage",
-      "Solar panels",
-      "See our current packages below",
+      "Building Permit",
+      "Electrical Permit",
+      "Final Inspection Permit",
+      "Requirements can vary by project and electric cooperative",
     ],
   },
   {
     slug: "net-metering",
-    title: "Net Metering",
+    title: "Net Metering Assistance",
     icon: "meter",
-    summary: "Net-metering services and application assistance for NORECO 1 and NORECO 2 customers.",
+    summary: "Net-metering application assistance for NORECO 1 and NORECO 2 customers.",
     details: [
       "Net-metering application processing for NORECO 1 and NORECO 2",
       "Help preparing the advertised requirements",
@@ -64,35 +61,24 @@ export const services: Service[] = [
     ],
   },
   {
-    slug: "solar-street-lights",
-    title: "Solar Street Lights",
-    icon: "lamp",
-    summary: "All-in-one solar street lights with a built-in panel, LED light, battery and controller.",
-    details: [
-      "Dusk-to-dawn operation",
-      "Remote control",
-      "Weather-resistant design",
-      "Bulk orders and nationwide shipping",
-    ],
-  },
-  {
-    slug: "installation-support",
-    title: "Site Assessment & Installation Support",
-    icon: "wrench",
-    summary: "From site assessment and quotation to installation and support for your solar system.",
-    details: ["Site assessment", "Quotation for your property", "Solar installation", "Installation support"],
+    slug: "maintenance-after-sales",
+    title: "Maintenance & After-Sales Support",
+    icon: "headset",
+    summary: "Support after installation, including maintenance and help with questions about your system.",
+    details: ["Solar system maintenance", "After-sales support", "Help with questions about your system"],
   },
 ];
 
 /** Options in the quote form's "Service Interested In" field. */
+export const PRODUCT_INQUIRY_SERVICE = "Product Inquiry / Pre-Order (Inverters, Batteries)";
 export const serviceOptions = [
-  "Residential Solar",
-  "Commercial Solar",
-  "Hybrid Solar & Battery Storage",
+  "Solar System Supply",
+  "Solar Installation",
+  "System Design & Consultation",
+  "Permits & Documents Processing",
   "Net Metering Assistance",
-  "Solar Street Lights",
-  "Site Assessment / Quotation",
-  "Installation Support",
+  "Maintenance & After-Sales Support",
+  PRODUCT_INQUIRY_SERVICE,
   "Not sure yet",
 ];
 
@@ -105,7 +91,7 @@ export const installationProcess = [
   { title: "Site assessment", description: "We assess your property to recommend a suitable system." },
   { title: "Solar installation", description: "Our team installs your panels, inverter and any battery storage." },
   { title: "Net-metering application", description: "For NORECO 1 and NORECO 2 customers, we process your net-metering application." },
-  { title: "Installation support", description: "We support you after installation with questions about your system." },
+  { title: "After-sales support", description: "We support you after installation, including maintenance and questions about your system." },
 ];
 
 export type SolarPackage = {
@@ -157,8 +143,40 @@ export const solarPackages: SolarPackage[] = [
 
 export const PACKAGES_NOTE = "Prices and package availability are subject to confirmation and may change.";
 
-/** Brands the company publicly uses/promotes. Not an official partnership or certification. */
-export const brands = ["SRNE", "Deye", "LVTopsun"];
+/**
+ * Brands shown in the client's current promotional material (Oct 2026).
+ * "Offer or promote" only — NOT an official partnership, authorized
+ * dealership, certification or exclusive distributorship.
+ */
+export const brandGroups = [
+  { category: "Inverters", brands: ["Deye", "Solis", "GoodWe", "SRNE"] },
+  { category: "Batteries", brands: ["LVTopsun", "Puston", "SRNE", "DuroSel", "Deye"] },
+];
+
+/** Product lines for the "Solar Products & Pre-Orders" section. Availability is never implied. */
+export const productLines = [
+  {
+    title: "Inverters",
+    icon: "bolt" as IconName,
+    description: "Hybrid and grid-tied inverters for residential and commercial solar systems.",
+    brands: ["Deye", "Solis", "GoodWe", "SRNE"],
+  },
+  {
+    title: "Batteries",
+    icon: "battery" as IconName,
+    description: "Battery storage for hybrid solar systems and backup power.",
+    brands: ["LVTopsun", "Puston", "SRNE", "DuroSel", "Deye"],
+  },
+  {
+    title: "Solar system components",
+    icon: "panel" as IconName,
+    description: "Solar panels and the other parts that make up a complete solar system.",
+    brands: [] as string[],
+  },
+];
+
+export const PRODUCTS_NOTE =
+  "Pre-orders are available for inverters and batteries. Stock, models and prices change — ask us about current availability before ordering.";
 
 /** Publicly advertised street-light features (no model specifications yet). */
 export const streetLightFeatures = [

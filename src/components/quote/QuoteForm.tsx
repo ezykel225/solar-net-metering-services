@@ -16,6 +16,7 @@ import {
 } from "@/lib/quote";
 import { CONSENT_REQUIRED_MESSAGE, consentText } from "@/lib/privacy";
 import type { CalculatorQuoteInput } from "@/lib/solar-calculator";
+import { PRODUCT_INQUIRY_SERVICE } from "@/data/services";
 import { Icon } from "@/components/ui/Icon";
 import { FormField } from "./FormField";
 import styles from "./QuoteForm.module.css";
@@ -160,10 +161,15 @@ export function QuoteForm({ initialValues, calculator }: QuoteFormProps = {}) {
 
   return (
     <form ref={formRef} className={styles.form} onSubmit={handleSubmit} noValidate aria-describedby="quote-form-note">
-      {initialValues ? (
+      {initialValues && calculator ? (
         <p className={styles.prefilled}>
           <Icon name="chart" size={18} /> We’ve filled in some details from your Solar Calculator estimate. Please
           review them and add your contact details.
+        </p>
+      ) : initialValues?.service === PRODUCT_INQUIRY_SERVICE ? (
+        <p className={styles.prefilled}>
+          <Icon name="battery" size={18} /> Product inquiry: tell us which inverter, battery or system you’re looking
+          for in the message, and we’ll confirm availability and pricing.
         </p>
       ) : null}
 

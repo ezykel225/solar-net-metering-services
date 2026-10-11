@@ -6,11 +6,11 @@ import heroImage from "../../../public/images/hero.jpg";
 import styles from "./Hero.module.css";
 import { getSiteSettings } from "@/lib/cms";
 
-/** Confirmed offerings only. */
+/** Confirmed offerings only (client rebrand material, Oct 2026). */
 const highlights = [
-  "Site assessment and quotation",
+  "Solar systems, inverters & batteries",
+  "Installation, system design & permits",
   "Net-metering assistance for NORECO 1 & NORECO 2",
-  "Hybrid systems with battery storage",
 ];
 
 export async function Hero() {
@@ -20,20 +20,21 @@ export async function Hero() {
       <div className={`container ${styles.inner}`}>
         <div className={styles.copy}>
           <p className={styles.badge}>
-            <Icon name="mapPin" size={16} /> Serving Dumaguete City &amp; Negros Oriental
+            <Icon name="sun" size={16} /> Solar Products • Solar Services
           </p>
           <h1 id="hero-title">
-            Power Your Home <span className={styles.accent}>With Solar</span>
+            Solar Products &amp; <span className={styles.accent}>Professional Solar Solutions</span>
           </h1>
           <p className={styles.lead}>
-            Professional solar installation and net metering solutions for homes and businesses.
+            From solar system supply and installation to system design, permits, net-metering assistance, inverters,
+            batteries and after-sales support — based in Batinguel, Dumaguete City.
           </p>
           <div className={styles.ctas}>
             <ButtonLink href={QUOTE_HREF}>
               {settings.quoteCopy.cta} <Icon name="arrowRight" size={18} />
             </ButtonLink>
-            <ButtonLink href="/#how-it-works" variant="secondary">
-              Learn More
+            <ButtonLink href="/services#products" variant="secondary">
+              Products &amp; Pre-Orders
             </ButtonLink>
           </div>
           <ul className={styles.highlights}>

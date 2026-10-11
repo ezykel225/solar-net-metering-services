@@ -70,7 +70,7 @@ export function Header() {
       <div className={styles.topbar}>
         <div className={`container ${styles.topbarInner}`}>
           <p className={styles.topbarText}>
-            <Icon name="sun" size={16} /> Solar installation &amp; net-metering assistance
+            <Icon name="sun" size={16} /> Solar products &amp; solar services · Batinguel, Dumaguete City
           </p>
           <ul className={styles.topbarLinks}>
             <li>

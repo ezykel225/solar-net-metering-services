@@ -8,7 +8,7 @@
  * The policy is still a DRAFT structure until the owner/legal adviser supplies
  * the final wording (see src/app/(site)/privacy/page.tsx).
  */
-export const PRIVACY_POLICY_VERSION = "draft-2026-10-07";
+export const PRIVACY_POLICY_VERSION = "draft-2026-10-11"; // business renamed to EG Solar Products Trading
 
 /** Consent wording shown next to the required checkbox. */
 export const consentText = (businessName: string) =>

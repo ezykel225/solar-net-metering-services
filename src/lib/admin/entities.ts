@@ -210,7 +210,7 @@ export const entities: Record<EntityKey, EntityDef> = {
         maxLength: 80,
         pattern: PATH_SLUG,
         patternMessage: "Use lowercase letters, numbers and hyphens only, e.g. residential-solar.",
-        help: "Used in links like /services#residential-solar.",
+        help: "Used in links like /services#solar-installation.",
       },
       { name: "description", label: "Description", type: "textarea", required: true, maxLength: 600, rows: 3, full: true },
       { name: "details", label: "Bullet points (Services page)", type: "list", maxItems: 12, maxLength: 200, full: true, placeholder: "One item per line" },

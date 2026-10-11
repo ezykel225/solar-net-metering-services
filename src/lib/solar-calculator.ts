@@ -13,6 +13,7 @@
  * them as guaranteed savings.
  */
 import { parseBillAmount, type QuoteRequest } from "@/lib/quote";
+import { PRODUCT_INQUIRY_SERVICE } from "@/data/services";
 
 /* ------------------------------ power rates ------------------------------ */
 
@@ -641,6 +642,9 @@ export function quotePrefillFromParams(
 ): { values: Partial<QuoteRequest>; calculator: CalculatorQuoteInput | null } | null {
   const prefill: Partial<QuoteRequest> = {};
 
+  // "Ask About Product Availability" links carry ?service=product.
+  if (params.get("service") === "product") prefill.service = PRODUCT_INQUIRY_SERVICE;
+
   const billRaw = params.get("bill") ?? "";
   if (/^\d{1,9}$/.test(billRaw) && validateBill(billRaw, config) === null) {
     prefill.monthlyBill = Number(billRaw).toLocaleString("en-PH");
@@ -653,7 +657,8 @@ export function quotePrefillFromParams(
   const batteryKey = params.get("battery");
   const battery = isOption(batteryOptions, batteryKey) ? (batteryKey as BatteryPreference) : null;
   if (battery) {
-    prefill.service = battery === "none" ? `${propertyType ?? "Residential"} Solar` : "Hybrid Solar & Battery Storage";
+    // Calculator visitors are looking at a full system, whatever the battery choice.
+    prefill.service = "Solar Installation";
   }
 
   const sizeMatch = /^(\d{1,3}(?:\.\d)?)-(\d{1,3}(?:\.\d)?)$/.exec(params.get("size") ?? "");

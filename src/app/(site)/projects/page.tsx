@@ -9,7 +9,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Projects & Results",
   description:
-    "Solar installations by Solar Net Metering Services in Negros Oriental, including a 10kW hybrid system with 15kWh battery storage in Siaton.",
+    "Solar installations by EG Solar Products Trading in Negros Oriental, including a 10kW hybrid system with 15kWh battery storage in Siaton.",
   path: "/projects",
 });
 

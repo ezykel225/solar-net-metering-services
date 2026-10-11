@@ -79,7 +79,7 @@ export function AdminShell({ email, newQuotes, children }: { email: string | nul
             <Icon name="sun" size={20} />
           </span>
           <span>
-            Solar Net Metering
+            EG Solar Products
             <small>Admin</small>
           </span>
         </Link>

@@ -45,3 +45,12 @@
 .onDark .sub {
   color: var(--color-orange);
 }
+
+/* Official logo image: fixed height, width follows the file's aspect ratio. */
+.official {
+  display: block;
+  width: auto;
+  height: 44px;
+  max-width: min(240px, 60vw);
+  object-fit: contain;
+}

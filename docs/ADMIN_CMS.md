@@ -26,6 +26,7 @@ Keep the secure defaults:
 | `supabase/migrations/20261007090100_storage_website_media.sql` | `website-media` storage bucket and its policies |
 | `supabase/migrations/20261007090200_seed_confirmed_content.sql` | Confirmed business content (safe to re-run; it never overwrites edits) |
 | `supabase/migrations/20261007090300_revoke_extra_table_privileges.sql` | Removes TRUNCATE/REFERENCES/TRIGGER/MAINTAIN that hosted projects give API roles by default, and locks down Supabase's `rls_auto_enable()` helper |
+| `supabase/migrations/20261011090000_rebrand_eg_solar_products_trading.sql` | Rebrand: business settings, the six new service categories (old ones deactivated), brands/pre-order FAQs. Safe to re-run; leaves admin edits alone |
 | `supabase/migrations/20261007090500_tighten_promotion_cta_url.sql` | Promotion button links: refuses `/\host`-style links that would leave the site |
 | `supabase/migrations/20261007090400_admin_dashboard_stats.sql` | `admin_dashboard_stats()`: all dashboard counts in one request (runs with the caller's permissions, returns nothing to non-admins) |
 
@@ -38,12 +39,12 @@ You can apply them in either of two ways:
   ```
 - **Dashboard:** paste each file into **SQL Editor** and run it.
 
-**Status (7 Oct 2026):** all six migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
+**Status (7 Oct 2026):** all seven migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
 They were applied with the Supabase MCP tool, so the hosted migration history uses different version numbers than these file names.
 Before using `supabase db push` on that project, mark the files as applied, or the CLI will try to run them again:
 
 ```bash
-supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400 20261007090500
+supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400 20261007090500 20261011090000
 ```
 
 Security check after applying:
@@ -103,7 +104,7 @@ for Production and Preview. `.env.example` lists them all. Never commit real val
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Anon key or publishable key (`sb_publishable_…`). Access is limited by RLS. |
 | `SUPABASE_SERVICE_ROLE_KEY` | **No, server only** | Service role or secret key (`sb_secret_…`). Used only by `/api/quote` to save quotes. |
 | `RESEND_API_KEY` | **No, server only** | Optional. Sends the new-quote email. |
-| `QUOTE_NOTIFY_TO` | Server | Recipient of quote emails. Defaults to solarandnetmeteringservices@gmail.com. |
+| `QUOTE_NOTIFY_TO` | Server | Recipient of quote emails. Defaults to egsolarproductstrading@gmail.com. If this variable is set in Vercel to the old address, change it there. |
 | `QUOTE_NOTIFY_FROM` | Server | Sender on a Resend-verified domain, for example `Website <quotes@yourdomain.com>` |
 
 Rules:

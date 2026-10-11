@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site";
  * Environment (server-only):
  *   RESEND_API_KEY      — required to send; without it, sending is skipped (the
  *                          quote is still saved and visible in Admin → Quote Requests)
- *   QUOTE_NOTIFY_TO     — recipient (default: solarandnetmeteringservices@gmail.com)
+ *   QUOTE_NOTIFY_TO     — recipient (default: egsolarproductstrading@gmail.com)
  *   QUOTE_NOTIFY_FROM   — verified sender, e.g. "Website <quotes@yourdomain.com>"
  *                          (default: Resend's test sender, which only delivers to the
  *                          Resend account owner's own address)
@@ -32,8 +32,8 @@ const escapeHtml = (s: string) =>
 export async function sendQuoteNotification(q: QuoteEmail): Promise<"sent" | "skipped" | "failed"> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) return "skipped";
-  const to = process.env.QUOTE_NOTIFY_TO?.trim() || "solarandnetmeteringservices@gmail.com";
-  const from = process.env.QUOTE_NOTIFY_FROM?.trim() || "Solar Net Metering Website <onboarding@resend.dev>";
+  const to = process.env.QUOTE_NOTIFY_TO?.trim() || "egsolarproductstrading@gmail.com";
+  const from = process.env.QUOTE_NOTIFY_FROM?.trim() || "EG Solar Products Trading Website <onboarding@resend.dev>";
   const bill = `₱${q.monthlyBill.toLocaleString("en-PH")}`;
   const adminUrl = `${siteConfig.url}/admin/quotes/${q.id}`;
   const rows: [string, string][] = [

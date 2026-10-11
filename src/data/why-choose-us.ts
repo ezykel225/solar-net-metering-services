@@ -20,9 +20,9 @@ export const reasons: Reason[] = [
     description: "Hybrid solar systems with inverters and battery storage, as well as standard solar installations.",
   },
   {
-    title: "Brands We Work With",
+    title: "Solar Products & Services",
     icon: "shield",
-    description: "We install and promote products from brands including SRNE, Deye and LVTopsun.",
+    description: "Inverters and batteries from brands including Deye, Solis, GoodWe, SRNE, LVTopsun, Puston and DuroSel — plus installation and support.",
   },
   {
     title: "Lower Electricity Costs",

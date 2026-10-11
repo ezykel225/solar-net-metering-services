@@ -40,6 +40,23 @@ export function buildMetadata({ title, description, path, image }: PageMetadataI
   };
 }
 
+/**
+ * Structured address. The confirmed location "Batinguel, Dumaguete City, Philippines"
+ * becomes barangay + city; any other text is kept as a plain street address.
+ */
+function postalAddress(address: string) {
+  const confirmed = /^\s*Batinguel,\s*Dumaguete City/i.test(address);
+  return confirmed
+    ? {
+        "@type": "PostalAddress",
+        streetAddress: "Batinguel",
+        addressLocality: "Dumaguete City",
+        addressRegion: "Negros Oriental",
+        addressCountry: "PH",
+      }
+    : { "@type": "PostalAddress", streetAddress: address, addressCountry: "PH" };
+}
+
 /** LocalBusiness structured data (JSON-LD) rendered in the root layout. */
 export function localBusinessJsonLd(settings: SiteSettings, areaServed: string[] = []) {
   return {
@@ -52,8 +69,16 @@ export function localBusinessJsonLd(settings: SiteSettings, areaServed: string[]
     telephone: settings.phoneIntl,
     email: settings.email,
     sameAs: [settings.facebook],
-    ...(settings.address && { address: settings.address }),
-    knowsAbout: ["Solar installation", "Hybrid solar systems", "Battery storage", "Net metering", "Solar street lights"],
+    ...(settings.address && { address: postalAddress(settings.address) }),
+    knowsAbout: [
+      "Solar products",
+      "Solar systems",
+      "Solar inverters",
+      "Solar batteries",
+      "Solar installation",
+      "Solar system design",
+      "Net metering",
+    ],
     ...(areaServed.length > 0 && { areaServed }),
   };
 }

@@ -69,10 +69,21 @@ export async function QuoteSection({ headingLevel = "h2" }: { headingLevel?: "h1
                 <Icon name="mapPin" size={20} />
               </span>
               <span>
-                <small>Service area</small>
+                <small>{settings.address ? "Business location" : "Service area"}</small>
                 {settings.address ?? settings.serviceAreaShort}
               </span>
             </li>
+            {settings.address ? (
+              <li>
+                <span className={styles.contactIcon}>
+                  <Icon name="grid" size={20} />
+                </span>
+                <span>
+                  <small>Service area</small>
+                  {settings.serviceAreaShort}
+                </span>
+              </li>
+            ) : null}
             {settings.hours ? (
               <li>
                 <span className={styles.contactIcon}>

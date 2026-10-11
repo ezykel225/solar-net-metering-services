@@ -28,7 +28,7 @@ export async function FaqSection({ items, limit, showHeading = true }: FaqSectio
               align="left"
               eyebrow="FAQs"
               title="Frequently Asked Questions"
-              intro="Answers to common questions about solar installation and net metering."
+              intro="Answers to common questions about solar products, installation and net metering."
             />
           ) : (
             <h2 id="faq-title" className="sr-only">

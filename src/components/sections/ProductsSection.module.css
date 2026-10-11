@@ -1,0 +1,80 @@
+.section {
+  scroll-margin-top: var(--header-h);
+}
+
+.grid {
+  display: grid;
+  gap: 1.25rem;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  background: var(--color-orange-soft);
+  color: var(--color-orange-text);
+}
+
+.title {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.card p {
+  color: var(--color-text-muted);
+}
+
+.brands {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.brandsLabel {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.note {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  max-width: 720px;
+  margin: 1.5rem auto 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.note svg {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

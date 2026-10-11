@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/layout/PageHero";
 import { ServicesSection } from "@/components/sections/ServicesSection";
+import { ProductsSection } from "@/components/sections/ProductsSection";
 import { PackagesSection } from "@/components/sections/PackagesSection";
 import { PromotionsSection } from "@/components/sections/PromotionsSection";
 import { BrandsSection } from "@/components/sections/BrandsSection";
@@ -8,9 +9,9 @@ import { CtaBanner } from "@/components/sections/CtaBanner";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
-  title: "Solar Services & Packages",
+  title: "Solar Products & Services",
   description:
-    "Residential and commercial solar installation, hybrid systems with battery storage, net-metering assistance for NORECO 1 and NORECO 2, and solar street lights.",
+    "Solar system supply, inverters and batteries, solar installation, system design and consultation, permits and documents, net-metering assistance, and maintenance and after-sales support in Dumaguete City.",
   path: "/services",
 });
 
@@ -20,10 +21,11 @@ export default function ServicesPage() {
       <PageHero
         crumb="Services"
         path="/services"
-        title="Our Solar Services"
-        intro="Solar panels, inverters, battery storage, net-metering assistance and solar street lights — from site assessment to installation support."
+        title="Solar Products & Services"
+        intro="Solar systems, inverters and batteries — plus installation, system design, permits, net-metering assistance and after-sales support."
       />
       <ServicesSection detailed showHeading={false} />
+      <ProductsSection />
       <PromotionsSection />
       <PackagesSection />
       <BrandsSection />

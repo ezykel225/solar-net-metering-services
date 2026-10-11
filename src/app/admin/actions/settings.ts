@@ -29,7 +29,7 @@ export async function saveBusinessSettingsAction(_prev: FormState, form: FormDat
   const errors: Record<string, string> = {};
   if (v.business_name.length < 2 || v.business_name.length > 120) errors.business_name = "Enter the business name (2–120 characters).";
   if (v.phone_display.length < 7 || v.phone_display.length > 30) errors.phone_display = "Enter the phone number as it should appear.";
-  if (!/^\+[1-9][0-9]{7,14}$/.test(v.phone_e164)) errors.phone_e164 = "Use international format, e.g. +639977310543.";
+  if (!/^\+[1-9][0-9]{7,14}$/.test(v.phone_e164)) errors.phone_e164 = "Use international format, e.g. +639552704060.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.email) || v.email.length > 254) errors.email = "Enter a valid email address.";
   for (const k of ["facebook_url", "messenger_url"] as const) {
     if (v[k] && !/^https:\/\/[^\s]+$/.test(v[k]!)) errors[k] = "Enter a full link starting with https://";

@@ -1,6 +1,7 @@
-# Solar Net Metering Services — Website
+# EG Solar Products Trading — Website
 
-Marketing website for **Solar Net Metering Services**, built with Next.js (App Router) and TypeScript.
+Marketing website for **EG Solar Products Trading** (formerly presented as "Solar Net Metering Services"), built with Next.js (App Router) and TypeScript.
+The repository, Supabase project and branch keep their original `solar-net-metering-services` names; these are technical identifiers only.
 Content, calculator settings and quote requests are managed in a protected admin area at `/admin`, backed by Supabase (Auth, Postgres with RLS, Storage).
 Setup, security model and operations are documented in **[`docs/ADMIN_CMS.md`](docs/ADMIN_CMS.md)**.
 Without Supabase variables, the public site still works with its built-in content.

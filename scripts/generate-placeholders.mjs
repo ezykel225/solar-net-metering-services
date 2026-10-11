@@ -174,11 +174,11 @@ function ogScene() {
     <rect width="560" height="${h}" fill="#0b1f3a"/>
     <polygon points="560,0 640,0 560,${h}" fill="#0b1f3a"/>
     <rect x="70" y="120" width="70" height="8" fill="#f5891f"/>
-    <text x="70" y="210" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#ffffff">Solar Net</text>
-    <text x="70" y="275" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#ffffff">Metering</text>
-    <text x="70" y="340" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#f5891f">Services</text>
-    <text x="70" y="420" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#c9d6e8">Solar installation &amp; net metering</text>
-    <text x="70" y="456" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#c9d6e8">for homes and businesses</text>
+    <text x="70" y="210" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#ffffff">EG Solar</text>
+    <text x="70" y="275" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#ffffff">Products</text>
+    <text x="70" y="340" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#f5891f">Trading</text>
+    <text x="70" y="420" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#c9d6e8">Solar products &amp; solar services</text>
+    <text x="70" y="456" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#c9d6e8">Batinguel, Dumaguete City</text>
   </svg>`;
 }
 

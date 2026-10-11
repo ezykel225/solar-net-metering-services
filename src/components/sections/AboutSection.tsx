@@ -7,12 +7,12 @@ import aboutImage from "../../../public/images/about.jpg";
 import styles from "./AboutSection.module.css";
 import { getSiteSettings } from "@/lib/cms";
 
-/** Confirmed offerings only. */
+/** Confirmed offerings only (client rebrand material, Oct 2026). */
 const points = [
-  "Residential and commercial solar installation",
-  "Hybrid solar systems with inverters and battery storage",
-  "Net-metering application processing for NORECO 1 and NORECO 2",
-  "Site assessment, quotation and installation support",
+  "Solar systems, inverters and batteries, including pre-orders",
+  "Solar installation, system design and consultation",
+  "Permits & documents processing and net-metering assistance (NORECO 1 & 2)",
+  "Maintenance and after-sales support",
 ];
 
 export async function AboutSection({ showLink = true }: { showLink?: boolean }) {
@@ -38,8 +38,10 @@ export async function AboutSection({ showLink = true }: { showLink?: boolean }) 
             id="about-title"
             align="left"
             eyebrow="About Us"
-            title="Your Local Partner for Solar & Net Metering"
-            intro={`${settings.name} helps homeowners and businesses switch to solar energy. ${settings.serviceAreaSummary}`}
+            title="Solar Products & Solar Services from Dumaguete City"
+            intro={`${settings.name} supplies solar products and provides solar services for homes and businesses${
+              settings.address ? `, from ${settings.address}` : ""
+            }. ${settings.serviceAreaSummary}`}
           />
           <ul className={styles.points}>
             {points.map((p) => (

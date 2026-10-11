@@ -20,8 +20,8 @@ export async function ServicesSection({ detailed = false, showHeading = true }: 
           <SectionHeading
             id="services-title"
             eyebrow="What We Do"
-            title="Solar Solutions for Every Property"
-            intro="From site assessment and quotation to installation and net-metering assistance, we offer solar solutions for homes and businesses."
+            title="Solar Products & Services"
+            intro="From solar system supply and installation to system design, permits, net-metering assistance and after-sales support — for homes and businesses."
           />
         ) : (
           // Keeps the heading outline intact (h1 → h2 → h3) when the page hero already introduces the section.
