@@ -12,6 +12,9 @@ function resolveSiteUrl(): string {
   return url.replace(/\/$/, "");
 }
 
+/** True when NEXT_PUBLIC_SITE_URL is set (links in notification emails use it). */
+export const siteUrlConfigured = Boolean(process.env.NEXT_PUBLIC_SITE_URL?.trim());
+
 /**
  * Central business information. Every page, the footer, metadata and
  * structured data read from here, so official details only need to be

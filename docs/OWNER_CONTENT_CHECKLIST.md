@@ -1,6 +1,36 @@
 # Owner Content Checklist
 
-> **Rebrand (Oct 2026):** the business is now **EG Solar Products Trading**, 0955 270 4060, egsolarproductstrading@gmail.com, Bulfas Compound, Dumaguete – Palinpinon Rd., Dumaguete City, 6200 Negros Oriental. Items below that mention the previous name, number or email are historical. Still needed: official logo file, real promotional images and project photos, confirmation of the Facebook/Messenger links, and whether solar street lights are still offered.
+## Launch checklist (11 October 2026) — current, replaces the older notes below
+
+Every item still visible on the website was checked against the live Supabase content and the code.
+Nothing uncertain was changed; each item is classified:
+
+- **CONFIRMED**: supplied or confirmed by the owner; no action.
+- **NEEDS OWNER CONFIRMATION**: shown on the site, but the owner must confirm (or change it in the admin).
+- **REMOVE BEFORE LAUNCH**: should not go live as it is unless the owner confirms it.
+
+| # | Item | Currently on the site | Status | Owner action |
+| --- | --- | --- | --- | --- |
+| 1 | Privacy Policy text (`/privacy`, version 2026-10-11) | Full policy drafted from what the site actually does; page says "awaiting final review" and is not indexed | **NEEDS OWNER CONFIRMATION — required before launch** | Read and approve (or have it reviewed). Then set `PRIVACY_POLICY_APPROVED = true` in `src/lib/privacy.ts` (change `PRIVACY_POLICY_VERSION` if the text changes) |
+| 2 | Testimonial (Ma’am Jing T.) | Quote thanks "Solar and Netmetering Services" (previous business name) | **NEEDS OWNER CONFIRMATION** | Keep as is (genuine quote), or unpublish it in Admin → Testimonials |
+| 3 | Solar street lights | Service card hidden, but the published FAQ "Do you sell solar street lights?" answers *Yes* | **REMOVE BEFORE LAUNCH** unless still offered | If not offered: Admin → FAQs → unpublish that FAQ. If offered: reactivate Admin → Services → Solar Street Lights |
+| 4 | Siaton project photos | Three photos uploaded in Admin → Projects, but "Image is an illustration" is still ticked, so the page shows an "Illustration" label and hides the gallery | **NEEDS OWNER CONFIRMATION** | If they are real photos of this installation: Admin → Projects → Siaton → untick "Image is an illustration" and save |
+| 5 | Package prices and availability | 3kW Hybrid ₱180,000 and 5kW Hybrid ₱330,000 (from earlier posts), with "subject to confirmation" note | **NEEDS OWNER CONFIRMATION** | Confirm prices/inclusions still current, edit or unpublish in Admin → Solar Packages |
+| 6 | "Get a Free Quote" | Quotations shown as free across the site | **NEEDS OWNER CONFIRMATION** | If not free: Admin → Business Settings → untick "Quotations are free" |
+| 7 | Facebook / Messenger links | Page ID 61567843505161 (carried over from the previous brand) | **NEEDS OWNER CONFIRMATION** | Confirm it is EG Solar Products Trading’s page, or paste the new links in Admin → Business Settings |
+| 8 | Business hours | Hidden (not supplied) | **NEEDS OWNER CONFIRMATION** (optional) | Add in Admin → Business Settings if you want them shown |
+| 9 | Calculator power rates | NORECO rates ₱14.3522 / ₱13.5024 / ₱10.9692 per kWh, entered 7 Oct 2026; **billing period empty**; NORECO 1 or 2 not stated | **NEEDS OWNER CONFIRMATION** | Admin → Calculator Settings: confirm the rates, fill in the billing period and which cooperative they come from |
+| 10 | Net-metering export credit | 50% of the retail rate, marked "assumption not yet verified" on the calculator page | **NEEDS OWNER CONFIRMATION** (disclosed, not blocking) | Provide an official NORECO reference, or keep the visible "not verified" note |
+| 11 | Brands offered/promoted | Inverters: Deye, Solis, GoodWe, SRNE. Batteries: LVTopsun, Puston, SRNE, DuroSel, Deye ("offer or promote", no partnership claim) | CONFIRMED | Tell us if the list changes |
+| 12 | Services list | Solar System Supply; Solar Installation; System Design & Consultation; Permits & Documents Processing; Net Metering Assistance; Maintenance & After-Sales Support | CONFIRMED | — |
+| 13 | Promotions | None active | CONFIRMED | Add in Admin → Promotions when needed |
+| 14 | Business name, phone, email, address, Google Maps listing, Plus Code, map | EG Solar Products Trading · 0955 270 4060 · egsolarproductstrading@gmail.com · Bulfas Compound, Dumaguete – Palinpinon Rd., Dumaguete City, 6200 Negros Oriental · maps.app.goo.gl/81yyiSJeFAdaxvHN9 · 875R+JP · map embed entered in the admin | CONFIRMED | — |
+| 15 | Projects: Tierra Alta (real photos), Sibulan (illustration, labelled) | As supplied | CONFIRMED | Send real Sibulan photos when available |
+| 16 | Quote email notifications | Code ready; needs Resend setup (see `docs/ADMIN_CMS.md` → Email) | **NEEDS OWNER ACTION** | Verify a sending domain in Resend and set `RESEND_API_KEY`, `QUOTE_NOTIFY_FROM`, `QUOTE_NOTIFY_TO` in Vercel |
+
+Older notes follow for history; where they disagree with the table above, the table is current.
+
+---
 
 Everything below must come from the business owner. Nothing here should be guessed or invented.
 Each item lists the exact file where it will be updated. Tick items off as the information arrives.

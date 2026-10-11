@@ -19,7 +19,7 @@ Three levels:
 | Business name | EG Solar Products Trading | `src/lib/site.ts`, Admin → Business Settings |
 | Mobile | 0955 270 4060 (`tel:+639552704060`) | same |
 | Email | egsolarproductstrading@gmail.com | same |
-| Business location | Bulfas Compound, Dumaguete – Palinpinon Rd., Dumaguete City, 6200 Negros Oriental · Plus Code 875R+JP · Google Maps https://maps.app.goo.gl/81yyiSJeFAdaxvHN9 (matches the Google Business Profile, Oct 2026). Map embed URL and coordinates not yet entered | `office_address`, `google_maps_url`, `plus_code`; `google_maps_embed_url`, `latitude`/`longitude` empty |
+| Business location | Bulfas Compound, Dumaguete – Palinpinon Rd., Dumaguete City, 6200 Negros Oriental · Plus Code 875R+JP · Google Maps https://maps.app.goo.gl/81yyiSJeFAdaxvHN9 (matches the Google Business Profile, Oct 2026). Map embed link entered by the owner in Admin → Business Settings; coordinates not entered | `office_address`, `google_maps_url`, `plus_code`, `google_maps_embed_url`; `latitude`/`longitude` empty |
 | Services | Solar System Supply; Solar Installation; System Design & Consultation; Permits & Documents Processing; Net Metering Assistance; Maintenance & After-Sales Support | `src/data/services.ts`, Admin → Services |
 | Products & pre-orders | Inverters, batteries and solar system components; pre-orders for inverters and batteries | `src/data/services.ts` (`productLines`), `ProductsSection` |
 | Brands offered/promoted | Inverters: Deye, Solis, GoodWe, SRNE. Batteries: LVTopsun, Puston, SRNE, DuroSel, Deye. No partnership implied | `src/data/services.ts` (`brandGroups`) |
@@ -27,8 +27,12 @@ Three levels:
 | Wide brand banner | Supplied; homepage band under the hero (whole image, not cropped) and the social-share image (fitted into 1200×630 on navy) | `public/images/brand/eg-solar-products-trading-banner.jpg`, `eg-solar-og.jpg` |
 | Pre-order poster | Supplied; Solar Products & Pre-Orders section. Its printed slogans ("best price", "100% genuine", delivery) are artwork only, not website text | `public/images/brand/eg-solar-preorder-inverters-batteries.jpg` |
 | Tierra Alta, Valencia project | Real client photos (5 received: 2 rooftop, 2 inverter/battery, 1 net meter); 10.8kW array, 12kW hybrid inverter, 32kWh storage, net metering. A 6th photo (equipment with a person) was shown in chat but no file was received — upload it in Admin → Projects if wanted | `public/images/projects/tierra-alta/`, Admin → Projects |
-| Siaton project | Updated to "Siaton 10kW Hybrid Solar Installation" — 10kW Hybrid Solar System, 300Ah LiFePO₄ Battery (client caption, Oct 2026). Three real photos (rooftop, indoor setup, indoor setup with a person) were shown in chat but **no files were received**; the illustration and its label stay until they are added | Admin → Projects |
+| Siaton project | "Siaton 10kW Hybrid Solar Installation" — 10kW Hybrid Solar System, 300Ah LiFePO₄ Battery (client caption, Oct 2026). Three photos have since been uploaded in Admin → Projects, but "Image is an illustration" is still ticked — see the launch checklist | Admin → Projects |
 | Real project photos (Siaton, Sibulan), hero and About photos | **Still needed as files** — illustrations remain, labelled as illustrations | `public/images/` |
+
+| Launch status (11 Oct 2026) | Items still needing the owner are listed, classified, in [`OWNER_CONTENT_CHECKLIST.md`](OWNER_CONTENT_CHECKLIST.md) → *Launch checklist* | — |
+| Privacy Policy | Full text drafted from what the site actually does (version 2026-10-11); **awaiting owner approval** (`PRIVACY_POLICY_APPROVED` in `src/lib/privacy.ts`) | `src/app/(site)/privacy/page.tsx` |
+| Quote email notifications | Implemented (Resend, server-only, never blocks or loses a quote); needs Resend account setup and env vars | `src/lib/notifications/email.ts`, `docs/ADMIN_CMS.md` |
 
 Rows below that still show the previous name, number or email are kept as history; the values above replace them.
 
@@ -98,8 +102,8 @@ Rows below that still show the previous name, number or email are kept as histor
 | More projects and testimonials | Only confirmed ones shown | `src/data/projects.ts`, `src/data/testimonials.ts` |
 | Street-light model specifications | Not shown (optional) | `src/data/services.ts` |
 | Net-metering timelines and fees | Not stated | `src/data/faqs.ts` |
-| Privacy Policy text | Page structure at `/privacy` (noindex, sections marked "Pending"); the consent checkbox is live and required | `src/app/(site)/privacy/page.tsx`, `src/lib/privacy.ts` (`PRIVACY_POLICY_VERSION`) |
-| Quote email notification | Quotes are saved to Supabase; email needs a Resend API key and a verified sender domain | `docs/ADMIN_CMS.md` §2 |
+| Privacy Policy text | Drafted in full (version 2026-10-11); awaiting owner approval, noindex until approved | `src/app/(site)/privacy/page.tsx`, `src/lib/privacy.ts` |
+| Quote email notification | Implemented; needs a Resend API key and a verified sender domain | `docs/ADMIN_CMS.md` §2 |
 | Final domain | Not set | `NEXT_PUBLIC_SITE_URL` (Vercel) |
 
 ## Asset replacement guide

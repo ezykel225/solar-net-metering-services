@@ -129,6 +129,19 @@ Behaviour when variables are missing:
 3. Set `QUOTE_NOTIFY_FROM` to an address on that domain.
 
 Gmail addresses can't be used as the sender. Until a domain is verified, quotes are only visible in the admin.
+4. Set `QUOTE_NOTIFY_TO=egsolarproductstrading@gmail.com` (the recipient) and `NEXT_PUBLIC_SITE_URL` (the email then
+   links straight to the request in the admin).
+5. Redeploy, send one test quote from the Contact page, and check that the email arrives.
+
+The email is sent after the quote is saved and after the visitor sees the success message, so a slow or failed
+email never loses a quote or shows an error to the visitor. Problems appear only in the Vercel function logs:
+
+| Log line | Meaning |
+| --- | --- |
+| `[quote] RESEND_API_KEY not set: notification email skipped` | No API key configured |
+| `[quote] QUOTE_NOTIFY_FROM not set: using Resend's test sender…` | Falls back to `onboarding@resend.dev`, which only delivers to the Resend account owner's own address |
+| `[quote] notification email failed (HTTP 403, validation_error)` | Resend refused it, usually an unverified sender domain. The log shows only the status and error type, never addresses or form data |
+| `[quote] notification email failed (network error)` | Resend could not be reached in time (8-second limit) |
 
 ### Vercel
 

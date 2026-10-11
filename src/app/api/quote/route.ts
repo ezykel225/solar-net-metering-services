@@ -193,7 +193,7 @@ export async function POST(request: Request) {
       consented_at: consentedAt,
       privacy_policy_version: PRIVACY_POLICY_VERSION,
     })
-    .select("id")
+    .select("id, created_at")
     .single();
 
   if (error || !data) {
@@ -216,8 +216,10 @@ export async function POST(request: Request) {
       message: insert.message,
       fromCalculator: !!calcInput,
       estimateSummary: estimate
-        ? `${formatRange(estimate.systemSizeKw, "kW", 1)} system, ${formatRange(estimate.panelCount, "panels")}, bill reduction ${formatPesoRange(estimate.billReduction)} per month (estimate)`
+        ? `${formatRange(estimate.systemSizeKw, "kW", 1)} system, ${formatRange(estimate.panelCount, "panels")}, bill reduction ${formatPesoRange(estimate.billReduction)} per month (estimate). ` +
+          `Based on about ${Math.round(estimate.monthlyUsageKwh).toLocaleString("en-PH")} kWh/month at ₱${estimate.rate.ratePerKwh.toFixed(2)}/kWh (${estimate.rate.label}${estimate.rate.approximate ? ", approximate" : ""}); ${estimate.systemType}; ${estimate.batterySuggestion}.`
         : null,
+      submittedAt: data.created_at,
     });
     if (result === "skipped") console.warn("[quote] RESEND_API_KEY not set: notification email skipped");
   });
