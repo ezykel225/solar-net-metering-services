@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { Project } from "@/data/projects";
 import { Icon } from "@/components/ui/Icon";
+import { ProjectPhotos } from "./ProjectPhotos";
 import styles from "./Projects.module.css";
 
 export function ProjectCard({ project }: { project: Project }) {
@@ -48,6 +49,7 @@ export function ProjectCard({ project }: { project: Project }) {
           ) : null}
         </p>
         <p className={styles.description}>{project.description}</p>
+        {project.gallery && project.gallery.length > 1 ? <ProjectPhotos title={project.title} photos={project.gallery} /> : null}
       </div>
     </article>
   );

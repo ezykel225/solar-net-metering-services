@@ -18,6 +18,7 @@ export const serviceAreas: ServiceArea[] = [
   { slug: "dumaguete-city", name: "Dumaguete City", region: "Negros Oriental" },
   { slug: "sibulan", name: "Sibulan", region: "Negros Oriental" },
   { slug: "siaton", name: "Siaton", region: "Negros Oriental" },
+  { slug: "valencia", name: "Valencia", region: "Negros Oriental" },
   { slug: "siquijor", name: "Siquijor", region: "Siquijor" },
 ];
 

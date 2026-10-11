@@ -9,7 +9,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Projects & Results",
   description:
-    "Solar installations by EG Solar Products Trading in Negros Oriental, including a 10kW hybrid system with 15kWh battery storage in Siaton.",
+    "Solar installations by EG Solar Products Trading in Negros Oriental, including a hybrid solar and net-metering system with a 10.8kW array, 12kW hybrid inverter and 32kWh battery storage in Tierra Alta, Valencia.",
   path: "/projects",
 });
 

@@ -26,6 +26,7 @@ Keep the secure defaults:
 | `supabase/migrations/20261007090100_storage_website_media.sql` | `website-media` storage bucket and its policies |
 | `supabase/migrations/20261007090200_seed_confirmed_content.sql` | Confirmed business content (safe to re-run; it never overwrites edits) |
 | `supabase/migrations/20261007090300_revoke_extra_table_privileges.sql` | Removes TRUNCATE/REFERENCES/TRIGGER/MAINTAIN that hosted projects give API roles by default, and locks down Supabase's `rls_auto_enable()` helper |
+| `supabase/migrations/20261011100000_project_tierra_alta.sql` | Tierra Alta project with real photos (main + 4 gallery). Inserted as **draft** — publish in Admin → Projects after deploying the site version that contains `public/images/projects/tierra-alta/` |
 | `supabase/migrations/20261011090000_rebrand_eg_solar_products_trading.sql` | Rebrand: business settings, the six new service categories (old ones deactivated), brands/pre-order FAQs. Safe to re-run; leaves admin edits alone |
 | `supabase/migrations/20261007090500_tighten_promotion_cta_url.sql` | Promotion button links: refuses `/\host`-style links that would leave the site |
 | `supabase/migrations/20261007090400_admin_dashboard_stats.sql` | `admin_dashboard_stats()`: all dashboard counts in one request (runs with the caller's permissions, returns nothing to non-admins) |
@@ -39,12 +40,12 @@ You can apply them in either of two ways:
   ```
 - **Dashboard:** paste each file into **SQL Editor** and run it.
 
-**Status (7 Oct 2026):** all seven migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
+**Status (7 Oct 2026):** all eight migrations are applied to the hosted project `solar-net-metering-services` (CAPSTONE org, ref `miastsvhbnrfogijyhcp`).
 They were applied with the Supabase MCP tool, so the hosted migration history uses different version numbers than these file names.
 Before using `supabase db push` on that project, mark the files as applied, or the CLI will try to run them again:
 
 ```bash
-supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400 20261007090500 20261011090000
+supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400 20261007090500 20261011090000 20261011100000
 ```
 
 Security check after applying:

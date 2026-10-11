@@ -75,6 +75,7 @@ type ProjectRow = {
   main_image_path: string | null;
   main_image_alt: string | null;
   image_is_illustration: boolean;
+  additional_image_paths: string[] | null;
   is_featured: boolean;
 };
 
@@ -99,7 +100,20 @@ function projectFromRow(row: ProjectRow): Project {
     imageAlt: row.main_image_alt ?? "",
     imageIsIllustration: row.image_is_illustration,
     featured: row.is_featured,
+    gallery: galleryFromRow(row),
   };
+}
+
+/** Main image + additional photos, only when they are real photos (never illustrations). */
+function galleryFromRow(row: ProjectRow) {
+  if (row.image_is_illustration) return [];
+  const paths = [row.main_image_path, ...(row.additional_image_paths ?? [])].filter((p): p is string => !!p);
+  return paths
+    .map((p, i) => ({
+      src: mediaUrl(p),
+      alt: i === 0 && row.main_image_alt ? row.main_image_alt : `${row.title} — photo ${i + 1} of ${paths.length}`,
+    }))
+    .filter((g): g is { src: string; alt: string } => !!g.src);
 }
 
 export const getProjects = cache(async (): Promise<CmsResult<Project[]>> => {
@@ -107,7 +121,7 @@ export const getProjects = cache(async (): Promise<CmsResult<Project[]>> => {
   if (!supabase) return { data: localProjects, source: "fallback" };
   const { data, error } = await supabase
     .from("projects")
-    .select("id,title,location,categories,system_size,battery_size,description,main_image_path,main_image_alt,image_is_illustration,is_featured")
+    .select("id,title,location,categories,system_size,battery_size,description,main_image_path,main_image_alt,image_is_illustration,additional_image_paths,is_featured")
     .eq("status", "published")
     .order("is_featured", { ascending: false })
     .order("display_order", { ascending: true })
