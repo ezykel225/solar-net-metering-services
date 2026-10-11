@@ -1,10 +1,11 @@
 import type { IconName } from "@/components/ui/Icon";
 
 /**
- * Primary service categories from the client's rebrand material (Oct 2026):
- * Solar System Supply, Solar Installation, System Design & Consultation,
+ * Service list confirmed by the owner's DTI announcement (Oct 2026):
+ * Solar Products, Solar System Installation, System Design & Consultation,
  * Permits & Documents Processing, Net Metering Assistance, Maintenance &
  * After-Sales Support. Wording beyond these titles needs owner approval.
+ * Solar street lights are not on this list (not offered unless confirmed).
  * Do not add warranties, certifications or approval guarantees.
  */
 export type Service = {
@@ -18,14 +19,14 @@ export type Service = {
 export const services: Service[] = [
   {
     slug: "solar-system-supply",
-    title: "Solar System Supply",
+    title: "Solar Products",
     icon: "panel",
     summary: "Solar systems and components for homes and businesses, including inverters and batteries.",
     details: ["Complete solar system packages", "Inverters", "Batteries", "Product inquiries and pre-orders"],
   },
   {
     slug: "solar-installation",
-    title: "Solar Installation",
+    title: "Solar System Installation",
     icon: "home",
     summary: "Installation of solar systems for residential and commercial properties, including hybrid systems with battery storage.",
     details: ["Residential and commercial properties", "Grid-tied and hybrid systems", "Battery storage", "Site assessment before installation"],
@@ -71,9 +72,10 @@ export const services: Service[] = [
 
 /** Options in the quote form's "Service Interested In" field. */
 export const PRODUCT_INQUIRY_SERVICE = "Product Inquiry / Pre-Order (Inverters, Batteries)";
+export const INSTALLATION_SERVICE = "Solar System Installation";
 export const serviceOptions = [
-  "Solar System Supply",
-  "Solar Installation",
+  "Solar Products",
+  INSTALLATION_SERVICE,
   "System Design & Consultation",
   "Permits & Documents Processing",
   "Net Metering Assistance",
@@ -81,6 +83,12 @@ export const serviceOptions = [
   PRODUCT_INQUIRY_SERVICE,
   "Not sure yet",
 ];
+
+/** Previous option names, still accepted from pages cached before the Oct 2026 rename. */
+export const legacyServiceOptions = new Map<string, string>([
+  ["Solar System Supply", "Solar Products"],
+  ["Solar Installation", INSTALLATION_SERVICE],
+]);
 
 /**
  * Typical project flow built only from confirmed services.
@@ -178,7 +186,10 @@ export const productLines = [
 export const PRODUCTS_NOTE =
   "Pre-orders are available for inverters and batteries. Stock, models and prices change — ask us about current availability before ordering.";
 
-/** Publicly advertised street-light features (no model specifications yet). */
+/**
+ * Street-light features advertised under the previous brand. NOT shown: solar
+ * street lights are not on the owner's confirmed service list (Oct 2026).
+ */
 export const streetLightFeatures = [
   "Integrated solar panel, LED light, battery and controller",
   "Dusk-to-dawn operation",

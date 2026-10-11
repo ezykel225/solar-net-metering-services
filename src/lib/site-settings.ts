@@ -4,7 +4,7 @@
  * confirmed values in src/lib/site.ts are the fallback. Safe for client and server.
  */
 import { buildQuoteCopy, QUOTES_ARE_FREE, type QuoteCopy } from "@/data/navigation";
-import { siteConfig } from "@/lib/site";
+import { siteConfig, type Registration } from "@/lib/site";
 
 export type SiteSettings = {
   name: string;
@@ -24,6 +24,8 @@ export type SiteSettings = {
   mapsEmbedUrl: string | null;
   plusCode: string | null;
   geo: { lat: number; lng: number } | null;
+  /** Business registration shown on the About page (null when not entered). */
+  registration: Registration | null;
   quotesAreFree: boolean;
   quoteCopy: QuoteCopy;
 };
@@ -44,6 +46,7 @@ export const defaultSiteSettings: SiteSettings = {
   mapsEmbedUrl: siteConfig.map.embedUrl,
   plusCode: siteConfig.map.plusCode,
   geo: siteConfig.map.geo,
+  registration: siteConfig.registration,
   quotesAreFree: QUOTES_ARE_FREE,
   quoteCopy: buildQuoteCopy(QUOTES_ARE_FREE),
 };
@@ -65,6 +68,12 @@ export type BusinessSettingsRow = {
   plus_code?: string | null;
   latitude?: number | string | null;
   longitude?: number | string | null;
+  registration_authority?: string | null;
+  registration_status?: string | null;
+  registration_scope?: string | null;
+  registration_region?: string | null;
+  registration_date?: string | null;
+  registration_expiry_date?: string | null;
   quote_cta_label: string;
   quotes_are_free: boolean;
 };
@@ -75,6 +84,19 @@ function geoFromRow(lat: number | string | null | undefined, lng: number | strin
   if (lat == null || lng == null) return null;
   const la = Number(lat), lo = Number(lng);
   return Number.isFinite(la) && Number.isFinite(lo) ? { lat: la, lng: lo } : null;
+}
+
+function registrationFromRow(row: BusinessSettingsRow): Registration | null {
+  const r: Registration = {
+    authority: blankToNull(row.registration_authority),
+    status: blankToNull(row.registration_status),
+    scope: blankToNull(row.registration_scope),
+    region: blankToNull(row.registration_region),
+    date: row.registration_date ?? null,
+    expiryDate: row.registration_expiry_date ?? null,
+  };
+  // Only shown once the authority and status are both entered.
+  return r.authority && r.status ? r : null;
 }
 
 /** Maps a database row onto SiteSettings, falling back field-by-field. */
@@ -98,6 +120,7 @@ export function siteSettingsFromRow(row: BusinessSettingsRow): SiteSettings {
     mapsEmbedUrl: row.google_maps_embed_url === undefined ? d.mapsEmbedUrl : blankToNull(row.google_maps_embed_url),
     plusCode: row.plus_code === undefined ? d.plusCode : blankToNull(row.plus_code),
     geo: row.latitude === undefined ? d.geo : geoFromRow(row.latitude, row.longitude),
+    registration: row.registration_status === undefined ? d.registration : registrationFromRow(row),
     quotesAreFree: free,
     quoteCopy: buildQuoteCopy(free, row.quote_cta_label),
   };

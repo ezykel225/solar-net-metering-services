@@ -20,6 +20,7 @@ import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import { getCalculatorConfig } from "@/lib/cms";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { sendQuoteNotification } from "@/lib/notifications/email";
+import { legacyServiceOptions } from "@/data/services";
 
 /**
  * POST /api/quote — public quote form endpoint.
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
     location: str(v.location),
     propertyType: str(v.propertyType),
     monthlyBill: str(v.monthlyBill, 40),
-    service: str(v.service),
+    service: legacyServiceOptions.get(str(v.service)) ?? str(v.service),
     message: str(v.message),
   });
 

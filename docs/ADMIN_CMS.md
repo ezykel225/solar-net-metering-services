@@ -33,6 +33,7 @@ Keep the secure defaults:
 | `supabase/migrations/20261011110000_update_siaton_project.sql` | Siaton record updated in place: "Siaton 10kW Hybrid Solar Installation", 10kW Hybrid Solar System, 300Ah LiFePO₄ Battery. Images untouched (illustration until real photo files are added) |
 | `supabase/migrations/20261011120000_project_slugs.sql` | Unique `slug` for each project (page address `/projects/<slug>`). Existing projects get a slug from their title; new or cleared slugs are filled in automatically. IDs and order unchanged |
 | `supabase/migrations/20261011130000_business_location_map.sql` | Business Settings → Location & map: exact address, official Google Maps link, Plus Code, optional map embed link and optional latitude/longitude (HTTPS Google Maps links only; both coordinates or neither). Sets the confirmed address, listing link and Plus Code |
+| `supabase/migrations/20261011140000_dti_registration_services.sql` | Business Settings → Business registration (authority, status, scope, region, registration and expiry dates; no certificate number or QR code) seeded with the confirmed DTI details; service titles aligned with the owner's list ("Solar Products", "Solar System Installation"); the street-light FAQ unpublished while that service is inactive |
 
 You can apply them in either of two ways:
 
@@ -48,7 +49,7 @@ They were applied with the Supabase MCP tool, so the hosted migration history us
 Before using `supabase db push` on that project, mark the files as applied, or the CLI will try to run them again:
 
 ```bash
-supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400 20261007090500 20261011090000 20261011100000 20261011110000 20261011120000 20261011130000
+supabase migration repair --status applied 20261007090000 20261007090100 20261007090200 20261007090300 20261007090400 20261007090500 20261011090000 20261011100000 20261011110000 20261011120000 20261011130000 20261011140000
 ```
 
 Security check after applying:

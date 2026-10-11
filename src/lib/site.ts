@@ -12,6 +12,17 @@ function resolveSiteUrl(): string {
   return url.replace(/\/$/, "");
 }
 
+export type Registration = {
+  authority: string | null;
+  status: string | null;
+  scope: string | null;
+  region: string | null;
+  /** YYYY-MM-DD */
+  date: string | null;
+  /** YYYY-MM-DD */
+  expiryDate: string | null;
+};
+
 /** True when NEXT_PUBLIC_SITE_URL is set (links in notification emails use it). */
 export const siteUrlConfigured = Boolean(process.env.NEXT_PUBLIC_SITE_URL?.trim());
 
@@ -62,6 +73,18 @@ export const siteConfig = {
     /** Office hours — not yet confirmed; hidden while null. */
     hours: null as string | null,
   },
+  /**
+   * Business-name registration (confirmed by the owner, Oct 2026). The
+   * registration number and QR code are intentionally not stored or shown.
+   */
+  registration: {
+    authority: "Department of Trade and Industry (DTI)",
+    status: "DTI Registered",
+    scope: "Regional",
+    region: "Negros Island Region (NIR)",
+    date: "2026-10-08",
+    expiryDate: "2031-10-08",
+  } as Registration | null,
   /**
    * Official Google Maps listing (confirmed). The embed URL and coordinates are
    * left empty until copied from the listing itself — never guessed.

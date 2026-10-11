@@ -30,6 +30,12 @@ export async function saveBusinessSettingsAction(_prev: FormState, form: FormDat
     plus_code: optional(text(form, "plus_code").replace(/\s+/g, " ")),
     latitude: optional(text(form, "latitude")),
     longitude: optional(text(form, "longitude")),
+    registration_authority: optional(text(form, "registration_authority")),
+    registration_status: optional(text(form, "registration_status")),
+    registration_scope: optional(text(form, "registration_scope")),
+    registration_region: optional(text(form, "registration_region")),
+    registration_date: optional(text(form, "registration_date")),
+    registration_expiry_date: optional(text(form, "registration_expiry_date")),
     quote_cta_label: text(form, "quote_cta_label"),
     quotes_are_free: form.get("quotes_are_free") === "on",
   };
@@ -56,6 +62,16 @@ export async function saveBusinessSettingsAction(_prev: FormState, form: FormDat
   if (v.latitude && Number.isNaN(lat)) errors.latitude = "Enter a latitude between -90 and 90 (up to 6 decimals).";
   if (v.longitude && Number.isNaN(lng)) errors.longitude = "Enter a longitude between -180 and 180 (up to 6 decimals).";
   if (!v.latitude !== !v.longitude) errors[v.latitude ? "longitude" : "latitude"] = "Enter both latitude and longitude, or leave both empty.";
+  for (const [k, max] of [["registration_authority", 120], ["registration_status", 60], ["registration_scope", 60], ["registration_region", 120]] as const) {
+    if ((v[k]?.length ?? 0) > max) errors[k] = `Keep this under ${max} characters.`;
+  }
+  const isDate = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(`${d}T00:00:00Z`)) && new Date(`${d}T00:00:00Z`).toISOString().startsWith(d);
+  for (const k of ["registration_date", "registration_expiry_date"] as const) {
+    if (v[k] && !isDate(v[k]!)) errors[k] = "Enter a valid date.";
+  }
+  if (v.registration_date && v.registration_expiry_date && !errors.registration_date && !errors.registration_expiry_date && v.registration_expiry_date <= v.registration_date) {
+    errors.registration_expiry_date = "The expiry date must be after the registration date.";
+  }
   if (v.quote_cta_label.length < 3 || v.quote_cta_label.length > 40) errors.quote_cta_label = "Enter the button wording (3–40 characters).";
   if (Object.keys(errors).length) return { error: "Please fix the highlighted fields.", errors, values: v };
 

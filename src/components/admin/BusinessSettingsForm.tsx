@@ -24,6 +24,12 @@ export type BusinessSettingsValues = {
   plus_code: string | null;
   latitude: number | string | null;
   longitude: number | string | null;
+  registration_authority: string | null;
+  registration_status: string | null;
+  registration_scope: string | null;
+  registration_region: string | null;
+  registration_date: string | null;
+  registration_expiry_date: string | null;
   quote_cta_label: string;
   quotes_are_free: boolean;
 };
@@ -100,6 +106,32 @@ export function BusinessSettingsForm({ initial }: { initial: BusinessSettingsVal
         </SettingsField>
         <SettingsField name="longitude" label="Longitude (optional)" error={e.longitude} help="Fill in both latitude and longitude, or neither.">
           {(p) => <input {...p} defaultValue={val(v.longitude)} maxLength={13} inputMode="decimal" placeholder="e.g. 123.456789" />}
+        </SettingsField>
+      </div>
+
+      <h2 className={styles.sectionTitle}>Business registration</h2>
+      <p className={styles.hint}>
+        Shown as a short “registered business” note on the About page once the authority and status are filled in. Do not
+        enter the certificate number or QR code; they are not shown on the website.
+      </p>
+      <div className={styles.formGrid}>
+        <SettingsField name="registration_authority" label="Registration authority (optional)" error={e.registration_authority} help="e.g. Department of Trade and Industry (DTI)">
+          {(p) => <input {...p} defaultValue={val(v.registration_authority)} maxLength={120} />}
+        </SettingsField>
+        <SettingsField name="registration_status" label="Registration status (optional)" error={e.registration_status} help="e.g. DTI Registered">
+          {(p) => <input {...p} defaultValue={val(v.registration_status)} maxLength={60} />}
+        </SettingsField>
+        <SettingsField name="registration_scope" label="Registration scope (optional)" error={e.registration_scope} help="e.g. Regional">
+          {(p) => <input {...p} defaultValue={val(v.registration_scope)} maxLength={60} />}
+        </SettingsField>
+        <SettingsField name="registration_region" label="Registration region (optional)" error={e.registration_region} help="e.g. Negros Island Region (NIR)">
+          {(p) => <input {...p} defaultValue={val(v.registration_region)} maxLength={120} />}
+        </SettingsField>
+        <SettingsField name="registration_date" label="Registration date (optional)" error={e.registration_date}>
+          {(p) => <input {...p} type="date" defaultValue={val(v.registration_date)} />}
+        </SettingsField>
+        <SettingsField name="registration_expiry_date" label="Valid until (optional)" error={e.registration_expiry_date}>
+          {(p) => <input {...p} type="date" defaultValue={val(v.registration_expiry_date)} />}
         </SettingsField>
       </div>
 

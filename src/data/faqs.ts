@@ -41,11 +41,8 @@ export const faqs: Faq[] = [
     answer:
       "Not necessarily. A solar system can be connected to the grid without batteries. If you want stored power for use at night or during outages, we offer hybrid solar systems with battery storage.",
   },
-  {
-    question: "Do you sell solar street lights?",
-    answer:
-      "Yes. We offer all-in-one solar street lights with an integrated solar panel, LED light, battery and controller. They run dusk to dawn, come with a remote control and are designed to be weather-resistant. Bulk orders and nationwide shipping are available.",
-  },
+  // "Do you sell solar street lights?" removed (Oct 2026): street lights are not on the
+  // owner's confirmed service list. In Supabase the FAQ is unpublished, not deleted.
   {
     question: "What brands do you offer?",
     answer: `We offer or promote ${brandGroups

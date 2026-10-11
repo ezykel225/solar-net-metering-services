@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/layout/PageHero";
 import { AboutSection } from "@/components/sections/AboutSection";
+import { RegistrationNote } from "@/components/sections/RegistrationNote";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { CtaBanner } from "@/components/sections/CtaBanner";
@@ -28,6 +29,7 @@ export default async function AboutPage() {
         intro="Solar products and solar services for homes and businesses, from Dumaguete City, Negros Oriental."
       />
       <AboutSection showLink={false} />
+      <RegistrationNote />
       <section className="section section--soft" aria-labelledby="areas-title">
         <div className="container">
           <SectionHeading id="areas-title" eyebrow="Where We Work" title="Serving Dumaguete City & Negros Oriental" intro={settings.serviceAreaSummary} />

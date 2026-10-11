@@ -13,7 +13,7 @@
  * them as guaranteed savings.
  */
 import { parseBillAmount, type QuoteRequest } from "@/lib/quote";
-import { PRODUCT_INQUIRY_SERVICE } from "@/data/services";
+import { INSTALLATION_SERVICE, PRODUCT_INQUIRY_SERVICE } from "@/data/services";
 
 /* ------------------------------ power rates ------------------------------ */
 
@@ -653,7 +653,7 @@ export function quotePrefillFromParams(
   // Only plain title characters are accepted; the visitor reviews the text before sending.
   const similar = (params.get("similar") ?? "").trim();
   if (SIMILAR_TITLE.test(similar)) {
-    prefill.service = "Solar Installation";
+    prefill.service = INSTALLATION_SERVICE;
     prefill.message = `${SIMILAR_PROJECT_PREFIX} “${similar}”. `;
   }
 
@@ -670,7 +670,7 @@ export function quotePrefillFromParams(
   const battery = isOption(batteryOptions, batteryKey) ? (batteryKey as BatteryPreference) : null;
   if (battery) {
     // Calculator visitors are looking at a full system, whatever the battery choice.
-    prefill.service = "Solar Installation";
+    prefill.service = INSTALLATION_SERVICE;
   }
 
   const sizeMatch = /^(\d{1,3}(?:\.\d)?)-(\d{1,3}(?:\.\d)?)$/.exec(params.get("size") ?? "");
