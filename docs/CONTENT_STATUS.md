@@ -19,7 +19,7 @@ Three levels:
 | Business name | EG Solar Products Trading | `src/lib/site.ts`, Admin → Business Settings |
 | Mobile | 0955 270 4060 (`tel:+639552704060`) | same |
 | Email | egsolarproductstrading@gmail.com | same |
-| Business location | Batinguel, Dumaguete City, Philippines (service area wording unchanged) | same (`office_address`) |
+| Business location | Bulfas Compound, Dumaguete – Palinpinon Rd., Dumaguete City, 6200 Negros Oriental · Plus Code 875R+JP · Google Maps https://maps.app.goo.gl/81yyiSJeFAdaxvHN9 (matches the Google Business Profile, Oct 2026). Map embed URL and coordinates not yet entered | `office_address`, `google_maps_url`, `plus_code`; `google_maps_embed_url`, `latitude`/`longitude` empty |
 | Services | Solar System Supply; Solar Installation; System Design & Consultation; Permits & Documents Processing; Net Metering Assistance; Maintenance & After-Sales Support | `src/data/services.ts`, Admin → Services |
 | Products & pre-orders | Inverters, batteries and solar system components; pre-orders for inverters and batteries | `src/data/services.ts` (`productLines`), `ProductsSection` |
 | Brands offered/promoted | Inverters: Deye, Solis, GoodWe, SRNE. Batteries: LVTopsun, Puston, SRNE, DuroSel, Deye. No partnership implied | `src/data/services.ts` (`brandGroups`) |

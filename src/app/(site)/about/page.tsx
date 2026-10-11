@@ -13,7 +13,7 @@ import { getSiteSettings } from "@/lib/cms";
 export const metadata = buildMetadata({
   title: "About Us",
   description:
-    "EG Solar Products Trading, based in Batinguel, Dumaguete City, supplies solar systems, inverters and batteries and provides installation, system design, permits, net-metering assistance and after-sales support.",
+    "EG Solar Products Trading, based in Dumaguete City, supplies solar systems, inverters and batteries and provides installation, system design, permits, net-metering assistance and after-sales support.",
   path: "/about",
 });
 
@@ -25,7 +25,7 @@ export default async function AboutPage() {
         crumb="About"
         path="/about"
         title="About EG Solar Products Trading"
-        intro="Solar products and solar services for homes and businesses, from Batinguel, Dumaguete City."
+        intro="Solar products and solar services for homes and businesses, from Dumaguete City, Negros Oriental."
       />
       <AboutSection showLink={false} />
       <section className="section section--soft" aria-labelledby="areas-title">

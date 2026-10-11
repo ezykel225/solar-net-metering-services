@@ -75,9 +75,14 @@ export async function Footer() {
             </li>
             <li>
               <Icon name="mapPin" size={18} />
-              <span>
+              <span className={styles.address}>
                 {settings.address ?? settings.serviceAreaShort}
                 {settings.address ? <span className="sr-only"> (business location)</span> : null}
+                {settings.address && settings.mapsUrl ? (
+                  <a href={settings.mapsUrl} target="_blank" rel="noopener noreferrer" className={styles.mapLink}>
+                    View on Google Maps<span className="sr-only"> (opens in a new tab)</span>
+                  </a>
+                ) : null}
               </span>
             </li>
             {settings.address ? (

@@ -27,7 +27,7 @@ export async function Hero() {
           </h1>
           <p className={styles.lead}>
             From solar system supply and installation to system design, permits, net-metering assistance, inverters,
-            batteries and after-sales support — based in Batinguel, Dumaguete City.
+            batteries and after-sales support — based in Dumaguete City.
           </p>
           <div className={styles.ctas}>
             <ButtonLink href={QUOTE_HREF}>

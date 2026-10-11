@@ -19,7 +19,9 @@ function resolveSiteUrl(): string {
  *
  * CONFIRMED (client rebrand, Oct 2026): business name "EG Solar Products
  * Trading", mobile 0955 270 4060, email egsolarproductstrading@gmail.com,
- * business location Batinguel, Dumaguete City. Service-area wording and the
+ * business location (updated Oct 2026 to match the Google Business Profile):
+ * Bulfas Compound, Dumaguete – Palinpinon Rd., Dumaguete City, 6200 Negros
+ * Oriental, Plus Code 875R+JP. Service-area wording and the
  * Facebook/Messenger links carry over from the earlier confirmation (the
  * links still need owner confirmation for the new brand).
  * NOT YET CONFIRMED: office hours, company statistics — left empty and hidden.
@@ -50,12 +52,22 @@ export const siteConfig = {
     phone: "0955 270 4060",
     phoneHref: "tel:+639552704060",
     /** International format for structured data */
-    phoneIntl: "+63 955 270 4060",
+    phoneIntl: "+639552704060",
     email: "egsolarproductstrading@gmail.com",
-    /** Business location (confirmed). Not the full service area — see serviceAreaSummary. */
-    address: "Batinguel, Dumaguete City, Philippines" as string | null,
+    /** Business location (confirmed, matches the Google Business Profile). Not the full service area — see serviceAreaSummary. */
+    address: "Bulfas Compound, Dumaguete – Palinpinon Rd., Dumaguete City, 6200 Negros Oriental" as string | null,
     /** Office hours — not yet confirmed; hidden while null. */
     hours: null as string | null,
+  },
+  /**
+   * Official Google Maps listing (confirmed). The embed URL and coordinates are
+   * left empty until copied from the listing itself — never guessed.
+   */
+  map: {
+    url: "https://maps.app.goo.gl/81yyiSJeFAdaxvHN9" as string | null,
+    embedUrl: null as string | null,
+    plusCode: "875R+JP Dumaguete City, Negros Oriental" as string | null,
+    geo: null as { lat: number; lng: number } | null,
   },
   /** Approved wording for where the company works. Not a complete list of service areas. */
   serviceAreaSummary:

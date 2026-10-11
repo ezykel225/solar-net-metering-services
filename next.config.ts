@@ -8,8 +8,12 @@ const securityHeaders = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
   // Conservative policy that cannot break scripts or styles: no framing by other
-  // sites, no <base> or plugin injection, forms only post to this site.
-  { key: "Content-Security-Policy", value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'" },
+  // sites, no <base> or plugin injection, forms only post to this site, and the
+  // only page that can be framed here is a Google Maps embed (Contact page).
+  {
+    key: "Content-Security-Policy",
+    value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-src https://www.google.com",
+  },
 ];
 
 /**

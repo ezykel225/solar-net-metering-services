@@ -19,6 +19,11 @@ export type BusinessSettingsValues = {
   service_area_short: string | null;
   office_address: string | null;
   business_hours: string | null;
+  google_maps_url: string | null;
+  google_maps_embed_url: string | null;
+  plus_code: string | null;
+  latitude: number | string | null;
+  longitude: number | string | null;
   quote_cta_label: string;
   quotes_are_free: boolean;
 };
@@ -29,7 +34,7 @@ export function BusinessSettingsForm({ initial }: { initial: BusinessSettingsVal
   const e = state.errors ?? {};
   // Keep typed values after a failed save (React resets forms after actions).
   const v = { ...initial, ...(state.values as Partial<BusinessSettingsValues> | undefined) };
-  const val = (x: string | null | undefined) => x ?? "";
+  const val = (x: string | number | null | undefined) => (x == null ? "" : String(x));
 
   return (
     <form ref={formRef} action={action} className={`${styles.card} ${styles.form}`} noValidate>
@@ -62,11 +67,39 @@ export function BusinessSettingsForm({ initial }: { initial: BusinessSettingsVal
         <SettingsField name="service_area_short" label="Service area (short)" error={e.service_area_short} help="Shown next to the map pin, e.g. Dumaguete City & Negros Oriental">
           {(p) => <input {...p} defaultValue={val(v.service_area_short)} maxLength={80} />}
         </SettingsField>
-        <SettingsField name="office_address" label="Office address (optional)" error={e.office_address} help="Leave empty to hide it on the website.">
-          {(p) => <input {...p} defaultValue={val(v.office_address)} maxLength={300} />}
-        </SettingsField>
         <SettingsField name="business_hours" label="Business hours (optional)" error={e.business_hours} help="Leave empty to hide them on the website.">
           {(p) => <input {...p} defaultValue={val(v.business_hours)} maxLength={150} placeholder="e.g. Mon – Sat, 8:00 AM – 5:00 PM" />}
+        </SettingsField>
+      </div>
+
+      <h2 className={styles.sectionTitle}>Location &amp; map</h2>
+      <p className={styles.hint}>
+        Keep these the same as the Google Business Profile. Used on the Contact page, footer and in search-engine data.
+      </p>
+      <div className={styles.formGrid}>
+        <SettingsField name="office_address" label="Business address" full error={e.office_address} help="Exact address as on Google Maps. Leave empty to hide it on the website.">
+          {(p) => <input {...p} defaultValue={val(v.office_address)} maxLength={300} />}
+        </SettingsField>
+        <SettingsField name="google_maps_url" label="Google Maps link" error={e.google_maps_url} help="Google Maps → your business → Share → Copy link. Used for “View on Google Maps”.">
+          {(p) => <input {...p} type="url" inputMode="url" defaultValue={val(v.google_maps_url)} maxLength={500} placeholder="https://maps.app.goo.gl/…" />}
+        </SettingsField>
+        <SettingsField name="plus_code" label="Plus Code (optional)" error={e.plus_code} help="Shown under the address; also used for “Get Directions”.">
+          {(p) => <input {...p} defaultValue={val(v.plus_code)} maxLength={120} placeholder="e.g. 875R+JP Dumaguete City, Negros Oriental" />}
+        </SettingsField>
+        <SettingsField
+          name="google_maps_embed_url"
+          label="Map embed link (optional)"
+          full
+          error={e.google_maps_embed_url}
+          help="Google Maps → your business → Share → Embed a map → Copy HTML, then paste it here (the whole code or just the link). Leave empty to show the address and buttons without a map."
+        >
+          {(p) => <textarea {...p} defaultValue={val(v.google_maps_embed_url)} maxLength={2400} rows={3} placeholder="https://www.google.com/maps/embed?pb=…" />}
+        </SettingsField>
+        <SettingsField name="latitude" label="Latitude (optional)" error={e.latitude} help="Only from the official listing. Leave empty if unsure.">
+          {(p) => <input {...p} defaultValue={val(v.latitude)} maxLength={12} inputMode="decimal" placeholder="e.g. 12.345678" />}
+        </SettingsField>
+        <SettingsField name="longitude" label="Longitude (optional)" error={e.longitude} help="Fill in both latitude and longitude, or neither.">
+          {(p) => <input {...p} defaultValue={val(v.longitude)} maxLength={13} inputMode="decimal" placeholder="e.g. 123.456789" />}
         </SettingsField>
       </div>
 

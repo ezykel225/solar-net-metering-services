@@ -47,17 +47,19 @@ export function buildMetadata({ title, description, path, image, imageAlt }: Pag
 }
 
 /**
- * Structured address. The confirmed location "Batinguel, Dumaguete City, Philippines"
- * becomes barangay + city; any other text is kept as a plain street address.
+ * Structured address. "<street>, Dumaguete City, 6200 Negros Oriental" (the
+ * confirmed format) is split into its parts; any other text is kept as a plain
+ * street address.
  */
 function postalAddress(address: string) {
-  const confirmed = /^\s*Batinguel,\s*Dumaguete City/i.test(address);
-  return confirmed
+  const m = /^(.+?),\s*([^,]+? City),\s*(\d{4})\s+([^,]+?)(?:,\s*Philippines)?\s*$/i.exec(address);
+  return m
     ? {
         "@type": "PostalAddress",
-        streetAddress: "Batinguel",
-        addressLocality: "Dumaguete City",
-        addressRegion: "Negros Oriental",
+        streetAddress: m[1],
+        addressLocality: m[2],
+        postalCode: m[3],
+        addressRegion: m[4],
         addressCountry: "PH",
       }
     : { "@type": "PostalAddress", streetAddress: address, addressCountry: "PH" };
@@ -74,8 +76,11 @@ export function localBusinessJsonLd(settings: SiteSettings, areaServed: string[]
     image: `${siteConfig.url}${siteConfig.ogImage}`,
     telephone: settings.phoneIntl,
     email: settings.email,
-    sameAs: [settings.facebook],
+    sameAs: [settings.facebook, ...(settings.mapsUrl ? [settings.mapsUrl] : [])],
     ...(settings.address && { address: postalAddress(settings.address) }),
+    // Official Google Maps listing; coordinates only when entered from the listing.
+    ...(settings.mapsUrl && { hasMap: settings.mapsUrl }),
+    ...(settings.geo && { geo: { "@type": "GeoCoordinates", latitude: settings.geo.lat, longitude: settings.geo.lng } }),
     knowsAbout: [
       "Solar products",
       "Solar systems",

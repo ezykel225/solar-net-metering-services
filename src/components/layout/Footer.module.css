@@ -95,6 +95,22 @@
   text-decoration: underline;
 }
 
+/* The full street address is long: keep it compact and let it wrap. */
+.address {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.contact .mapLink {
+  width: fit-content;
+  color: var(--color-orange);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
 .cta {
   margin-top: 1.5rem;
 }

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { AdminAuthError, requireAdminAction } from "@/lib/admin/auth";
 import { friendlyDbError } from "@/lib/admin/validate";
 import type { FormState } from "./content";
+import { embedSrcFromInput, isGoogleMapsEmbedUrl, isGoogleMapsUrl, PLUS_CODE } from "@/lib/maps";
 
 const notAuthorized: FormState = { error: "Your session has expired or you are not authorized. Please sign in again." };
 
@@ -23,6 +24,12 @@ export async function saveBusinessSettingsAction(_prev: FormState, form: FormDat
     service_area_short: optional(text(form, "service_area_short")),
     office_address: optional(text(form, "office_address")),
     business_hours: optional(text(form, "business_hours")),
+    google_maps_url: optional(text(form, "google_maps_url")),
+    // Accepts the embed link or the whole <iframe> code from Google Maps → Share → Embed a map.
+    google_maps_embed_url: optional(embedSrcFromInput(text(form, "google_maps_embed_url"))),
+    plus_code: optional(text(form, "plus_code").replace(/\s+/g, " ")),
+    latitude: optional(text(form, "latitude")),
+    longitude: optional(text(form, "longitude")),
     quote_cta_label: text(form, "quote_cta_label"),
     quotes_are_free: form.get("quotes_are_free") === "on",
   };
@@ -38,12 +45,24 @@ export async function saveBusinessSettingsAction(_prev: FormState, form: FormDat
   if ((v.service_area_short?.length ?? 0) > 80) errors.service_area_short = "Keep this under 80 characters.";
   if ((v.office_address?.length ?? 0) > 300) errors.office_address = "Keep this under 300 characters.";
   if ((v.business_hours?.length ?? 0) > 150) errors.business_hours = "Keep this under 150 characters.";
+  if (v.google_maps_url && !isGoogleMapsUrl(v.google_maps_url))
+    errors.google_maps_url = "Paste the Google Maps share link (https://maps.app.goo.gl/… or https://www.google.com/maps/…).";
+  if (v.google_maps_embed_url && !isGoogleMapsEmbedUrl(v.google_maps_embed_url))
+    errors.google_maps_embed_url = "Paste the embed link from Google Maps → Share → Embed a map (it starts with https://www.google.com/maps/embed?).";
+  if (v.plus_code && !PLUS_CODE.test(v.plus_code)) errors.plus_code = "Use the Plus Code as shown in Google Maps, e.g. 875R+JP Dumaguete City, Negros Oriental.";
+  const coord = (raw: string | null, max: number) => (raw && /^-?\d{1,3}(\.\d{1,6})?$/.test(raw) && Math.abs(Number(raw)) <= max ? Number(raw) : NaN);
+  const lat = coord(v.latitude, 90);
+  const lng = coord(v.longitude, 180);
+  if (v.latitude && Number.isNaN(lat)) errors.latitude = "Enter a latitude between -90 and 90 (up to 6 decimals).";
+  if (v.longitude && Number.isNaN(lng)) errors.longitude = "Enter a longitude between -180 and 180 (up to 6 decimals).";
+  if (!v.latitude !== !v.longitude) errors[v.latitude ? "longitude" : "latitude"] = "Enter both latitude and longitude, or leave both empty.";
   if (v.quote_cta_label.length < 3 || v.quote_cta_label.length > 40) errors.quote_cta_label = "Enter the button wording (3–40 characters).";
   if (Object.keys(errors).length) return { error: "Please fix the highlighted fields.", errors, values: v };
 
   try {
     const { supabase } = await requireAdminAction();
-    const { data, error } = await supabase.from("business_settings").update(v).eq("id", true).select("id");
+    const row = { ...v, latitude: v.latitude ? lat : null, longitude: v.longitude ? lng : null };
+    const { data, error } = await supabase.from("business_settings").update(row).eq("id", true).select("id");
     if (error) return { error: friendlyDbError(error) };
     if (!data?.length) return { error: "Business settings record is missing. Run the database seed migration." };
   } catch (e) {

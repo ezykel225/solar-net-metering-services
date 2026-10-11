@@ -18,6 +18,12 @@ export type SiteSettings = {
   serviceAreaShort: string;
   address: string | null;
   hours: string | null;
+  /** Official Google Maps listing link. */
+  mapsUrl: string | null;
+  /** Google Maps "Embed a map" iframe src; no map is shown without it. */
+  mapsEmbedUrl: string | null;
+  plusCode: string | null;
+  geo: { lat: number; lng: number } | null;
   quotesAreFree: boolean;
   quoteCopy: QuoteCopy;
 };
@@ -34,6 +40,10 @@ export const defaultSiteSettings: SiteSettings = {
   serviceAreaShort: siteConfig.serviceAreaShort,
   address: siteConfig.contact.address,
   hours: siteConfig.contact.hours,
+  mapsUrl: siteConfig.map.url,
+  mapsEmbedUrl: siteConfig.map.embedUrl,
+  plusCode: siteConfig.map.plusCode,
+  geo: siteConfig.map.geo,
   quotesAreFree: QUOTES_ARE_FREE,
   quoteCopy: buildQuoteCopy(QUOTES_ARE_FREE),
 };
@@ -50,11 +60,22 @@ export type BusinessSettingsRow = {
   service_area_short: string | null;
   office_address: string | null;
   business_hours: string | null;
+  google_maps_url?: string | null;
+  google_maps_embed_url?: string | null;
+  plus_code?: string | null;
+  latitude?: number | string | null;
+  longitude?: number | string | null;
   quote_cta_label: string;
   quotes_are_free: boolean;
 };
 
 const blankToNull = (v: string | null | undefined) => (v && v.trim() ? v.trim() : null);
+
+function geoFromRow(lat: number | string | null | undefined, lng: number | string | null | undefined) {
+  if (lat == null || lng == null) return null;
+  const la = Number(lat), lo = Number(lng);
+  return Number.isFinite(la) && Number.isFinite(lo) ? { lat: la, lng: lo } : null;
+}
 
 /** Maps a database row onto SiteSettings, falling back field-by-field. */
 export function siteSettingsFromRow(row: BusinessSettingsRow): SiteSettings {
@@ -72,6 +93,11 @@ export function siteSettingsFromRow(row: BusinessSettingsRow): SiteSettings {
     serviceAreaShort: blankToNull(row.service_area_short) ?? d.serviceAreaShort,
     address: blankToNull(row.office_address),
     hours: blankToNull(row.business_hours),
+    // Columns added later: fall back while a database hasn't been migrated yet.
+    mapsUrl: row.google_maps_url === undefined ? d.mapsUrl : blankToNull(row.google_maps_url),
+    mapsEmbedUrl: row.google_maps_embed_url === undefined ? d.mapsEmbedUrl : blankToNull(row.google_maps_embed_url),
+    plusCode: row.plus_code === undefined ? d.plusCode : blankToNull(row.plus_code),
+    geo: row.latitude === undefined ? d.geo : geoFromRow(row.latitude, row.longitude),
     quotesAreFree: free,
     quoteCopy: buildQuoteCopy(free, row.quote_cta_label),
   };

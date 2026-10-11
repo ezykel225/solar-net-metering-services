@@ -1,6 +1,6 @@
 # Owner Content Checklist
 
-> **Rebrand (Oct 2026):** the business is now **EG Solar Products Trading**, 0955 270 4060, egsolarproductstrading@gmail.com, Batinguel, Dumaguete City. Items below that mention the previous name, number or email are historical. Still needed: official logo file, real promotional images and project photos, confirmation of the Facebook/Messenger links, and whether solar street lights are still offered.
+> **Rebrand (Oct 2026):** the business is now **EG Solar Products Trading**, 0955 270 4060, egsolarproductstrading@gmail.com, Bulfas Compound, Dumaguete – Palinpinon Rd., Dumaguete City, 6200 Negros Oriental. Items below that mention the previous name, number or email are historical. Still needed: official logo file, real promotional images and project photos, confirmation of the Facebook/Messenger links, and whether solar street lights are still offered.
 
 Everything below must come from the business owner. Nothing here should be guessed or invented.
 Each item lists the exact file where it will be updated. Tick items off as the information arrives.
