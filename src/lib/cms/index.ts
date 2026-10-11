@@ -66,6 +66,8 @@ export const getCalculatorConfig = cache(async (): Promise<CalculatorConfig> => 
 
 type ProjectRow = {
   id: string;
+  slug: string | null;
+  completion_date: string | null;
   title: string;
   location: string | null;
   categories: string[] | null;
@@ -90,7 +92,7 @@ function projectFromRow(row: ProjectRow): Project {
   const battery = row.battery_size ? (/batter/i.test(row.battery_size) ? row.battery_size : `${row.battery_size} battery storage`) : null;
   const system = [row.system_size, battery].filter(Boolean).join(" · ");
   return {
-    slug: row.id,
+    slug: row.slug ?? row.id,
     title: row.title,
     category,
     tags: categories.map((c) => (c === "Residential Solar" ? "Residential" : c === "Commercial Solar" ? "Commercial" : c)),
@@ -103,6 +105,7 @@ function projectFromRow(row: ProjectRow): Project {
     imageIsIllustration: row.image_is_illustration,
     featured: row.is_featured,
     gallery: galleryFromRow(row),
+    completedOn: row.completion_date,
   };
 }
 
@@ -118,12 +121,32 @@ function galleryFromRow(row: ProjectRow) {
     .filter((g): g is { src: string; alt: string } => !!g.src);
 }
 
+const PROJECT_COLUMNS =
+  "id,slug,completion_date,title,location,categories,system_size,battery_size,description,main_image_path,main_image_alt,image_is_illustration,additional_image_paths,is_featured";
+
+/**
+ * One published project by its page slug. Returns null for unknown or
+ * unpublished projects (RLS also hides drafts/archived from the public).
+ * Falls back to the built-in list only when Supabase is unavailable.
+ */
+export const getProjectBySlug = cache(async (slug: string): Promise<Project | null> => {
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || slug.length > 80) return null;
+  const supabase = createSupabasePublicClient();
+  if (!supabase) return localProjects.find((p) => p.slug === slug) ?? null;
+  const { data, error } = await supabase.from("projects").select(PROJECT_COLUMNS).eq("slug", slug).eq("status", "published").maybeSingle();
+  if (error) {
+    warn("project", error);
+    return localProjects.find((p) => p.slug === slug) ?? null;
+  }
+  return data ? projectFromRow(data as ProjectRow) : null;
+});
+
 export const getProjects = cache(async (): Promise<CmsResult<Project[]>> => {
   const supabase = createSupabasePublicClient();
   if (!supabase) return { data: localProjects, source: "fallback" };
   const { data, error } = await supabase
     .from("projects")
-    .select("id,title,location,categories,system_size,battery_size,description,main_image_path,main_image_alt,image_is_illustration,additional_image_paths,is_featured")
+    .select(PROJECT_COLUMNS)
     .eq("status", "published")
     .order("is_featured", { ascending: false })
     .order("display_order", { ascending: true })

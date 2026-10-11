@@ -100,6 +100,16 @@ export const entities: Record<EntityKey, EntityDef> = {
     defaults: { status: "draft", categories: [], is_featured: false, image_is_illustration: false, additional_image_paths: [] },
     fields: [
       { name: "title", label: "Project title", type: "text", required: true, maxLength: 150, full: true },
+      {
+        name: "slug",
+        label: "Page address",
+        type: "text",
+        maxLength: 80,
+        pattern: PATH_SLUG,
+        patternMessage: "Use lowercase letters, numbers and hyphens only, e.g. siaton-hybrid-solar.",
+        help: "The project page is /projects/<this>. Leave empty to create it from the title. Changing it breaks links already shared.",
+        full: true,
+      },
       { name: "location", label: "Location", type: "text", maxLength: 150, placeholder: "e.g. Siaton, Negros Oriental" },
       { name: "completion_date", label: "Completion date", type: "date" },
       { name: "categories", label: "Category", type: "multiselect", options: projectCategories.map((c) => ({ value: c, label: c })), full: true },

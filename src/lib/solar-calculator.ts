@@ -636,6 +636,10 @@ export function parseCalculatorQuoteInput(raw: unknown): CalculatorQuoteInput | 
  * re-validated (URLs can be edited by anyone); unknown values are ignored.
  * Returns null when nothing usable is present.
  */
+/** Opening words of a message prefilled from a project page (also used to show the form notice). */
+export const SIMILAR_PROJECT_PREFIX = "I’m interested in a system similar to your project";
+const SIMILAR_TITLE = /^[\p{L}\p{N} .,&+()·'’/-]{3,120}$/u;
+
 export function quotePrefillFromParams(
   params: URLSearchParams,
   config: CalculatorConfig = DEFAULT_CALCULATOR_CONFIG,
@@ -644,6 +648,14 @@ export function quotePrefillFromParams(
 
   // "Ask About Product Availability" links carry ?service=product.
   if (params.get("service") === "product") prefill.service = PRODUCT_INQUIRY_SERVICE;
+
+  // "Ask About a Similar System" links on project pages carry ?similar=<project title>.
+  // Only plain title characters are accepted; the visitor reviews the text before sending.
+  const similar = (params.get("similar") ?? "").trim();
+  if (SIMILAR_TITLE.test(similar)) {
+    prefill.service = "Solar Installation";
+    prefill.message = `${SIMILAR_PROJECT_PREFIX} “${similar}”. `;
+  }
 
   const billRaw = params.get("bill") ?? "";
   if (/^\d{1,9}$/.test(billRaw) && validateBill(billRaw, config) === null) {

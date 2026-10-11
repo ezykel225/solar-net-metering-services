@@ -1,0 +1,164 @@
+.location {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+/* Phones: photo, details, gallery. Desktop: photo + gallery left, details right. */
+.layout {
+  display: grid;
+  grid-template-areas: "media" "details" "gallery";
+  gap: clamp(2rem, 4vw, 3rem);
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas: "media details" "gallery details";
+    grid-template-rows: auto 1fr;
+    row-gap: 2rem;
+  }
+}
+
+.media {
+  grid-area: media;
+  min-width: 0;
+}
+
+.details {
+  grid-area: details;
+  min-width: 0;
+}
+
+.figure {
+  margin: 0;
+}
+
+/* Whole photo visible (no cropping), on a soft background. */
+.mainImage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-bg-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.image {
+  object-fit: contain;
+}
+
+.noImage {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--color-text-muted);
+}
+
+.illustration {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(11, 31, 58, 0.78);
+  color: var(--color-white);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.caption {
+  margin-top: 0.6rem;
+  font-size: 0.92rem;
+  font-style: italic;
+}
+
+.gallery {
+  grid-area: gallery;
+  min-width: 0;
+}
+
+.subheading {
+  margin-bottom: 0.85rem;
+  font-size: 1.25rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--color-orange);
+  color: var(--color-navy);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.tagSecondary {
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.facts {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0 0 1.25rem;
+}
+
+.facts dt {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--color-orange-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 0.15rem 0 0;
+  color: var(--color-navy);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  font-size: 1.05rem;
+  overflow-wrap: break-word;
+}
+
+.cta {
+  margin-top: 1.75rem;
+  padding: clamp(1.25rem, 4vw, 1.75rem);
+  background: var(--color-bg-soft);
+  border-left: 5px solid var(--color-orange);
+  border-radius: var(--radius);
+}
+
+.cta p {
+  margin-bottom: 1.1rem;
+}
+
+.back {
+  margin-top: 1.5rem;
+}
+
+.back a {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-weight: 600;
+}
+
+.flip {
+  transform: scaleX(-1);
+}

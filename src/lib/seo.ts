@@ -7,7 +7,9 @@ type PageMetadataInput = {
   description?: string;
   /** Route path, e.g. "/services". Used for canonical URLs. */
   path: string;
+  /** Social preview image. Defaults to the site image (1200×630). */
   image?: string;
+  imageAlt?: string;
 };
 
 /**
@@ -16,7 +18,7 @@ type PageMetadataInput = {
  * Location-specific pages can call this too, e.g.:
  *   buildMetadata({ title: `Solar Installation in ${area.name}`, path: `/service-areas/${area.slug}` })
  */
-export function buildMetadata({ title, description, path, image }: PageMetadataInput): Metadata {
+export function buildMetadata({ title, description, path, image, imageAlt }: PageMetadataInput): Metadata {
   const desc = description ?? siteConfig.description;
   const ogImage = image ?? siteConfig.ogImage;
   return {
@@ -29,7 +31,11 @@ export function buildMetadata({ title, description, path, image }: PageMetadataI
       url: path,
       siteName: siteConfig.name,
       type: "website",
-      images: [{ url: ogImage, width: 1200, height: 630, alt: siteConfig.name }],
+      images: [
+        image
+          ? { url: ogImage, alt: imageAlt ?? siteConfig.name }
+          : { url: ogImage, width: 1200, height: 630, alt: siteConfig.name },
+      ],
     },
     twitter: {
       card: "summary_large_image",
@@ -84,13 +90,16 @@ export function localBusinessJsonLd(settings: SiteSettings, areaServed: string[]
 }
 
 /** BreadcrumbList structured data for an inner page (Home → page). */
-export function breadcrumbJsonLd(label: string, path: string) {
+export function breadcrumbJsonLd(label: string, path: string, parents: { label: string; href: string }[] = []) {
+  const trail = [{ label: "Home", href: "/" }, ...parents, { label, href: path }];
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${siteConfig.url}/` },
-      { "@type": "ListItem", position: 2, name: label, item: `${siteConfig.url}${path}` },
-    ],
+    itemListElement: trail.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.label,
+      item: `${siteConfig.url}${c.href}`,
+    })),
   };
 }

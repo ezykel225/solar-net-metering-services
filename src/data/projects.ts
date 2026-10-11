@@ -18,6 +18,8 @@ export type Project = {
   featured?: boolean;
   /** True while the image is an illustration rather than a real project photo. */
   imageIsIllustration: boolean;
+  /** Completion date (YYYY-MM-DD) when the admin has entered one. */
+  completedOn?: string | null;
   /** Real project photos (main image first), viewable full size. Empty or omitted when none. */
   gallery?: { src: string; alt: string }[];
 };
@@ -42,7 +44,7 @@ const TIERRA_ALTA_MAIN_ALT =
 export const projects: Project[] = [
   // Real completed project with genuine photos (client-supplied, Oct 2026). Same record as the CMS.
   {
-    slug: "tierra-alta-hybrid-solar-net-metering",
+    slug: "tierra-alta-hybrid-solar-net-metering-installation",
     title: tierraAltaTitle,
     category: "Residential",
     tags: ["Residential", "Hybrid Solar", "Net Metering"],
@@ -60,7 +62,7 @@ export const projects: Project[] = [
     })),
   },
   {
-    slug: "siaton-hybrid-solar-installation",
+    slug: "siaton-10kw-hybrid-solar-installation",
     title: "Siaton 10kW Hybrid Solar Installation",
     category: "Residential",
     tags: ["Residential", "Hybrid Solar"],

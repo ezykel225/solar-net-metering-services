@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
 import { mainNav } from "@/data/navigation";
 import { serviceAreas, SERVICE_AREA_PAGES_ENABLED } from "@/data/service-areas";
+import { getProjects } from "@/lib/cms";
 import { siteConfig } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 300;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages: MetadataRoute.Sitemap = mainNav.map((item) => ({
     url: `${siteConfig.url}${item.href === "/" ? "" : item.href}`,
     changeFrequency: "monthly",
@@ -18,5 +21,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }))
     : [];
 
-  return [...pages, ...areaPages];
+  // Published projects only (getProjects never returns drafts or archived projects).
+  const { data: projects } = await getProjects();
+  const projectPages: MetadataRoute.Sitemap = projects.map((p) => ({
+    url: `${siteConfig.url}/projects/${p.slug}`,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
+  return [...pages, ...projectPages, ...areaPages];
 }

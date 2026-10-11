@@ -21,6 +21,43 @@
   box-shadow: var(--shadow);
 }
 
+/* Whole card opens the project page: the title link covers the card. */
+.card {
+  position: relative;
+}
+
+.card:hover,
+.card:has(.cardLink:focus-visible) {
+  border-color: var(--color-orange);
+}
+
+.card:has(.cardLink:focus-visible) {
+  outline: 3px solid var(--color-orange);
+  outline-offset: 3px;
+}
+
+.cardLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.cardLink:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.card:hover .cardLink {
+  color: var(--color-orange-text);
+}
+
 .imageWrap {
   position: relative;
   aspect-ratio: 16 / 10;

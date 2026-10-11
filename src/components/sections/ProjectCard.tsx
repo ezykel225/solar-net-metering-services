@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Project } from "@/data/projects";
 import { Icon } from "@/components/ui/Icon";
 import { ProjectPhotos } from "./ProjectPhotos";
@@ -35,7 +36,12 @@ export function ProjectCard({ project }: { project: Project }) {
         ) : null}
       </div>
       <div className={styles.body}>
-        <h3>{project.title}</h3>
+        {/* The title link stretches over the whole card (see .cardLink::after): one link, no nested links. */}
+        <h3>
+          <Link href={`/projects/${project.slug}`} className={styles.cardLink}>
+            {project.title}
+          </Link>
+        </h3>
         <p className={styles.meta}>
           {project.location ? (
             <span>

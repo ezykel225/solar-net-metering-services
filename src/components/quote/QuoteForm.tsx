@@ -15,7 +15,7 @@ import {
   type QuoteRequest,
 } from "@/lib/quote";
 import { CONSENT_REQUIRED_MESSAGE, consentText } from "@/lib/privacy";
-import type { CalculatorQuoteInput } from "@/lib/solar-calculator";
+import { SIMILAR_PROJECT_PREFIX, type CalculatorQuoteInput } from "@/lib/solar-calculator";
 import { PRODUCT_INQUIRY_SERVICE } from "@/data/services";
 import { Icon } from "@/components/ui/Icon";
 import { FormField } from "./FormField";
@@ -165,6 +165,11 @@ export function QuoteForm({ initialValues, calculator }: QuoteFormProps = {}) {
         <p className={styles.prefilled}>
           <Icon name="chart" size={18} /> We’ve filled in some details from your Solar Calculator estimate. Please
           review them and add your contact details.
+        </p>
+      ) : initialValues?.message?.startsWith(SIMILAR_PROJECT_PREFIX) ? (
+        <p className={styles.prefilled}>
+          <Icon name="panel" size={18} /> We’ve noted the project you asked about. Add your monthly bill and anything
+          else you’d like us to know, then send your request.
         </p>
       ) : initialValues?.service === PRODUCT_INQUIRY_SERVICE ? (
         <p className={styles.prefilled}>

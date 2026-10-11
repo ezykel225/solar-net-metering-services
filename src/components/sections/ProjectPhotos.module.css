@@ -1,4 +1,9 @@
 .thumbs {
+  /* Above the card's full-size link so gallery controls never open the project page. */
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -123,4 +128,39 @@
   color: var(--color-white);
   text-align: center;
   font-variant-numeric: tabular-nums;
+}
+
+/* Project page: larger photo grid (every photo, opens the same viewer). */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+}
+
+.tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 10px);
+  background: var(--color-bg-soft);
+  cursor: zoom-in;
+}
+
+.tile:hover .thumbImage {
+  transform: scale(1.03);
+}
+
+.tile .thumbImage {
+  transition: transform 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }

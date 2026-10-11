@@ -11,10 +11,12 @@ type PageHeroProps = {
   crumb: string;
   /** Route path of the page, e.g. "/about" (used for breadcrumb structured data) */
   path: string;
+  /** Pages between Home and this page, e.g. [{ label: "Projects", href: "/projects" }] */
+  parents?: { label: string; href: string }[];
 };
 
 /** Compact banner used at the top of inner pages. */
-export function PageHero({ title, intro, crumb, path }: PageHeroProps) {
+export function PageHero({ title, intro, crumb, path, parents = [] }: PageHeroProps) {
   return (
     <section className={styles.hero} aria-labelledby="page-title">
       <div className="container">
@@ -23,13 +25,18 @@ export function PageHero({ title, intro, crumb, path }: PageHeroProps) {
             <li>
               <Link href="/">Home</Link>
             </li>
+            {parents.map((p) => (
+              <li key={p.href}>
+                <Link href={p.href}>{p.label}</Link>
+              </li>
+            ))}
             <li aria-current="page">{crumb}</li>
           </ol>
         </nav>
         <h1 id="page-title">{title}</h1>
         {intro ? <p className={styles.intro}>{intro}</p> : null}
       </div>
-      <JsonLd data={breadcrumbJsonLd(crumb, path)} />
+      <JsonLd data={breadcrumbJsonLd(crumb, path, parents)} />
     </section>
   );
 }
