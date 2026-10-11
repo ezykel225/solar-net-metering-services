@@ -86,7 +86,9 @@ function projectFromRow(row: ProjectRow): Project {
     : categories.includes("Commercial Solar")
       ? "Commercial"
       : undefined;
-  const system = [row.system_size, row.battery_size ? `${row.battery_size} battery storage` : null].filter(Boolean).join(" · ");
+  // "15kWh" → "15kWh battery storage"; text that already names the battery (e.g. "300Ah LiFePO₄ Battery") is kept as entered.
+  const battery = row.battery_size ? (/batter/i.test(row.battery_size) ? row.battery_size : `${row.battery_size} battery storage`) : null;
+  const system = [row.system_size, battery].filter(Boolean).join(" · ");
   return {
     slug: row.id,
     title: row.title,

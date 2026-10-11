@@ -27,7 +27,8 @@ Three levels:
 | Wide brand banner | Supplied; homepage band under the hero (whole image, not cropped) and the social-share image (fitted into 1200×630 on navy) | `public/images/brand/eg-solar-products-trading-banner.jpg`, `eg-solar-og.jpg` |
 | Pre-order poster | Supplied; Solar Products & Pre-Orders section. Its printed slogans ("best price", "100% genuine", delivery) are artwork only, not website text | `public/images/brand/eg-solar-preorder-inverters-batteries.jpg` |
 | Tierra Alta, Valencia project | Real client photos (5 received: 2 rooftop, 2 inverter/battery, 1 net meter); 10.8kW array, 12kW hybrid inverter, 32kWh storage, net metering. A 6th photo (equipment with a person) was shown in chat but no file was received — upload it in Admin → Projects if wanted | `public/images/projects/tierra-alta/`, Admin → Projects |
-| Real project photos (Siaton, Sibulan), hero and About photos | **Still needed** — illustrations remain, labelled as illustrations | `public/images/` |
+| Siaton project | Updated to "Siaton 10kW Hybrid Solar Installation" — 10kW Hybrid Solar System, 300Ah LiFePO₄ Battery (client caption, Oct 2026). Three real photos (rooftop, indoor setup, indoor setup with a person) were shown in chat but **no files were received**; the illustration and its label stay until they are added | Admin → Projects |
+| Real project photos (Siaton, Sibulan), hero and About photos | **Still needed as files** — illustrations remain, labelled as illustrations | `public/images/` |
 
 Rows below that still show the previous name, number or email are kept as history; the values above replace them.
 

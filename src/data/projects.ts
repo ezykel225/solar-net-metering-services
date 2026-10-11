@@ -61,12 +61,13 @@ export const projects: Project[] = [
   },
   {
     slug: "siaton-hybrid-solar-installation",
-    title: "Siaton Hybrid Solar Installation",
+    title: "Siaton 10kW Hybrid Solar Installation",
     category: "Residential",
     tags: ["Residential", "Hybrid Solar"],
     location: "Siaton, Negros Oriental",
-    system: "10kW hybrid solar system · 15kWh battery storage",
-    description: "A 10kW hybrid solar system with 15kWh of battery storage, installed for a residential client in Siaton.",
+    system: "10kW Hybrid Solar System · 300Ah LiFePO₄ Battery",
+    description:
+      "A completed 10kW hybrid solar installation in Siaton, Negros Oriental, with a 300Ah LiFePO₄ battery. The project includes the rooftop solar installation and the indoor power-system setup.",
     image: "/images/projects/siaton-hybrid.jpg",
     imageAlt: "Illustration of a house with rooftop solar panels",
     imageIsIllustration: true,
