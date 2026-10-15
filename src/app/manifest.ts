@@ -6,8 +6,11 @@ export default function manifest(): MetadataRoute.Manifest {
     name: siteConfig.name,
     short_name: siteConfig.shortName,
     description: siteConfig.description,
+    id: "/",
     start_url: "/",
-    display: "browser",
+    scope: "/",
+    // Opens full-screen (no browser bar) when added to a phone or iPad Home Screen.
+    display: "standalone",
     background_color: "#ffffff",
     theme_color: "#0b1f3a",
     icons: [

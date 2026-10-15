@@ -46,6 +46,8 @@ export const metadata: Metadata = {
     images: [siteConfig.ogImage],
   },
   robots: { index: true, follow: true },
+  // iPhone/iPad "Add to Home Screen": opens full-screen with the EG logo icon.
+  appleWebApp: { capable: true, title: siteConfig.shortName, statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

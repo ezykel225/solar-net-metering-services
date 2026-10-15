@@ -181,6 +181,21 @@ Admin pages are `noindex` and sent with `Cache-Control: private, no-store`. `rob
 
 ---
 
+### Home Screen icons (iPad / iPhone)
+
+The site can be added to a Home Screen and opens full-screen, like an app. There are two separate icons:
+
+| Icon | How to add it | Opens |
+| --- | --- | --- |
+| **EG Solar** (public website) | Safari → open the website → Share → **Add to Home Screen** | Home page |
+| **EG Admin** (owner only) | Safari → open `<website>/admin/login` → Share → **Add to Home Screen** | Admin dashboard (sign-in page when signed out) |
+
+Home Screen apps keep their own sign-in, separate from Safari, so sign in once inside the EG Admin app.
+There is deliberately no admin link on the public website. If an icon was added before an update, delete it
+and add it again to pick up the change.
+
+---
+
 ## 4. Storage
 
 Bucket `website-media` is public-read, so images can be shown on the site. Only admins can upload.
